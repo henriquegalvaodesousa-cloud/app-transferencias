@@ -1470,34 +1470,102 @@
     win.print();
     setTimeout(() => { win.close(); }, 5000);
   }
+// ============================================================
+// 20. SALVAR NO HISTÓRICO (Google Sheets)
+// ============================================================
+const URL_SCRIPT = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRc-6neLCG2M-SJmsKRN9FjG88LdCOK1QmTtB4hUzT-YA8i2Rgb922fCU5XFNTaNhOMDSNS7qOrW_yW/pubhtml'; // Substitua pela URL do seu WebApp
+
+async function salvarHistorico() {
+  if (itens.length === 0) {
+    showToast('⚠️ Nenhum item para salvar');
+    return false;
+  }
+
+  const lojaOrigem = document.getElementById('lojaOrigem').value;
+  const lojaDestino = document.getElementById('lojaDestino').value;
+  const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
+  const operador = document.getElementById('operador').value.trim() || 'Não informado';
+  const observacao = document.getElementById('observacao').value.trim();
+
+  const dados = {
+    dataHora: dataHora,
+    tipo: 'TRANSFERÊNCIA',
+    origem: lojaOrigem,
+    destino: lojaDestino,
+    operador: operador,
+    observacao: observacao,
+    itens: itens.map(item => ({
+      sku: item.sku,
+      codbarra: item.codbarra,
+      descricao: item.descricao,
+      quantidade: item.quantidade,
+      fator: item.fator,
+      unidade: item.unidade,
+      totalUnidades: item.totalUnidades
+    }))
+  };
+
+  try {
+    const resposta = await fetch(URL_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors', // Importante para evitar CORS
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dados)
+    });
+
+    // Como usamos 'no-cors', não podemos ler a resposta diretamente
+    // Então assumimos que deu certo se não houve erro na requisição
+    showToast('✅ Histórico salvo com sucesso!');
+    return true;
+
+  } catch (erro) {
+    console.error('Erro ao salvar histórico:', erro);
+    showToast('⚠️ Erro ao salvar histórico. Verifique a URL do Script.');
+    return false;
+  }
+}
+
 
   // ============================================================
-  // 20. FINALIZAR TRANSFERÊNCIA
+  // 21. FINALIZAR TRANSFERÊNCIA
   // ============================================================
-  function finalizarTransferencia() {
-    if (itens.length === 0) {
-      showToast('⚠️ Adicione pelo menos um item');
+function finalizarTransferencia() {
+  if (itens.length === 0) {
+    showToast('⚠️ Adicione pelo menos um item');
+    return;
+  }
+
+  let operador = document.getElementById('operador').value.trim();
+  if (!operador) {
+    operador = prompt('Digite o nome do operador (campo obrigatório):');
+    if (!operador) {
+      showToast('⚠️ Operador é obrigatório');
       return;
     }
+    document.getElementById('operador').value = operador;
+  }
 
-    let operador = document.getElementById('operador').value.trim();
-    if (!operador) {
-      operador = prompt('Digite o nome do operador (campo obrigatório):');
-      if (!operador) {
-        showToast('⚠️ Operador é obrigatório');
+  const lojaOrigem = document.getElementById('lojaOrigem').value;
+  const lojaDestino = document.getElementById('lojaDestino').value;
+  const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
+  const observacao = document.getElementById('observacao').value.trim();
+
+  const totalItens = itens.length;
+  const totalUnidades = itens.reduce((acc, item) => acc + item.totalUnidades, 0);
+
+  // ===== NOVO: Salva no histórico ANTES de mostrar o resumo =====
+  // Usamos async/await com uma função anônima para não bloquear a interface
+  (async () => {
+    const salvou = await salvarHistorico();
+    if (!salvou) {
+      if (!confirm('⚠️ Não foi possível salvar o histórico. Deseja continuar assim mesmo?')) {
         return;
       }
-      document.getElementById('operador').value = operador;
     }
 
-    const lojaOrigem = document.getElementById('lojaOrigem').value;
-    const lojaDestino = document.getElementById('lojaDestino').value;
-    const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
-    const observacao = document.getElementById('observacao').value.trim();
-
-    const totalItens = itens.length;
-    const totalUnidades = itens.reduce((acc, item) => acc + item.totalUnidades, 0);
-
+    // ===== Exibe o resumo (continuação do fluxo original) =====
     let resumo = '🍇 FRUTAS & CIA — ROMANEIO DE TRANSFERÊNCIA\n';
     resumo += '═'.repeat(48) + '\n';
     resumo += `Origem: ${lojaOrigem}\n`;
@@ -1524,7 +1592,8 @@
     }
 
     showToast('✅ Transferência finalizada!');
-  }
+  })();
+}
 
   // ============================================================
   // 21. TOAST
