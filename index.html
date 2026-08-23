@@ -1180,107 +1180,217 @@
   <meta charset="UTF-8">
   <title>Cupom - Transferência</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 13px;
-      width: 80mm;
-      margin: 0 auto;
-      padding: 5mm 4mm;
-      background: white;
-      color: #000;
-      line-height: 1.5;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .cupom { width: 100%; max-width: 80mm; }
-    .center { text-align: center; }
-    .bold { font-weight: bold; }
-    .linha { border-top: 2px solid #000; margin: 6px 0; }
-    .linha-dupla { border-top: 3px double #000; margin: 6px 0; }
+  
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+  
+    html,
+    body {
+      width: 80mm;
+      margin: 0;
+      padding: 0;
+      background: #fff !important;
+      color: #000 !important;
+    }
+  
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.35;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  
+    .cupom {
+      width: 80mm;
+      max-width: 80mm;
+      padding: 4mm 3mm;
+      color: #000 !important;
+      background: #fff !important;
+    }
+  
+    .center {
+      text-align: center;
+    }
+  
     .titulo-empresa {
       font-size: 18px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin-bottom: 2px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
     }
+  
     .titulo-doc {
       font-size: 14px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
+      font-weight: 900;
+      margin-bottom: 5px;
     }
+  
+    .linha {
+      border-top: 2px solid #000;
+      margin: 6px 0;
+    }
+  
+    .linha-dupla {
+      border-top: 3px double #000;
+      margin: 7px 0;
+    }
+  
     .info-linha {
       font-size: 12px;
+      font-weight: 700;
       padding: 2px 0;
     }
-    .info-linha .label {
-      font-weight: bold;
+  
+    .info-linha .label,
+    .observacao .label {
+      font-weight: 900;
     }
+  
+    .observacao {
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #000 !important;
+    }
+  
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 11px;
-      margin: 4px 0;
+      table-layout: fixed;
+      font-size: 10px;
+      color: #000 !important;
+      margin: 5px 0;
     }
+  
     th {
-      padding: 5px 4px;
-      border-bottom: 2px solid #000;
-      font-weight: bold;
-      text-align: left;
-      font-size: 11px;
-      background: #f0f0f0;
-    }
-    td {
-      padding: 4px 4px;
-      border-bottom: 1px dashed #ccc;
-    }
-    tr:last-child td { border-bottom: none; }
-    .col-num { width: 6%; text-align: center; }
-    .col-sku { width: 10%; }
-    .col-desc { width: 35%; }
-    .col-qtd { width: 8%; text-align: center; }
-    .col-fat { width: 8%; text-align: center; }
-    .col-un { width: 7%; text-align: center; }
-    .col-total { width: 12%; text-align: right; }
-    .totais {
-      font-size: 13px;
-      padding: 6px 0;
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
+      padding: 5px 2px;
       border-top: 2px solid #000;
-      margin-top: 4px;
+      border-bottom: 2px solid #000;
+      background: #fff !important;
+      color: #000 !important;
+      font-size: 10px;
+      font-weight: 900;
+      text-align: left;
     }
-    .totais span { font-weight: bold; }
-    .assinatura {
-      margin-top: 12px;
+  
+    td {
+      padding: 4px 2px;
+      border-bottom: 1px solid #000;
+      color: #000 !important;
+      font-weight: 700;
+      vertical-align: top;
+      word-wrap: break-word;
+    }
+  
+    .col-num {
+      width: 6%;
+      text-align: center;
+    }
+  
+    .col-sku {
+      width: 13%;
+    }
+  
+    .col-desc {
+      width: 35%;
+    }
+  
+    .col-qtd {
+      width: 10%;
+      text-align: center;
+    }
+  
+    .col-fat {
+      width: 9%;
+      text-align: center;
+    }
+  
+    .col-un {
+      width: 8%;
+      text-align: center;
+    }
+  
+    .col-total {
+      width: 19%;
+      text-align: right;
+    }
+  
+    .totais {
       display: flex;
       justify-content: space-between;
-      gap: 20px;
+      padding: 7px 0;
+      border-top: 3px solid #000;
+      border-bottom: 3px double #000;
+      color: #000 !important;
+      font-size: 13px;
+      font-weight: 900;
     }
+  
+    .totais span {
+      font-weight: 900;
+    }
+  
+    .assinatura {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 15px;
+    }
+  
     .assinatura div {
-      text-align: center;
       flex: 1;
-      font-size: 12px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
     }
+  
     .assinatura .linha-ass {
       border-top: 2px solid #000;
-      margin-top: 16px;
+      margin-top: 18px;
       padding-top: 4px;
-      font-weight: bold;
+      font-weight: 900;
     }
+  
     .footer {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 10px;
-      color: #333;
       border-top: 2px solid #000;
+      margin-top: 10px;
       padding-top: 6px;
+      text-align: center;
+      color: #000 !important;
+      font-size: 9px;
+      font-weight: 700;
     }
-    .observacao {
-      font-size: 11px;
-      color: #333;
-      margin-top: 4px;
-      font-style: italic;
+  
+    @media print {
+      html,
+      body {
+        width: 80mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #000 !important;
+      }
+  
+      .cupom {
+        width: 80mm;
+        padding: 4mm 3mm;
+      }
+  
+      * {
+        color: #000 !important;
+        background: #fff !important;
+        text-shadow: none !important;
+        box-shadow: none !important;
+      }
     }
   </style>
 </head>
