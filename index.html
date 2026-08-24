@@ -6,7 +6,7 @@
   <title>Frutas & Cia — Transferências</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ===== ESTILOS PRINCIPAIS ===== */
+    /* ===== ESTILOS PRINCIPAIS (mesmos de antes) ===== */
     :root {
       --bg: #f5f4f1;
       --surface: #ffffff;
@@ -509,7 +509,6 @@
       z-index: 200;
     }
     .toast.show { opacity: 1; transform: translateY(0); }
-    /* Status do catálogo */
     .status-bar {
       background: var(--surface-alt);
       border: 1px solid var(--border);
@@ -586,13 +585,11 @@
     <div class="page-sub">Busque por código de barras ou descrição (qualquer ordem). Use o checkbox para manter o fator padrão do catálogo.</div>
   </div>
 
-  <!-- Status do catálogo -->
   <div class="status-bar" id="statusBar">
     <span id="statusTexto">🔄 Carregando catálogo...</span>
     <button class="btn-reload" onclick="recarregarCatalogo()">⟳ Recarregar</button>
   </div>
 
-  <!-- Dados da transferência -->
   <div class="transfer-header">
     <div class="header-field">
       <label>Loja origem</label>
@@ -622,14 +619,12 @@
     </div>
   </div>
 
-  <!-- BARRA DE PESQUISA COM AUTOCOMPLETE -->
   <div class="search-bar">
     <span class="search-icon">🔍</span>
     <input type="text" id="pesquisaProduto" placeholder="Buscar produto por código ou descrição (ex: 'avocado kg' ou '14')" autocomplete="off">
     <div class="autocomplete-suggestions" id="suggestionsPesquisa"></div>
   </div>
 
-  <!-- FORMULÁRIO DE ADIÇÃO -->
   <div class="add-product">
     <div class="add-field busca">
       <label>Cód. Barras</label>
@@ -672,7 +667,6 @@
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
   </div>
 
-  <!-- LISTA DE ITENS -->
   <div class="items-section">
     <div class="items-header">
       <h3>Itens da transferência</h3>
@@ -722,12 +716,12 @@
 
 <script>
   // ============================================================
-  // 0. URL DO CSV (SUBSTITUA PELA SUA URL CORRETA)
+  // 0. URL DO CSV
   // ============================================================
   const URL_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjvppz-af7oTQZHb7EVqWIZkr64pR_FMtALAdr8FhXAYWv1nBUixrxHz4Zl8iGnMq_JrEFMWMGoh2D/pub?gid=1850173316&single=true&output=csv';
 
   // ============================================================
-  // 1. CATÁLOGO DE FALLBACK (usado se o CSV não carregar)
+  // 1. CATÁLOGO DE FALLBACK
   // ============================================================
   const catalogoFallback = [
     { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1 },
@@ -752,7 +746,7 @@
   let catalogo = [];
 
   // ============================================================
-  // 3. FUNÇÃO PARA CARREGAR O CATÁLOGO DO CSV (CORRIGIDA)
+  // 3. FUNÇÃO PARA CARREGAR O CATÁLOGO DO CSV
   // ============================================================
   async function carregarCatalogo() {
     const statusTexto = document.getElementById('statusTexto');
@@ -765,21 +759,15 @@
       }
       
       const csv = await resposta.text();
-      console.log('✅ CSV baixado, primeiros 200 caracteres:', csv.substring(0, 200));
       
-      // Divide o CSV em linhas
       const linhas = csv.split('\n').filter(linha => linha.trim() !== '');
       if (linhas.length === 0) throw new Error('CSV vazio');
       
-      // Detecta o separador pela primeira linha
       const primeiraLinha = linhas[0];
       const separador = primeiraLinha.includes(';') ? ';' : ',';
-      console.log(`🔍 Separador detectado: "${separador}"`);
       
       const cabecalho = primeiraLinha.split(separador).map(item => item.trim());
-      console.log('📋 Cabeçalho:', cabecalho);
       
-      // Mapeia os índices com nomes flexíveis (maiúsculas/minúsculas, variações)
       const idxMap = {
         codigo: cabecalho.findIndex(c => /codigo|código/i.test(c)),
         codbarra: cabecalho.findIndex(c => /codbarra|codbarr/i.test(c)),
@@ -787,9 +775,7 @@
         unidade: cabecalho.findIndex(c => /unidade|un/i.test(c)),
         fator: cabecalho.findIndex(c => /fatorcx|fator|fator cx/i.test(c))
       };
-      console.log('📍 Índices encontrados:', idxMap);
       
-      // Se algum índice não foi encontrado, usa fallback posicional
       if (idxMap.codigo === -1) idxMap.codigo = 0;
       if (idxMap.codbarra === -1) idxMap.codbarra = 1;
       if (idxMap.descricao === -1) idxMap.descricao = 2;
@@ -802,7 +788,6 @@
         if (colunas.length <= Math.max(idxMap.codigo, idxMap.codbarra, idxMap.descricao)) continue;
         
         const codbarra = colunas[idxMap.codbarra] || '';
-        // Ignora linhas com código de barras vazio ou "SEM GTIN"
         if (codbarra === '' || codbarra.toUpperCase() === 'SEM GTIN') continue;
         
         catalogoCarregado.push({
@@ -820,7 +805,6 @@
       
       catalogo = catalogoCarregado;
       statusTexto.innerHTML = `✅ Catálogo carregado: <strong>${catalogo.length}</strong> produtos (via CSV)`;
-      console.log(`📦 Total de produtos carregados: ${catalogo.length}`);
       return catalogo;
       
     } catch (erro) {
@@ -832,7 +816,7 @@
   }
 
   // ============================================================
-  // 4. RECARREGAR CATÁLOGO (botão)
+  // 4. RECARREGAR CATÁLOGO
   // ============================================================
   async function recarregarCatalogo() {
     await carregarCatalogo();
@@ -863,7 +847,7 @@
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
 
   // ============================================================
-  // 7. LÓGICA DO CHECKBOX (Fator automático vs manual)
+  // 7. LÓGICA DO CHECKBOX
   // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
@@ -919,7 +903,7 @@
   });
 
   // ============================================================
-  // 9. AUTOCOMPLETE COM BUSCA EM QUALQUER ORDEM
+  // 9. AUTOCOMPLETE
   // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
@@ -1038,7 +1022,7 @@
   }
 
   // ============================================================
-  // 14. ATUALIZAR ITEM (editáveis)
+  // 14. ATUALIZAR ITEM
   // ============================================================
   function atualizarItem(index, campo, valor) {
     if (campo === 'descricao') itens[index].descricao = valor;
@@ -1180,218 +1164,36 @@
   <meta charset="UTF-8">
   <title>Cupom - Transferência</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-  
-    @page {
-      size: 80mm auto;
-      margin: 0;
-    }
-  
-    html,
-    body {
-      width: 80mm;
-      margin: 0;
-      padding: 0;
-      background: #fff !important;
-      color: #000 !important;
-    }
-  
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.35;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-  
-    .cupom {
-      width: 80mm;
-      max-width: 80mm;
-      padding: 4mm 3mm;
-      color: #000 !important;
-      background: #fff !important;
-    }
-  
-    .center {
-      text-align: center;
-    }
-  
-    .titulo-empresa {
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      margin-bottom: 3px;
-    }
-  
-    .titulo-doc {
-      font-size: 14px;
-      font-weight: 900;
-      margin-bottom: 5px;
-    }
-  
-    .linha {
-      border-top: 2px solid #000;
-      margin: 6px 0;
-    }
-  
-    .linha-dupla {
-      border-top: 3px double #000;
-      margin: 7px 0;
-    }
-  
-    .info-linha {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 2px 0;
-    }
-  
-    .info-linha .label,
-    .observacao .label {
-      font-weight: 900;
-    }
-  
-    .observacao {
-      font-size: 11px;
-      font-weight: 700;
-      margin-top: 4px;
-      color: #000 !important;
-    }
-  
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 10px;
-      color: #000 !important;
-      margin: 5px 0;
-    }
-  
-    th {
-      padding: 5px 2px;
-      border-top: 2px solid #000;
-      border-bottom: 2px solid #000;
-      background: #fff !important;
-      color: #000 !important;
-      font-size: 10px;
-      font-weight: 900;
-      text-align: left;
-    }
-  
-    td {
-      padding: 4px 2px;
-      border-bottom: 1px solid #000;
-      color: #000 !important;
-      font-weight: 700;
-      vertical-align: top;
-      word-wrap: break-word;
-    }
-  
-    .col-num {
-      width: 6%;
-      text-align: center;
-    }
-  
-    .col-sku {
-      width: 13%;
-    }
-  
-    .col-desc {
-      width: 35%;
-    }
-  
-    .col-qtd {
-      width: 10%;
-      text-align: center;
-    }
-  
-    .col-fat {
-      width: 9%;
-      text-align: center;
-    }
-  
-    .col-un {
-      width: 8%;
-      text-align: center;
-    }
-  
-    .col-total {
-      width: 19%;
-      text-align: right;
-    }
-  
-    .totais {
-      display: flex;
-      justify-content: space-between;
-      padding: 7px 0;
-      border-top: 3px solid #000;
-      border-bottom: 3px double #000;
-      color: #000 !important;
-      font-size: 13px;
-      font-weight: 900;
-    }
-  
-    .totais span {
-      font-weight: 900;
-    }
-  
-    .assinatura {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 15px;
-    }
-  
-    .assinatura div {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 700;
-    }
-  
-    .assinatura .linha-ass {
-      border-top: 2px solid #000;
-      margin-top: 18px;
-      padding-top: 4px;
-      font-weight: 900;
-    }
-  
-    .footer {
-      border-top: 2px solid #000;
-      margin-top: 10px;
-      padding-top: 6px;
-      text-align: center;
-      color: #000 !important;
-      font-size: 9px;
-      font-weight: 700;
-    }
-  
-    @media print {
-      html,
-      body {
-        width: 80mm;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #fff !important;
-        color: #000 !important;
-      }
-  
-      .cupom {
-        width: 80mm;
-        padding: 4mm 3mm;
-      }
-  
-      * {
-        color: #000 !important;
-        background: #fff !important;
-        text-shadow: none !important;
-        box-shadow: none !important;
-      }
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page { size: 80mm auto; margin: 0; }
+    html, body { width: 80mm; margin: 0; padding: 0; background: #fff !important; color: #000 !important; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .cupom { width: 80mm; max-width: 80mm; padding: 4mm 3mm; color: #000 !important; background: #fff !important; }
+    .center { text-align: center; }
+    .titulo-empresa { font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 3px; }
+    .titulo-doc { font-size: 14px; font-weight: 900; margin-bottom: 5px; }
+    .linha { border-top: 2px solid #000; margin: 6px 0; }
+    .linha-dupla { border-top: 3px double #000; margin: 7px 0; }
+    .info-linha { font-size: 12px; font-weight: 700; padding: 2px 0; }
+    .info-linha .label, .observacao .label { font-weight: 900; }
+    .observacao { font-size: 11px; font-weight: 700; margin-top: 4px; color: #000 !important; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10px; color: #000 !important; margin: 5px 0; }
+    th { padding: 5px 2px; border-top: 2px solid #000; border-bottom: 2px solid #000; background: #fff !important; color: #000 !important; font-size: 10px; font-weight: 900; text-align: left; }
+    td { padding: 4px 2px; border-bottom: 1px solid #000; color: #000 !important; font-weight: 700; vertical-align: top; word-wrap: break-word; }
+    .col-num { width: 6%; text-align: center; }
+    .col-sku { width: 13%; }
+    .col-desc { width: 35%; }
+    .col-qtd { width: 10%; text-align: center; }
+    .col-fat { width: 9%; text-align: center; }
+    .col-un { width: 8%; text-align: center; }
+    .col-total { width: 19%; text-align: right; }
+    .totais { display: flex; justify-content: space-between; padding: 7px 0; border-top: 3px solid #000; border-bottom: 3px double #000; color: #000 !important; font-size: 13px; font-weight: 900; }
+    .totais span { font-weight: 900; }
+    .assinatura { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
+    .assinatura div { flex: 1; text-align: center; font-size: 11px; font-weight: 700; }
+    .assinatura .linha-ass { border-top: 2px solid #000; margin-top: 18px; padding-top: 4px; font-weight: 900; }
+    .footer { border-top: 2px solid #000; margin-top: 10px; padding-top: 6px; text-align: center; color: #000 !important; font-size: 9px; font-weight: 700; }
+    @media print { html, body { width: 80mm; margin: 0 !important; padding: 0 !important; background: #fff !important; color: #000 !important; } .cupom { width: 80mm; padding: 4mm 3mm; } * { color: #000 !important; background: #fff !important; text-shadow: none !important; box-shadow: none !important; } }
   </style>
 </head>
 <body>
@@ -1399,50 +1201,19 @@
   <div class="center titulo-empresa">🍇 FRUTAS & CIA</div>
   <div class="center titulo-doc">ROMANEIO DE TRANSFERÊNCIA</div>
   <div class="linha"></div>
-
   <div class="info-linha"><span class="label">Origem:</span> ${escHtml(lojaOrigem)}</div>
   <div class="info-linha"><span class="label">Destino:</span> ${escHtml(lojaDestino)}</div>
   <div class="info-linha"><span class="label">Data/Hora:</span> ${escHtml(dataHora)}</div>
   <div class="info-linha"><span class="label">Operador:</span> ${escHtml(operador)}</div>
   ${observacao ? `<div class="observacao"><span class="label">Obs:</span> ${escHtml(observacao)}</div>` : ''}
-
   <div class="linha"></div>
-
   <table>
-    <thead>
-      <tr>
-        <th class="col-num">#</th>
-        <th class="col-sku">SKU</th>
-        <th class="col-desc">Descrição</th>
-        <th class="col-qtd">Qtd</th>
-        <th class="col-fat">Fat</th>
-        <th class="col-un">Un</th>
-        <th class="col-total">Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${linhas}
-    </tbody>
+    <thead><tr><th class="col-num">#</th><th class="col-sku">SKU</th><th class="col-desc">Descrição</th><th class="col-qtd">Qtd</th><th class="col-fat">Fat</th><th class="col-un">Un</th><th class="col-total">Total</th></tr></thead>
+    <tbody>${linhas}</tbody>
   </table>
-
-  <div class="totais">
-    <span>Itens: ${totalItens}</span>
-    <span>Total UN: ${totalUnidades}</span>
-  </div>
-
+  <div class="totais"><span>Itens: ${totalItens}</span><span>Total UN: ${totalUnidades}</span></div>
   <div class="linha-dupla"></div>
-
-  <div class="assinatura">
-    <div>
-      <div>Emissor</div>
-      <div class="linha-ass">________________________</div>
-    </div>
-    <div>
-      <div>Destinatário</div>
-      <div class="linha-ass">________________________</div>
-    </div>
-  </div>
-
+  <div class="assinatura"><div><div>Emissor</div><div class="linha-ass">________________________</div></div><div><div>Destinatário</div><div class="linha-ass">________________________</div></div></div>
   <div class="footer">*** Documento interno - Transferência entre lojas ***</div>
 </div>
 </body>
@@ -1472,7 +1243,7 @@
   }
 
   // ============================================================
-  // 20. SALVAR NO HISTÓRICO (Google Sheets) — VERSÃO CORRIGIDA
+  // 20. SALVAR NO HISTÓRICO (Google Sheets) — VERSÃO NO-CORS
   // ============================================================
   const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbwYKjNcykaQNnG0osrh_DZr8m2YRfqms1jUGiPF1hDBgyW-ibDio6QHK_FK5at6oOTQ/exec';
 
@@ -1507,28 +1278,14 @@
     };
 
     try {
-      /*
-       * text/plain evita o preflight CORS do navegador.
-       * O Apps Script receberá o conteúdo normalmente em e.postData.contents.
-       */
-      const resposta = await fetch(URL_SCRIPT, {
+      await fetch(URL_SCRIPT, {
         method: 'POST',
-        mode: 'cors',
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'text/plain;charset=utf-8'
         },
         body: JSON.stringify(dados)
       });
-
-      if (!resposta.ok) {
-        throw new Error(`Erro HTTP: ${resposta.status}`);
-      }
-
-      const resultado = await resposta.json();
-
-      if (!resultado.sucesso) {
-        throw new Error(resultado.mensagem || 'O Apps Script recusou os dados');
-      }
 
       showToast('✅ Histórico salvo com sucesso!');
       return true;
@@ -1541,7 +1298,7 @@
   }
 
   // ============================================================
-  // 21. FINALIZAR TRANSFERÊNCIA — VERSÃO ASYNC CORRIGIDA
+  // 21. FINALIZAR TRANSFERÊNCIA
   // ============================================================
   async function finalizarTransferencia() {
     if (itens.length === 0) {
