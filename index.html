@@ -1470,102 +1470,113 @@
     win.print();
     setTimeout(() => { win.close(); }, 5000);
   }
-// ============================================================
-// 20. SALVAR NO HISTÓRICO (Google Sheets)
-// ============================================================
-const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbz61xUG6dh8CWjfh9c8KtiJ8X3ocTj1towPeZR5QUP2qrLkeyWiTfMivVY2w66cN5RK/exec'; // Substitua pela URL do seu WebApp
-
-async function salvarHistorico() {
-  if (itens.length === 0) {
-    showToast('⚠️ Nenhum item para salvar');
-    return false;
-  }
-
-  const lojaOrigem = document.getElementById('lojaOrigem').value;
-  const lojaDestino = document.getElementById('lojaDestino').value;
-  const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
-  const operador = document.getElementById('operador').value.trim() || 'Não informado';
-  const observacao = document.getElementById('observacao').value.trim();
-
-  const dados = {
-    dataHora: dataHora,
-    tipo: 'TRANSFERÊNCIA',
-    origem: lojaOrigem,
-    destino: lojaDestino,
-    operador: operador,
-    observacao: observacao,
-    itens: itens.map(item => ({
-      sku: item.sku,
-      codbarra: item.codbarra,
-      descricao: item.descricao,
-      quantidade: item.quantidade,
-      fator: item.fator,
-      unidade: item.unidade,
-      totalUnidades: item.totalUnidades
-    }))
-  };
-
-  try {
-    const resposta = await fetch(URL_SCRIPT, {
-      method: 'POST',
-      mode: 'no-cors', // Importante para evitar CORS
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dados)
-    });
-
-    // Como usamos 'no-cors', não podemos ler a resposta diretamente
-    // Então assumimos que deu certo se não houve erro na requisição
-    showToast('✅ Histórico salvo com sucesso!');
-    return true;
-
-  } catch (erro) {
-    console.error('Erro ao salvar histórico:', erro);
-    showToast('⚠️ Erro ao salvar histórico. Verifique a URL do Script.');
-    return false;
-  }
-}
-
 
   // ============================================================
-  // 21. FINALIZAR TRANSFERÊNCIA
+  // 20. SALVAR NO HISTÓRICO (Google Sheets) — VERSÃO CORRIGIDA
   // ============================================================
-function finalizarTransferencia() {
-  if (itens.length === 0) {
-    showToast('⚠️ Adicione pelo menos um item');
-    return;
+  const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbz61xUG6dh8CWjfh9c8KtiJ8X3ocTj1towPeZR5QUP2qrLkeyWiTfMivVY2w66cN5RK/exec';
+
+  async function salvarHistorico() {
+    if (itens.length === 0) {
+      showToast('⚠️ Nenhum item para salvar');
+      return false;
+    }
+
+    const lojaOrigem = document.getElementById('lojaOrigem').value;
+    const lojaDestino = document.getElementById('lojaDestino').value;
+    const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
+    const operador = document.getElementById('operador').value.trim() || 'Não informado';
+    const observacao = document.getElementById('observacao').value.trim();
+
+    const dados = {
+      dataHora: dataHora,
+      tipo: 'TRANSFERÊNCIA',
+      origem: lojaOrigem,
+      destino: lojaDestino,
+      operador: operador,
+      observacao: observacao,
+      itens: itens.map(item => ({
+        sku: item.sku,
+        codbarra: item.codbarra,
+        descricao: item.descricao,
+        quantidade: Number(item.quantidade),
+        fator: Number(item.fator),
+        unidade: item.unidade,
+        totalUnidades: Number(item.totalUnidades)
+      }))
+    };
+
+    try {
+      /*
+       * text/plain evita o preflight CORS do navegador.
+       * O Apps Script receberá o conteúdo normalmente em e.postData.contents.
+       */
+      const resposta = await fetch(URL_SCRIPT, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(dados)
+      });
+
+      if (!resposta.ok) {
+        throw new Error(`Erro HTTP: ${resposta.status}`);
+      }
+
+      const resultado = await resposta.json();
+
+      if (!resultado.sucesso) {
+        throw new Error(resultado.mensagem || 'O Apps Script recusou os dados');
+      }
+
+      showToast('✅ Histórico salvo com sucesso!');
+      return true;
+
+    } catch (erro) {
+      console.error('Erro ao salvar histórico:', erro);
+      showToast(`⚠️ Erro ao salvar: ${erro.message}`);
+      return false;
+    }
   }
 
-  let operador = document.getElementById('operador').value.trim();
-  if (!operador) {
-    operador = prompt('Digite o nome do operador (campo obrigatório):');
-    if (!operador) {
-      showToast('⚠️ Operador é obrigatório');
+  // ============================================================
+  // 21. FINALIZAR TRANSFERÊNCIA — VERSÃO ASYNC CORRIGIDA
+  // ============================================================
+  async function finalizarTransferencia() {
+    if (itens.length === 0) {
+      showToast('⚠️ Adicione pelo menos um item');
       return;
     }
-    document.getElementById('operador').value = operador;
-  }
 
-  const lojaOrigem = document.getElementById('lojaOrigem').value;
-  const lojaDestino = document.getElementById('lojaDestino').value;
-  const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
-  const observacao = document.getElementById('observacao').value.trim();
+    let operador = document.getElementById('operador').value.trim();
+    if (!operador) {
+      operador = prompt('Digite o nome do operador (campo obrigatório):');
+      if (!operador) {
+        showToast('⚠️ Operador é obrigatório');
+        return;
+      }
+      document.getElementById('operador').value = operador;
+    }
 
-  const totalItens = itens.length;
-  const totalUnidades = itens.reduce((acc, item) => acc + item.totalUnidades, 0);
+    showToast('🔄 Salvando transferência...');
 
-  // ===== NOVO: Salva no histórico ANTES de mostrar o resumo =====
-  // Usamos async/await com uma função anônima para não bloquear a interface
-  (async () => {
     const salvou = await salvarHistorico();
+
     if (!salvou) {
-      if (!confirm('⚠️ Não foi possível salvar o histórico. Deseja continuar assim mesmo?')) {
+      if (!confirm('⚠️ Não foi possível salvar o histórico. Deseja continuar mesmo assim?')) {
         return;
       }
     }
 
-    // ===== Exibe o resumo (continuação do fluxo original) =====
+    const lojaOrigem = document.getElementById('lojaOrigem').value;
+    const lojaDestino = document.getElementById('lojaDestino').value;
+    const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
+    const observacao = document.getElementById('observacao').value.trim();
+
+    const totalItens = itens.length;
+    const totalUnidades = itens.reduce((acc, item) => acc + Number(item.totalUnidades || 0), 0);
+
     let resumo = '🍇 FRUTAS & CIA — ROMANEIO DE TRANSFERÊNCIA\n';
     resumo += '═'.repeat(48) + '\n';
     resumo += `Origem: ${lojaOrigem}\n`;
@@ -1587,16 +1598,15 @@ function finalizarTransferencia() {
 
     alert(resumo);
 
-    if (confirm('Deseja imprimir o cupom fiscal?')) {
+    if (confirm('Deseja imprimir o cupom?')) {
       imprimirCupom();
     }
 
     showToast('✅ Transferência finalizada!');
-  })();
-}
+  }
 
   // ============================================================
-  // 21. TOAST
+  // 22. TOAST
   // ============================================================
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -1606,14 +1616,14 @@ function finalizarTransferencia() {
   }
 
   // ============================================================
-  // 22. ENTER PARA ADICIONAR
+  // 23. ENTER PARA ADICIONAR
   // ============================================================
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   qtdInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   fatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
 
   // ============================================================
-  // 23. PREENCHER DATA/HORA AUTOMÁTICA
+  // 24. PREENCHER DATA/HORA AUTOMÁTICA
   // ============================================================
   (function preencherData() {
     const now = new Date();
@@ -1629,7 +1639,7 @@ function finalizarTransferencia() {
   })();
 
   // ============================================================
-  // 24. INICIALIZAR O APP
+  // 25. INICIALIZAR O APP
   // ============================================================
   (async function init() {
     await carregarCatalogo();
