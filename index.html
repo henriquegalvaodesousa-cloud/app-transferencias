@@ -640,17 +640,19 @@
       console.log('📤 Enviando para:', URL_SCRIPT);
       console.log('📦 Dados enviados:', dados);
 
-      // Envia como formulário (application/x-www-form-urlencoded) em vez
-      // de JSON puro. O Apps Script perde o corpo em text/plain durante
-      // seu redirecionamento interno (302) em alguns casos; como
-      // formulário, os dados chegam de forma confiável em e.parameter.
-      const corpo = new URLSearchParams();
-      corpo.append('dados', JSON.stringify(dados));
+      // Envia via GET, com os dados codificados na própria URL.
+      // O Apps Script descarta o corpo de requisições POST no seu
+      // redirecionamento interno — GET não tem esse problema, pois
+      // os dados viajam na URL, que é preservada no redirecionamento.
+      const urlComDados = URL_SCRIPT + '?dados=' + encodeURIComponent(JSON.stringify(dados));
 
-      await fetch(URL_SCRIPT, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: corpo
+      if (urlComDados.length > 7500) {
+        console.warn('⚠️ URL muito longa (' + urlComDados.length + ' caracteres). Transferências com muitos itens podem falhar por limite de tamanho de URL.');
+      }
+
+      await fetch(urlComDados, {
+        method: 'GET',
+        mode: 'no-cors'
       });
 
       // Como 'no-cors' não deixa ler a resposta do POST, fazemos uma
