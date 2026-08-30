@@ -612,12 +612,31 @@
   // ============================================================
   // SALVAR NO HISTÓRICO (Google Sheets)
   // ============================================================
-  // Usa 'no-cors' porque o Apps Script não retorna cabeçalhos CORS
-  // legíveis pelo navegador em respostas de POST. Como não é
-  // possível ler a resposta nesse modo, o código faz uma segunda
-  // chamada (GET, doGet) só para confirmar que o script está no ar
-  // e acessando a planilha corretamente — isso ajuda a diagnosticar
-  // se o problema é de rede/URL ou se é dentro do próprio script.
+  // O fetch() para o domínio de redirecionamento do Apps Script
+  // (googleusercontent.com) está sendo bloqueado pelo navegador
+  // devido a uma política de segurança (Cross-Origin-Resource-Policy)
+  // que existe especificamente para chamadas feitas via JavaScript —
+  // mas não bloqueia navegação/carregamento de recursos como imagens.
+  // Por isso, o envio usa a técnica de "imagem-beacon": criamos um
+  // objeto Image() apontando para a URL com os dados. O navegador
+  // dispara a requisição normalmente (like ao carregar uma foto),
+  // contorna o bloqueio, e não precisamos ler a resposta mesmo.
+  function enviarViaImagem(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      let concluido = false;
+      const finalizar = () => {
+        if (!concluido) { concluido = true; resolve(); }
+      };
+      img.onload = finalizar;
+      img.onerror = finalizar; // dispara mesmo assim: a resposta é JSON,
+                                // não uma imagem válida, mas a requisição
+                                // já chegou ao servidor de qualquer forma
+      img.src = url;
+      setTimeout(finalizar, 4000); // failsafe, caso nada dispare
+    });
+  }
+
   async function salvarHistorico() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para salvar'); return false; }
 
@@ -640,38 +659,13 @@
       console.log('📤 Enviando para:', URL_SCRIPT);
       console.log('📦 Dados enviados:', dados);
 
-      // Envia via GET, com os dados codificados na própria URL.
-      // O Apps Script descarta o corpo de requisições POST no seu
-      // redirecionamento interno — GET não tem esse problema, pois
-      // os dados viajam na URL, que é preservada no redirecionamento.
       const urlComDados = URL_SCRIPT + '?dados=' + encodeURIComponent(JSON.stringify(dados));
 
       if (urlComDados.length > 7500) {
         console.warn('⚠️ URL muito longa (' + urlComDados.length + ' caracteres). Transferências com muitos itens podem falhar por limite de tamanho de URL.');
       }
 
-      await fetch(urlComDados, {
-        method: 'GET',
-        mode: 'no-cors'
-      });
-
-      // Como 'no-cors' não deixa ler a resposta do POST, fazemos uma
-      // verificação extra: um GET simples ao mesmo script para
-      // confirmar que ele está publicado e acessando a planilha.
-      // Se isso falhar, o problema é a implantação/URL, não os dados.
-      try {
-        const verificacao = await fetch(URL_SCRIPT, { method: 'GET' });
-        const resultado = await verificacao.json();
-        console.log('🔍 Verificação do script (doGet):', resultado);
-        if (resultado.status === 'erro') {
-          showToast(`⚠️ Script respondeu com erro: ${resultado.mensagem}`);
-          return false;
-        }
-      } catch (erroVerificacao) {
-        console.warn('⚠️ Não foi possível verificar o script via GET:', erroVerificacao.message);
-        // Não bloqueia o fluxo — pode ser CORS no GET também, mas o
-        // POST em si já foi disparado.
-      }
+      await enviarViaImagem(urlComDados);
 
       showToast('✅ Histórico enviado! Confira a planilha.');
       return true;
