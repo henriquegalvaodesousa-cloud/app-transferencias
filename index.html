@@ -50,6 +50,7 @@
     .header-field label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
     .header-field input, .header-field select { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: all 0.15s; outline: none; width: 100%; }
     .header-field input:focus, .header-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15); }
+    .header-field .id-field { font-weight: 600; color: var(--accent); background: var(--accent-light); }
     .search-bar { margin-bottom: 24px; position: relative; }
     .search-bar .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; pointer-events: none; z-index: 2; }
     .search-bar input { width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: 0.2s; outline: none; }
@@ -161,6 +162,10 @@
 
   <div class="transfer-header">
     <div class="header-field">
+      <label>ID da Transferência</label>
+      <input type="text" id="idTransferencia" class="id-field" readonly>
+    </div>
+    <div class="header-field">
       <label>Loja origem</label>
       <select id="lojaOrigem"><option value="Loja 1">Loja 1</option><option value="Loja 2">Loja 2</option></select>
     </div>
@@ -190,8 +195,8 @@
 
   <div class="add-product">
     <div class="add-field busca"><label>Cód. Barras</label><input type="text" id="codigoProd" placeholder="Código"></div>
-    <div class="add-field sku"><label>SKU</label><input type="text" id="skuProd" placeholder="SKU"></div>
-    <div class="add-field descricao"><label>Descrição</label><input type="text" id="descProd" placeholder="Produto"></div>
+    <div class="add-field sku"><label>SKU</label><input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;"></div>
+    <div class="add-field descricao"><label>Descrição</label><input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;"></div>
     <div class="add-field unidade">
       <label>Un.</label>
       <select id="unidadeProd"><option value="UN">UN</option><option value="KG">KG</option><option value="L">L</option><option value="CX">CX</option><option value="FD">FD</option></select>
@@ -253,7 +258,7 @@
   const URL_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjvppz-af7oTQZHb7EVqWIZkr64pR_FMtALAdr8FhXAYWv1nBUixrxHz4Zl8iGnMq_JrEFMWMGoh2D/pub?gid=1850173316&single=true&output=csv';
 
   // ============================================================
-  // 0b. URL DO APPS SCRIPT (histórico) — ATUALIZE após reimplantar!
+  // 0b. URL DO APPS SCRIPT (histórico) — VERSÃO DOGET
   // ============================================================
   const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbwYKjNcykaQNnG0osrh_DZr8m2YRfqms1jUGiPF1hDBgyW-ibDio6QHK_FK5at6oOTQ/exec';
 
@@ -269,7 +274,32 @@
   ];
 
   let catalogo = [];
+  let itens = [];
+  let idTransferencia = '';
 
+  // ============================================================
+  // 2. GERAR ID DA TRANSFERÊNCIA
+  // ============================================================
+  function gerarIdTransferencia() {
+    const now = new Date();
+    const ano = now.getFullYear().toString().slice(-2);
+    const mes = String(now.getMonth() + 1).padStart(2, '0');
+    const dia = String(now.getDate()).padStart(2, '0');
+    const hora = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const seg = String(now.getSeconds()).padStart(2, '0');
+    const rand = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    return `TRF-${ano}${mes}${dia}-${hora}${min}${seg}-${rand}`;
+  }
+
+  function inicializarIdTransferencia() {
+    idTransferencia = gerarIdTransferencia();
+    document.getElementById('idTransferencia').value = idTransferencia;
+  }
+
+  // ============================================================
+  // 3. CARREGAR CATÁLOGO
+  // ============================================================
   async function carregarCatalogo() {
     const statusTexto = document.getElementById('statusTexto');
     try {
@@ -327,8 +357,9 @@
     if (query) pesquisaInput.dispatchEvent(new Event('input'));
   }
 
-  let itens = [];
-
+  // ============================================================
+  // 4. REFERÊNCIAS DOM
+  // ============================================================
   const codigoInput = document.getElementById('codigoProd');
   const skuInput = document.getElementById('skuProd');
   const descInput = document.getElementById('descProd');
@@ -340,6 +371,9 @@
   const pesquisaInput = document.getElementById('pesquisaProduto');
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
 
+  // ============================================================
+  // 5. LÓGICA DO CHECKBOX
+  // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
       fatorInput.disabled = true;
@@ -357,6 +391,9 @@
   usarFatorCheck.addEventListener('change', toggleFatorInput);
   toggleFatorInput();
 
+  // ============================================================
+  // 6. PREENCHER CAMPOS
+  // ============================================================
   function preencherCampos(produto) {
     if (!produto) return;
     codigoInput.value = produto.codbarra;
@@ -373,12 +410,19 @@
 
   codigoInput.addEventListener('blur', function() {
     const cod = this.value.trim();
-    if (cod === '') return;
+    if (cod === '') {
+      skuInput.value = '';
+      descInput.value = '';
+      return;
+    }
     const produto = catalogo.find(p => p.codbarra === cod);
     if (produto) { preencherCampos(produto); showToast('Produto encontrado'); qtdInput.focus(); }
   });
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
 
+  // ============================================================
+  // 7. AUTOCOMPLETE
+  // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
     const text = (produto.descricao + ' ' + produto.codbarra).toLowerCase();
@@ -416,6 +460,9 @@
     if (!e.target.closest('.search-bar')) suggestionsPesquisa.classList.remove('show');
   });
 
+  // ============================================================
+  // 8. FILTRAR LISTA
+  // ============================================================
   function filtrarLista(termo) {
     const linhas = document.querySelectorAll('#corpoTabela tr');
     const query = termo.toLowerCase().trim();
@@ -426,6 +473,9 @@
     });
   }
 
+  // ============================================================
+  // 9. ATUALIZAR TOTAL CALCULADO
+  // ============================================================
   function atualizarTotalCalc() {
     const qtd = parseInt(qtdInput.value) || 0;
     const fator = parseInt(fatorInput.value) || 1;
@@ -435,6 +485,9 @@
   fatorInput.addEventListener('input', atualizarTotalCalc);
   atualizarTotalCalc();
 
+  // ============================================================
+  // 10. ADICIONAR ITEM
+  // ============================================================
   function adicionarItem() {
     const codbarra = codigoInput.value.trim() || '---';
     const sku = skuInput.value.trim() || '---';
@@ -459,8 +512,14 @@
     showToast('✓ Item adicionado');
   }
 
+  // ============================================================
+  // 11. REMOVER ITEM
+  // ============================================================
   function removerItem(index) { itens.splice(index, 1); renderizarTabela(); showToast('Item removido'); }
 
+  // ============================================================
+  // 12. ATUALIZAR ITEM
+  // ============================================================
   function atualizarItem(index, campo, valor) {
     if (campo === 'descricao') itens[index].descricao = valor;
     else if (campo === 'sku') itens[index].sku = valor;
@@ -482,6 +541,9 @@
     renderizarTabela();
   }
 
+  // ============================================================
+  // 13. RENDERIZAR TABELA
+  // ============================================================
   function renderizarTabela() {
     const tbody = document.getElementById('corpoTabela');
     const totalItensSpan = document.getElementById('totalItens');
@@ -519,19 +581,29 @@
     if (termo) filtrarLista(termo);
   }
 
+  // ============================================================
+  // 14. ESCAPE HTML
+  // ============================================================
   function escHtml(texto) {
     if (!texto) return '';
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return texto.replace(/[&<>"']/g, m => map[m]);
   }
 
+  // ============================================================
+  // 15. LIMPAR FORMULÁRIO
+  // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
-    if (confirm('Tem certeza que deseja limpar todos os itens?')) { itens = []; renderizarTabela(); showToast('Lista limpa'); }
+    if (confirm('Tem certeza que deseja limpar todos os itens?')) { itens = []; renderizarTabela(); showToast('Lista limpa'); inicializarIdTransferencia(); }
   }
 
+  // ============================================================
+  // 16. GERAR HTML DO CUPOM FISCAL (com ID)
+  // ============================================================
   function gerarCupomHTML() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return null; }
+    const idTransferencia = document.getElementById('idTransferencia').value;
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
     const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
@@ -565,6 +637,7 @@
       .info-linha { font-size: 12px; font-weight: 700; padding: 2px 0; }
       .info-linha .label, .observacao .label { font-weight: 900; }
       .observacao { font-size: 11px; font-weight: 700; margin-top: 4px; color: #000 !important; }
+      .id-destaque { font-weight: 900; color: #000 !important; background: #f0f0f0 !important; padding: 2px 6px; border-radius: 4px; }
       table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10px; color: #000 !important; margin: 5px 0; }
       th { padding: 5px 2px; border-top: 2px solid #000; border-bottom: 2px solid #000; background: #fff !important; color: #000 !important; font-size: 10px; font-weight: 900; text-align: left; }
       td { padding: 4px 2px; border-bottom: 1px solid #000; color: #000 !important; font-weight: 700; vertical-align: top; word-wrap: break-word; }
@@ -582,6 +655,7 @@
         <div class="center titulo-empresa">🍇 FRUTAS & CIA</div>
         <div class="center titulo-doc">ROMANEIO DE TRANSFERÊNCIA</div>
         <div class="linha"></div>
+        <div class="info-linha"><span class="label">ID:</span> <span class="id-destaque">${escHtml(idTransferencia)}</span></div>
         <div class="info-linha"><span class="label">Origem:</span> ${escHtml(lojaOrigem)}</div>
         <div class="info-linha"><span class="label">Destino:</span> ${escHtml(lojaDestino)}</div>
         <div class="info-linha"><span class="label">Data/Hora:</span> ${escHtml(dataHora)}</div>
@@ -596,6 +670,9 @@
       </div></body></html>`;
   }
 
+  // ============================================================
+  // 17. IMPRIMIR CUPOM
+  // ============================================================
   function imprimirCupom() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return; }
     const html = gerarCupomHTML();
@@ -610,17 +687,8 @@
   }
 
   // ============================================================
-  // SALVAR NO HISTÓRICO (Google Sheets)
+  // 18. SALVAR NO HISTÓRICO (VERSÃO DOGET DO CLAUDE)
   // ============================================================
-  // O fetch() para o domínio de redirecionamento do Apps Script
-  // (googleusercontent.com) está sendo bloqueado pelo navegador
-  // devido a uma política de segurança (Cross-Origin-Resource-Policy)
-  // que existe especificamente para chamadas feitas via JavaScript —
-  // mas não bloqueia navegação/carregamento de recursos como imagens.
-  // Por isso, o envio usa a técnica de "imagem-beacon": criamos um
-  // objeto Image() apontando para a URL com os dados. O navegador
-  // dispara a requisição normalmente (like ao carregar uma foto),
-  // contorna o bloqueio, e não precisamos ler a resposta mesmo.
   function enviarViaImagem(url) {
     return new Promise((resolve) => {
       const img = new Image();
@@ -629,17 +697,16 @@
         if (!concluido) { concluido = true; resolve(); }
       };
       img.onload = finalizar;
-      img.onerror = finalizar; // dispara mesmo assim: a resposta é JSON,
-                                // não uma imagem válida, mas a requisição
-                                // já chegou ao servidor de qualquer forma
+      img.onerror = finalizar;
       img.src = url;
-      setTimeout(finalizar, 4000); // failsafe, caso nada dispare
+      setTimeout(finalizar, 4000);
     });
   }
 
   async function salvarHistorico() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para salvar'); return false; }
 
+    const idTransferencia = document.getElementById('idTransferencia').value;
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
     const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
@@ -647,11 +714,21 @@
     const observacao = document.getElementById('observacao').value.trim();
 
     const dados = {
-      dataHora, tipo: 'TRANSFERÊNCIA', origem: lojaOrigem, destino: lojaDestino, operador, observacao,
+      idTransferencia: idTransferencia,
+      dataHora: dataHora,
+      tipo: 'TRANSFERÊNCIA',
+      origem: lojaOrigem,
+      destino: lojaDestino,
+      operador: operador,
+      observacao: observacao,
       itens: itens.map(item => ({
-        sku: item.sku, codbarra: item.codbarra, descricao: item.descricao,
-        quantidade: Number(item.quantidade), fator: Number(item.fator),
-        unidade: item.unidade, totalUnidades: Number(item.totalUnidades)
+        sku: item.sku,
+        codbarra: item.codbarra,
+        descricao: item.descricao,
+        quantidade: Number(item.quantidade),
+        fator: Number(item.fator),
+        unidade: item.unidade,
+        totalUnidades: Number(item.totalUnidades)
       }))
     };
 
@@ -677,6 +754,9 @@
     }
   }
 
+  // ============================================================
+  // 19. FINALIZAR TRANSFERÊNCIA
+  // ============================================================
   async function finalizarTransferencia() {
     if (itens.length === 0) { showToast('⚠️ Adicione pelo menos um item'); return; }
 
@@ -695,6 +775,7 @@
       if (!confirm('⚠️ Não foi possível confirmar o salvamento do histórico. Deseja continuar mesmo assim?')) return;
     }
 
+    const idTransferencia = document.getElementById('idTransferencia').value;
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
     const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
@@ -705,6 +786,7 @@
 
     let resumo = '🍇 FRUTAS & CIA — ROMANEIO DE TRANSFERÊNCIA\n';
     resumo += '═'.repeat(48) + '\n';
+    resumo += `ID: ${idTransferencia}\n`;
     resumo += `Origem: ${lojaOrigem}\n`;
     resumo += `Destino: ${lojaDestino}\n`;
     resumo += `Data/Hora: ${dataHora}\n`;
@@ -729,6 +811,9 @@
     showToast('✅ Transferência finalizada!');
   }
 
+  // ============================================================
+  // 20. TOAST
+  // ============================================================
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -736,10 +821,22 @@
     setTimeout(() => t.classList.remove('show'), 3200);
   }
 
+  // ============================================================
+  // 21. ENTER PARA ADICIONAR
+  // ============================================================
+  codigoInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.blur();
+    }
+  });
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   qtdInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   fatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
 
+  // ============================================================
+  // 22. PREENCHER DATA/HORA AUTOMÁTICA
+  // ============================================================
   (function preencherData() {
     const now = new Date();
     const dia = String(now.getDate()).padStart(2,'0');
@@ -751,8 +848,12 @@
     if (!campoData.value) campoData.value = `${dia}/${mes}/${ano} ${hora}:${min}`;
   })();
 
+  // ============================================================
+  // 23. INICIALIZAR O APP
+  // ============================================================
   (async function init() {
     await carregarCatalogo();
+    inicializarIdTransferencia();
     console.log(`✅ App iniciado com ${catalogo.length} produtos no catálogo`);
     renderizarTabela();
     const query = pesquisaInput.value.trim();
