@@ -168,6 +168,11 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15);
     }
+    .header-field .id-field {
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+    }
     .search-bar {
       margin-bottom: 24px;
       position: relative;
@@ -509,7 +514,6 @@
       z-index: 200;
     }
     .toast.show { opacity: 1; transform: translateY(0); }
-    /* Status do catálogo */
     .status-bar {
       background: var(--surface-alt);
       border: 1px solid var(--border);
@@ -586,14 +590,16 @@
     <div class="page-sub">Busque por código de barras ou descrição (qualquer ordem). Use o checkbox para manter o fator padrão do catálogo.</div>
   </div>
 
-  <!-- Status do catálogo -->
   <div class="status-bar" id="statusBar">
     <span id="statusTexto">🔄 Carregando catálogo...</span>
     <button class="btn-reload" onclick="recarregarCatalogo()">⟳ Recarregar</button>
   </div>
 
-  <!-- Dados da transferência -->
   <div class="transfer-header">
+    <div class="header-field">
+      <label>ID da Transferência</label>
+      <input type="text" id="idTransferencia" class="id-field" readonly>
+    </div>
     <div class="header-field">
       <label>Loja origem</label>
       <select id="lojaOrigem">
@@ -622,14 +628,12 @@
     </div>
   </div>
 
-  <!-- BARRA DE PESQUISA COM AUTOCOMPLETE -->
   <div class="search-bar">
     <span class="search-icon">🔍</span>
     <input type="text" id="pesquisaProduto" placeholder="Buscar produto por código ou descrição (ex: 'avocado kg' ou '14')" autocomplete="off">
     <div class="autocomplete-suggestions" id="suggestionsPesquisa"></div>
   </div>
 
-  <!-- FORMULÁRIO DE ADIÇÃO -->
   <div class="add-product">
     <div class="add-field busca">
       <label>Cód. Barras</label>
@@ -637,11 +641,11 @@
     </div>
     <div class="add-field sku">
       <label>SKU</label>
-      <input type="text" id="skuProd" placeholder="SKU">
+      <input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;">
     </div>
     <div class="add-field descricao">
       <label>Descrição</label>
-      <input type="text" id="descProd" placeholder="Produto">
+      <input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;">
     </div>
     <div class="add-field unidade">
       <label>Un.</label>
@@ -672,7 +676,6 @@
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
   </div>
 
-  <!-- LISTA DE ITENS -->
   <div class="items-section">
     <div class="items-header">
       <h3>Itens da transferência</h3>
@@ -715,71 +718,76 @@
   <button class="btn btn-ghost" onclick="limparFormulario()">🗑️ Limpar tudo</button>
   <div class="footer-right">
     <button class="btn btn-primary" onclick="adicionarItem()">➕ Adicionar item</button>
-    <button class="btn btn-secondary" onclick="imprimirCupom()">🖨️ Imprimir Notinha</button>
+    <button class="btn btn-secondary" onclick="imprimirCupom()">🖨️ Imprimir Cupom</button>
     <button class="btn btn-success" onclick="finalizarTransferencia()">✓ Finalizar</button>
   </div>
 </div>
 
 <script>
   // ============================================================
-  // 0. URL DO CSV (SUBSTITUA PELA SUA URL CORRETA)
+  // 0. URL DO CSV
   // ============================================================
   const URL_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjvppz-af7oTQZHb7EVqWIZkr64pR_FMtALAdr8FhXAYWv1nBUixrxHz4Zl8iGnMq_JrEFMWMGoh2D/pub?gid=1850173316&single=true&output=csv';
 
   // ============================================================
-  // 1. CATÁLOGO DE FALLBACK (usado se o CSV não carregar)
+  // 1. URL DO APPS SCRIPT
+  // ============================================================
+  const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbwYKjNcykaQNnG0osrh_DZr8m2YRfqms1jUGiPF1hDBgyW-ibDio6QHK_FK5at6oOTQ/exec';
+
+  // ============================================================
+  // 2. CATÁLOGO DE FALLBACK
   // ============================================================
   const catalogoFallback = [
     { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1 },
-    { sku: '2', codbarra: '2', descricao: 'ABACATE BREDA KG', unidade: 'KG', fator: 1 },
-    { sku: '3', codbarra: '3', descricao: 'ABACATE FORTUNE KG', unidade: 'KG', fator: 1 },
-    { sku: '4', codbarra: '4', descricao: 'ABACAXI HAWAI UN', unidade: 'UN', fator: 1 },
-    { sku: '5', codbarra: '5', descricao: 'ABACAXI PEROLA UN', unidade: 'UN', fator: 1 },
-    { sku: '6', codbarra: '6', descricao: 'ABACAXI PEROLA PICADO UN', unidade: 'UN', fator: 1 },
-    { sku: '7', codbarra: '7', descricao: 'ABACAXI PEROLA RODELAS UN', unidade: 'UN', fator: 1 },
-    { sku: '8', codbarra: '8', descricao: 'ABOBORA JAPONESA FATIADA KG', unidade: 'KG', fator: 1 },
-    { sku: '9', codbarra: '9', descricao: 'ABOBORA JAPONESA KG', unidade: 'KG', fator: 1 },
-    { sku: '10', codbarra: '10', descricao: 'ABOBORA JAPONESA PICADA KG', unidade: 'KG', fator: 1 },
-    { sku: '11', codbarra: '11', descricao: 'ABOBORA MORANGA KG', unidade: 'KG', fator: 1 },
-    { sku: '12', codbarra: '12', descricao: 'ABOBORA MORANGA PICADA KG', unidade: 'KG', fator: 1 },
-    { sku: '13', codbarra: '13', descricao: 'ABOBORA PAULISTA KG', unidade: 'KG', fator: 1 },
-    { sku: '14', codbarra: '14', descricao: 'ABOBORA SECA PEDACO KG', unidade: 'KG', fator: 1 }
+    { sku: '2', codbarra: '2', descricao: 'ABACATE BREDA KG', unidade: 'KG', fator: 1 }
   ];
 
   // ============================================================
-  // 2. VARIÁVEL GLOBAL DO CATÁLOGO
+  // 3. VARIÁVEIS GLOBAIS
   // ============================================================
   let catalogo = [];
+  let itens = [];
+  let idTransferencia = '';
 
   // ============================================================
-  // 3. FUNÇÃO PARA CARREGAR O CATÁLOGO DO CSV (CORRIGIDA)
+  // 4. GERAR ID DA TRANSFERÊNCIA
+  // ============================================================
+  function gerarIdTransferencia() {
+    const now = new Date();
+    const ano = now.getFullYear().toString().slice(-2);
+    const mes = String(now.getMonth() + 1).padStart(2, '0');
+    const dia = String(now.getDate()).padStart(2, '0');
+    const hora = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const seg = String(now.getSeconds()).padStart(2, '0');
+    // Gera um número aleatório de 4 dígitos para evitar duplicidade
+    const rand = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    return `TRF-${ano}${mes}${dia}-${hora}${min}${seg}-${rand}`;
+  }
+
+  // ============================================================
+  // 5. FUNÇÃO PARA CARREGAR O CATÁLOGO DO CSV
   // ============================================================
   async function carregarCatalogo() {
     const statusTexto = document.getElementById('statusTexto');
     try {
       statusTexto.textContent = '🔄 Baixando catálogo da planilha...';
-
+      
       const resposta = await fetch(URL_CSV);
       if (!resposta.ok) {
         throw new Error(`Erro HTTP: ${resposta.status}`);
       }
-
+      
       const csv = await resposta.text();
-      console.log('✅ CSV baixado, primeiros 200 caracteres:', csv.substring(0, 200));
-
-      // Divide o CSV em linhas
+      
       const linhas = csv.split('\n').filter(linha => linha.trim() !== '');
       if (linhas.length === 0) throw new Error('CSV vazio');
-
-      // Detecta o separador pela primeira linha
+      
       const primeiraLinha = linhas[0];
       const separador = primeiraLinha.includes(';') ? ';' : ',';
-      console.log(`🔍 Separador detectado: "${separador}"`);
-
+      
       const cabecalho = primeiraLinha.split(separador).map(item => item.trim());
-      console.log('📋 Cabeçalho:', cabecalho);
-
-      // Mapeia os índices com nomes flexíveis (maiúsculas/minúsculas, variações)
+      
       const idxMap = {
         codigo: cabecalho.findIndex(c => /codigo|código/i.test(c)),
         codbarra: cabecalho.findIndex(c => /codbarra|codbarr/i.test(c)),
@@ -787,24 +795,21 @@
         unidade: cabecalho.findIndex(c => /unidade|un/i.test(c)),
         fator: cabecalho.findIndex(c => /fatorcx|fator|fator cx/i.test(c))
       };
-      console.log('📍 Índices encontrados:', idxMap);
-
-      // Se algum índice não foi encontrado, usa fallback posicional
+      
       if (idxMap.codigo === -1) idxMap.codigo = 0;
       if (idxMap.codbarra === -1) idxMap.codbarra = 1;
       if (idxMap.descricao === -1) idxMap.descricao = 2;
       if (idxMap.unidade === -1) idxMap.unidade = 3;
       if (idxMap.fator === -1) idxMap.fator = 4;
-
+      
       const catalogoCarregado = [];
       for (let i = 1; i < linhas.length; i++) {
         const colunas = linhas[i].split(separador).map(item => item.trim());
         if (colunas.length <= Math.max(idxMap.codigo, idxMap.codbarra, idxMap.descricao)) continue;
-
+        
         const codbarra = colunas[idxMap.codbarra] || '';
-        // Ignora linhas com código de barras vazio ou "SEM GTIN"
         if (codbarra === '' || codbarra.toUpperCase() === 'SEM GTIN') continue;
-
+        
         catalogoCarregado.push({
           sku: colunas[idxMap.codigo] || '',
           codbarra: codbarra,
@@ -813,16 +818,15 @@
           fator: parseInt(colunas[idxMap.fator]) || 1
         });
       }
-
+      
       if (catalogoCarregado.length === 0) {
         throw new Error('Nenhum produto válido encontrado no CSV');
       }
-
+      
       catalogo = catalogoCarregado;
       statusTexto.innerHTML = `✅ Catálogo carregado: <strong>${catalogo.length}</strong> produtos (via CSV)`;
-      console.log(`📦 Total de produtos carregados: ${catalogo.length}`);
       return catalogo;
-
+      
     } catch (erro) {
       console.error('❌ Erro ao carregar catálogo:', erro);
       catalogo = catalogoFallback;
@@ -832,7 +836,7 @@
   }
 
   // ============================================================
-  // 4. RECARREGAR CATÁLOGO (botão)
+  // 6. RECARREGAR CATÁLOGO
   // ============================================================
   async function recarregarCatalogo() {
     await carregarCatalogo();
@@ -844,12 +848,7 @@
   }
 
   // ============================================================
-  // 5. ARRAY DE ITENS DO ROMANEIO
-  // ============================================================
-  let itens = [];
-
-  // ============================================================
-  // 6. REFERÊNCIAS DOM
+  // 7. REFERÊNCIAS DOM
   // ============================================================
   const codigoInput = document.getElementById('codigoProd');
   const skuInput = document.getElementById('skuProd');
@@ -861,9 +860,18 @@
   const usarFatorCheck = document.getElementById('usarFatorCatalogo');
   const pesquisaInput = document.getElementById('pesquisaProduto');
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
+  const idTransferenciaInput = document.getElementById('idTransferencia');
 
   // ============================================================
-  // 7. LÓGICA DO CHECKBOX (Fator automático vs manual)
+  // 8. INICIALIZAR ID DA TRANSFERÊNCIA
+  // ============================================================
+  function inicializarIdTransferencia() {
+    idTransferencia = gerarIdTransferencia();
+    idTransferenciaInput.value = idTransferencia;
+  }
+
+  // ============================================================
+  // 9. LÓGICA DO CHECKBOX (Fator automático vs manual)
   // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
@@ -886,10 +894,11 @@
   toggleFatorInput();
 
   // ============================================================
-  // 8. PREENCHER CAMPOS
+  // 10. PREENCHER CAMPOS (corrigido)
   // ============================================================
   function preencherCampos(produto) {
     if (!produto) return;
+    // Preenche os campos com os dados do catálogo
     codigoInput.value = produto.codbarra;
     skuInput.value = produto.sku;
     descInput.value = produto.descricao;
@@ -904,22 +913,32 @@
     atualizarTotalCalc();
   }
 
+  // Busca por código de barras
   codigoInput.addEventListener('blur', function() {
     const cod = this.value.trim();
-    if (cod === '') return;
+    if (cod === '') {
+      // Limpa os campos se o código estiver vazio
+      skuInput.value = '';
+      descInput.value = '';
+      return;
+    }
     const produto = catalogo.find(p => p.codbarra === cod);
     if (produto) {
       preencherCampos(produto);
       showToast('Produto encontrado');
       qtdInput.focus();
+    } else {
+      showToast('⚠️ Produto não encontrado');
     }
   });
   codigoInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') this.blur();
+    if (e.key === 'Enter') {
+      this.blur();
+    }
   });
 
   // ============================================================
-  // 9. AUTOCOMPLETE COM BUSCA EM QUALQUER ORDEM
+  // 11. AUTOCOMPLETE
   // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
@@ -973,7 +992,7 @@
   });
 
   // ============================================================
-  // 10. FILTRAR LISTA
+  // 12. FILTRAR LISTA
   // ============================================================
   function filtrarLista(termo) {
     const linhas = document.querySelectorAll('#corpoTabela tr');
@@ -986,7 +1005,7 @@
   }
 
   // ============================================================
-  // 11. ATUALIZAR TOTAL CALCULADO
+  // 13. ATUALIZAR TOTAL CALCULADO
   // ============================================================
   function atualizarTotalCalc() {
     const qtd = parseInt(qtdInput.value) || 0;
@@ -998,30 +1017,31 @@
   atualizarTotalCalc();
 
   // ============================================================
-  // 12. ADICIONAR ITEM
+  // 14. ADICIONAR ITEM
   // ============================================================
   function adicionarItem() {
-    const codbarra = codigoInput.value.trim() || '---';
-    const sku = skuInput.value.trim() || '---';
+    const codbarra = codigoInput.value.trim();
+    const sku = skuInput.value.trim();
     const descricao = descInput.value.trim();
     const unidade = unidadeSelect.value;
     const fator = parseInt(fatorInput.value) || 1;
     const quantidade = parseInt(qtdInput.value) || 0;
     const totalUnidades = quantidade * fator;
 
-    if (!descricao) { showToast('⚠️ Digite a descrição'); return; }
+    if (!codbarra) { showToast('⚠️ Digite o código de barras'); return; }
+    if (!descricao) { showToast('⚠️ Produto não encontrado'); return; }
     if (quantidade <= 0) { showToast('⚠️ Quantidade deve ser > 0'); return; }
     if (fator <= 0) { showToast('⚠️ Fator deve ser > 0'); return; }
 
     itens.push({ sku, codbarra, descricao, unidade, fator, quantidade, totalUnidades });
 
-    descInput.value = '';
+    codigoInput.value = '';
     skuInput.value = '';
+    descInput.value = '';
     qtdInput.value = '1';
     fatorInput.value = '1';
     if (usarFatorCheck.checked) fatorInput.disabled = true;
     atualizarTotalCalc();
-    codigoInput.value = '';
     codigoInput.focus();
 
     renderizarTabela();
@@ -1029,7 +1049,7 @@
   }
 
   // ============================================================
-  // 13. REMOVER ITEM
+  // 15. REMOVER ITEM
   // ============================================================
   function removerItem(index) {
     itens.splice(index, 1);
@@ -1038,7 +1058,7 @@
   }
 
   // ============================================================
-  // 14. ATUALIZAR ITEM (editáveis)
+  // 16. ATUALIZAR ITEM
   // ============================================================
   function atualizarItem(index, campo, valor) {
     if (campo === 'descricao') itens[index].descricao = valor;
@@ -1062,7 +1082,7 @@
   }
 
   // ============================================================
-  // 15. RENDERIZAR TABELA
+  // 17. RENDERIZAR TABELA
   // ============================================================
   function renderizarTabela() {
     const tbody = document.getElementById('corpoTabela');
@@ -1123,7 +1143,7 @@
   }
 
   // ============================================================
-  // 16. ESCAPE HTML
+  // 18. ESCAPE HTML
   // ============================================================
   function escHtml(texto) {
     if (!texto) return '';
@@ -1132,7 +1152,7 @@
   }
 
   // ============================================================
-  // 17. LIMPAR FORMULÁRIO
+  // 19. LIMPAR FORMULÁRIO
   // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
@@ -1140,11 +1160,13 @@
       itens = [];
       renderizarTabela();
       showToast('Lista limpa');
+      // Gera novo ID para a próxima transferência
+      inicializarIdTransferencia();
     }
   }
 
   // ============================================================
-  // 18. GERAR HTML DO CUPOM FISCAL
+  // 20. GERAR HTML DO CUPOM FISCAL (com ID da transferência)
   // ============================================================
   function gerarCupomHTML() {
     if (itens.length === 0) {
@@ -1152,6 +1174,7 @@
       return null;
     }
 
+    const idTransferencia = document.getElementById('idTransferencia').value;
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
     const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
@@ -1180,218 +1203,37 @@
   <meta charset="UTF-8">
   <title>Cupom - Transferência</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    @page {
-      size: 80mm auto;
-      margin: 0;
-    }
-
-    html,
-    body {
-      width: 80mm;
-      margin: 0;
-      padding: 0;
-      background: #fff !important;
-      color: #000 !important;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.35;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-
-    .cupom {
-      width: 80mm;
-      max-width: 80mm;
-      padding: 4mm 3mm;
-      color: #000 !important;
-      background: #fff !important;
-    }
-
-    .center {
-      text-align: center;
-    }
-
-    .titulo-empresa {
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      margin-bottom: 3px;
-    }
-
-    .titulo-doc {
-      font-size: 14px;
-      font-weight: 900;
-      margin-bottom: 5px;
-    }
-
-    .linha {
-      border-top: 2px solid #000;
-      margin: 6px 0;
-    }
-
-    .linha-dupla {
-      border-top: 3px double #000;
-      margin: 7px 0;
-    }
-
-    .info-linha {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 2px 0;
-    }
-
-    .info-linha .label,
-    .observacao .label {
-      font-weight: 900;
-    }
-
-    .observacao {
-      font-size: 11px;
-      font-weight: 700;
-      margin-top: 4px;
-      color: #000 !important;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 10px;
-      color: #000 !important;
-      margin: 5px 0;
-    }
-
-    th {
-      padding: 5px 2px;
-      border-top: 2px solid #000;
-      border-bottom: 2px solid #000;
-      background: #fff !important;
-      color: #000 !important;
-      font-size: 10px;
-      font-weight: 900;
-      text-align: left;
-    }
-
-    td {
-      padding: 4px 2px;
-      border-bottom: 1px solid #000;
-      color: #000 !important;
-      font-weight: 700;
-      vertical-align: top;
-      word-wrap: break-word;
-    }
-
-    .col-num {
-      width: 6%;
-      text-align: center;
-    }
-
-    .col-sku {
-      width: 13%;
-    }
-
-    .col-desc {
-      width: 35%;
-    }
-
-    .col-qtd {
-      width: 10%;
-      text-align: center;
-    }
-
-    .col-fat {
-      width: 9%;
-      text-align: center;
-    }
-
-    .col-un {
-      width: 8%;
-      text-align: center;
-    }
-
-    .col-total {
-      width: 19%;
-      text-align: right;
-    }
-
-    .totais {
-      display: flex;
-      justify-content: space-between;
-      padding: 7px 0;
-      border-top: 3px solid #000;
-      border-bottom: 3px double #000;
-      color: #000 !important;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .totais span {
-      font-weight: 900;
-    }
-
-    .assinatura {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .assinatura div {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .assinatura .linha-ass {
-      border-top: 2px solid #000;
-      margin-top: 18px;
-      padding-top: 4px;
-      font-weight: 900;
-    }
-
-    .footer {
-      border-top: 2px solid #000;
-      margin-top: 10px;
-      padding-top: 6px;
-      text-align: center;
-      color: #000 !important;
-      font-size: 9px;
-      font-weight: 700;
-    }
-
-    @media print {
-      html,
-      body {
-        width: 80mm;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #fff !important;
-        color: #000 !important;
-      }
-
-      .cupom {
-        width: 80mm;
-        padding: 4mm 3mm;
-      }
-
-      * {
-        color: #000 !important;
-        background: #fff !important;
-        text-shadow: none !important;
-        box-shadow: none !important;
-      }
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page { size: 80mm auto; margin: 0; }
+    html, body { width: 80mm; margin: 0; padding: 0; background: #fff !important; color: #000 !important; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .cupom { width: 80mm; max-width: 80mm; padding: 4mm 3mm; color: #000 !important; background: #fff !important; }
+    .center { text-align: center; }
+    .titulo-empresa { font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 3px; }
+    .titulo-doc { font-size: 14px; font-weight: 900; margin-bottom: 5px; }
+    .linha { border-top: 2px solid #000; margin: 6px 0; }
+    .linha-dupla { border-top: 3px double #000; margin: 7px 0; }
+    .info-linha { font-size: 12px; font-weight: 700; padding: 2px 0; }
+    .info-linha .label, .observacao .label { font-weight: 900; }
+    .observacao { font-size: 11px; font-weight: 700; margin-top: 4px; color: #000 !important; }
+    .id-destaque { font-weight: 900; color: #000 !important; background: #f0f0f0 !important; padding: 2px 6px; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10px; color: #000 !important; margin: 5px 0; }
+    th { padding: 5px 2px; border-top: 2px solid #000; border-bottom: 2px solid #000; background: #fff !important; color: #000 !important; font-size: 10px; font-weight: 900; text-align: left; }
+    td { padding: 4px 2px; border-bottom: 1px solid #000; color: #000 !important; font-weight: 700; vertical-align: top; word-wrap: break-word; }
+    .col-num { width: 6%; text-align: center; }
+    .col-sku { width: 13%; }
+    .col-desc { width: 35%; }
+    .col-qtd { width: 10%; text-align: center; }
+    .col-fat { width: 9%; text-align: center; }
+    .col-un { width: 8%; text-align: center; }
+    .col-total { width: 19%; text-align: right; }
+    .totais { display: flex; justify-content: space-between; padding: 7px 0; border-top: 3px solid #000; border-bottom: 3px double #000; color: #000 !important; font-size: 13px; font-weight: 900; }
+    .totais span { font-weight: 900; }
+    .assinatura { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
+    .assinatura div { flex: 1; text-align: center; font-size: 11px; font-weight: 700; }
+    .assinatura .linha-ass { border-top: 2px solid #000; margin-top: 18px; padding-top: 4px; font-weight: 900; }
+    .footer { border-top: 2px solid #000; margin-top: 10px; padding-top: 6px; text-align: center; color: #000 !important; font-size: 9px; font-weight: 700; }
+    @media print { html, body { width: 80mm; margin: 0 !important; padding: 0 !important; background: #fff !important; color: #000 !important; } .cupom { width: 80mm; padding: 4mm 3mm; } * { color: #000 !important; background: #fff !important; text-shadow: none !important; box-shadow: none !important; } }
   </style>
 </head>
 <body>
@@ -1399,50 +1241,24 @@
   <div class="center titulo-empresa">🍇 FRUTAS & CIA</div>
   <div class="center titulo-doc">ROMANEIO DE TRANSFERÊNCIA</div>
   <div class="linha"></div>
-
+  
+  <div class="info-linha"><span class="label">ID:</span> <span class="id-destaque">${escHtml(idTransferencia)}</span></div>
   <div class="info-linha"><span class="label">Origem:</span> ${escHtml(lojaOrigem)}</div>
   <div class="info-linha"><span class="label">Destino:</span> ${escHtml(lojaDestino)}</div>
   <div class="info-linha"><span class="label">Data/Hora:</span> ${escHtml(dataHora)}</div>
   <div class="info-linha"><span class="label">Operador:</span> ${escHtml(operador)}</div>
   ${observacao ? `<div class="observacao"><span class="label">Obs:</span> ${escHtml(observacao)}</div>` : ''}
-
   <div class="linha"></div>
-
+  
   <table>
-    <thead>
-      <tr>
-        <th class="col-num">#</th>
-        <th class="col-sku">SKU</th>
-        <th class="col-desc">Descrição</th>
-        <th class="col-qtd">Qtd</th>
-        <th class="col-fat">Fat</th>
-        <th class="col-un">Un</th>
-        <th class="col-total">Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${linhas}
-    </tbody>
+    <thead><tr><th class="col-num">#</th><th class="col-sku">SKU</th><th class="col-desc">Descrição</th><th class="col-qtd">Qtd</th><th class="col-fat">Fat</th><th class="col-un">Un</th><th class="col-total">Total</th></tr></thead>
+    <tbody>${linhas}</tbody>
   </table>
-
-  <div class="totais">
-    <span>Itens: ${totalItens}</span>
-    <span>Total UN: ${totalUnidades}</span>
-  </div>
-
+  
+  <div class="totais"><span>Itens: ${totalItens}</span><span>Total UN: ${totalUnidades}</span></div>
   <div class="linha-dupla"></div>
-
-  <div class="assinatura">
-    <div>
-      <div>Emissor</div>
-      <div class="linha-ass">________________________</div>
-    </div>
-    <div>
-      <div>Destinatário</div>
-      <div class="linha-ass">________________________</div>
-    </div>
-  </div>
-
+  
+  <div class="assinatura"><div><div>Emissor</div><div class="linha-ass">________________________</div></div><div><div>Destinatário</div><div class="linha-ass">________________________</div></div></div>
   <div class="footer">*** Documento interno - Transferência entre lojas ***</div>
 </div>
 </body>
@@ -1450,7 +1266,7 @@
   }
 
   // ============================================================
-  // 19. IMPRIMIR CUPOM
+  // 21. IMPRIMIR CUPOM
   // ============================================================
   function imprimirCupom() {
     if (itens.length === 0) {
@@ -1472,9 +1288,64 @@
   }
 
   // ============================================================
-  // 20. FINALIZAR TRANSFERÊNCIA
+  // 22. SALVAR NO HISTÓRICO (Google Sheets)
   // ============================================================
-  function finalizarTransferencia() {
+  async function salvarHistorico() {
+    if (itens.length === 0) {
+      showToast('⚠️ Nenhum item para salvar');
+      return false;
+    }
+
+    const idTransferencia = document.getElementById('idTransferencia').value;
+    const lojaOrigem = document.getElementById('lojaOrigem').value;
+    const lojaDestino = document.getElementById('lojaDestino').value;
+    const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
+    const operador = document.getElementById('operador').value.trim() || 'Não informado';
+    const observacao = document.getElementById('observacao').value.trim();
+
+    const dados = {
+      idTransferencia: idTransferencia,
+      dataHora: dataHora,
+      tipo: 'TRANSFERÊNCIA',
+      origem: lojaOrigem,
+      destino: lojaDestino,
+      operador: operador,
+      observacao: observacao,
+      itens: itens.map(item => ({
+        sku: item.sku,
+        codbarra: item.codbarra,
+        descricao: item.descricao,
+        quantidade: Number(item.quantidade),
+        fator: Number(item.fator),
+        unidade: item.unidade,
+        totalUnidades: Number(item.totalUnidades)
+      }))
+    };
+
+    try {
+      await fetch(URL_SCRIPT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(dados)
+      });
+
+      showToast('✅ Histórico salvo com sucesso!');
+      return true;
+
+    } catch (erro) {
+      console.error('Erro ao salvar histórico:', erro);
+      showToast(`⚠️ Erro ao salvar: ${erro.message}`);
+      return false;
+    }
+  }
+
+  // ============================================================
+  // 23. FINALIZAR TRANSFERÊNCIA
+  // ============================================================
+  async function finalizarTransferencia() {
     if (itens.length === 0) {
       showToast('⚠️ Adicione pelo menos um item');
       return;
@@ -1490,16 +1361,28 @@
       document.getElementById('operador').value = operador;
     }
 
+    showToast('🔄 Salvando transferência...');
+
+    const salvou = await salvarHistorico();
+
+    if (!salvou) {
+      if (!confirm('⚠️ Não foi possível salvar o histórico. Deseja continuar mesmo assim?')) {
+        return;
+      }
+    }
+
+    const idTransferencia = document.getElementById('idTransferencia').value;
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
     const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
     const observacao = document.getElementById('observacao').value.trim();
 
     const totalItens = itens.length;
-    const totalUnidades = itens.reduce((acc, item) => acc + item.totalUnidades, 0);
+    const totalUnidades = itens.reduce((acc, item) => acc + Number(item.totalUnidades || 0), 0);
 
     let resumo = '🍇 FRUTAS & CIA — ROMANEIO DE TRANSFERÊNCIA\n';
     resumo += '═'.repeat(48) + '\n';
+    resumo += `ID: ${idTransferencia}\n`;
     resumo += `Origem: ${lojaOrigem}\n`;
     resumo += `Destino: ${lojaDestino}\n`;
     resumo += `Data/Hora: ${dataHora}\n`;
@@ -1519,7 +1402,7 @@
 
     alert(resumo);
 
-    if (confirm('Deseja imprimir o cupom fiscal?')) {
+    if (confirm('Deseja imprimir o cupom?')) {
       imprimirCupom();
     }
 
@@ -1527,7 +1410,7 @@
   }
 
   // ============================================================
-  // 21. TOAST
+  // 24. TOAST
   // ============================================================
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -1537,14 +1420,20 @@
   }
 
   // ============================================================
-  // 22. ENTER PARA ADICIONAR
+  // 25. ENTER PARA ADICIONAR
   // ============================================================
+  codigoInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.blur();
+    }
+  });
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   qtdInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   fatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
 
   // ============================================================
-  // 23. PREENCHER DATA/HORA AUTOMÁTICA
+  // 26. PREENCHER DATA/HORA AUTOMÁTICA
   // ============================================================
   (function preencherData() {
     const now = new Date();
@@ -1560,10 +1449,11 @@
   })();
 
   // ============================================================
-  // 24. INICIALIZAR O APP
+  // 27. INICIALIZAR O APP
   // ============================================================
   (async function init() {
     await carregarCatalogo();
+    inicializarIdTransferencia();
     console.log(`✅ App iniciado com ${catalogo.length} produtos no catálogo`);
     renderizarTabela();
     const query = pesquisaInput.value.trim();
