@@ -6,6 +6,7 @@
   <title>Frutas & Cia — Transferências</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* ===== ESTILOS PRINCIPAIS ===== */
     :root {
       --bg: #f5f4f1;
       --surface: #ffffff;
@@ -27,45 +28,249 @@
       --radius-lg: 16px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
-    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
-    .nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; letter-spacing: -0.3px; color: var(--text-primary); }
-    .nav-logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 700; }
-    .nav-links { display: flex; align-items: center; gap: 2px; }
-    .nav-link { padding: 6px 14px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: -0.3px;
+      color: var(--text-primary);
+    }
+    .nav-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .nav-link {
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
     .nav-link:hover { background: var(--bg); color: var(--text-primary); }
     .nav-link.active { color: var(--accent); background: var(--accent-light); }
-    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-mid)); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .page { max-width: 1000px; margin: 0 auto; padding: 32px 24px 100px; }
-    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-muted); margin-bottom: 24px; }
+    .nav-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 24px 100px;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
     .breadcrumb span { cursor: pointer; transition: color 0.15s; }
     .breadcrumb span:hover { color: var(--accent); }
     .breadcrumb .sep { color: var(--border-strong); }
     .breadcrumb .current { color: var(--text-secondary); font-weight: 500; }
-    .page-header { margin-bottom: 28px; }
-    .page-title { font-size: 26px; font-weight: 600; letter-spacing: -0.6px; color: var(--text-primary); margin-bottom: 8px; }
-    .page-sub { color: var(--text-secondary); font-size: 14px; }
-    .transfer-header { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px 24px; box-shadow: var(--shadow-sm); }
-    .header-field { display: flex; flex-direction: column; gap: 4px; }
-    .header-field label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
-    .header-field input, .header-field select { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: all 0.15s; outline: none; width: 100%; }
-    .header-field input:focus, .header-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15); }
-    .search-bar { margin-bottom: 24px; position: relative; }
-    .search-bar .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; pointer-events: none; z-index: 2; }
-    .search-bar input { width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: 0.2s; outline: none; }
+    .page-header {
+      margin-bottom: 28px;
+    }
+    .page-title {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.6px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .page-sub {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    .transfer-header {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .header-field label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+    .header-field input, .header-field select {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--surface);
+      transition: all 0.15s;
+      outline: none;
+      width: 100%;
+    }
+    .header-field input:focus, .header-field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15);
+    }
+    .search-bar {
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .search-bar .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--surface);
+      transition: 0.2s;
+      outline: none;
+    }
     .search-bar input::placeholder { color: var(--text-muted); }
-    .search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12); }
-    .autocomplete-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-sm); max-height: 200px; overflow-y: auto; z-index: 100; display: none; box-shadow: var(--shadow-md); }
+    .search-bar input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12);
+    }
+    .autocomplete-suggestions {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      box-shadow: var(--shadow-md);
+    }
     .autocomplete-suggestions.show { display: block; }
-    .autocomplete-suggestions .suggestion { padding: 8px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border); transition: 0.1s; }
-    .autocomplete-suggestions .suggestion:hover { background: var(--accent-light); }
-    .autocomplete-suggestions .suggestion:last-child { border-bottom: none; }
-    .add-product { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px 24px; margin-bottom: 28px; display: flex; align-items: end; gap: 14px; flex-wrap: wrap; box-shadow: var(--shadow-sm); }
-    .add-field { display: flex; flex-direction: column; gap: 4px; flex: 1 0 100px; }
-    .add-field label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
-    .add-field input, .add-field select { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text-primary); background: var(--surface); outline: none; transition: 0.15s; width: 100%; }
-    .add-field input:focus, .add-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12); }
-    .add-field input[type="number"] { width: 80px; }
+    .autocomplete-suggestions .suggestion {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      transition: 0.1s;
+    }
+    .autocomplete-suggestions .suggestion:hover {
+      background: var(--accent-light);
+    }
+    .autocomplete-suggestions .suggestion:last-child {
+      border-bottom: none;
+    }
+    .add-product {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: end;
+      gap: 14px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .add-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1 0 100px;
+    }
+    .add-field label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+    .add-field input, .add-field select {
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      color: var(--text-primary);
+      background: var(--surface);
+      outline: none;
+      transition: 0.15s;
+      width: 100%;
+    }
+    .add-field input:focus, .add-field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12);
+    }
+    .add-field input[type="number"] {
+      width: 80px;
+    }
     .add-field.descricao { flex: 2.5; }
     .add-field.unidade { flex: 0.9; }
     .add-field.total { flex: 0.5; }
@@ -73,50 +278,268 @@
     .add-field.fator { flex: 0.7; }
     .add-field.busca { flex: 0.9; }
     .add-field.qtd { flex: 0.6; }
-    .fator-toggle { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; margin-top: 6px; cursor: pointer; }
-    .fator-toggle input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
-    .btn-add { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: 0.18s; box-shadow: 0 2px 8px rgba(42, 157, 143, 0.25); height: 40px; align-self: flex-end; margin-bottom: 1px; }
-    .btn-add:hover { background: #1f8a7d; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(42, 157, 143, 0.35); }
-    .items-section { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
-    .items-header { padding: 14px 24px; background: var(--surface-alt); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .items-header h3 { font-size: 15px; font-weight: 600; }
-    .items-count { font-size: 13px; color: var(--text-muted); font-weight: 400; }
-    .items-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-    .items-table th { text-align: left; padding: 10px 12px; background: var(--surface-alt); border-bottom: 1px solid var(--border); font-weight: 600; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
-    .items-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .fator-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      margin-top: 6px;
+      cursor: pointer;
+    }
+    .fator-toggle input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .btn-add {
+      padding: 8px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.18s;
+      box-shadow: 0 2px 8px rgba(42, 157, 143, 0.25);
+      height: 40px;
+      align-self: flex-end;
+      margin-bottom: 1px;
+    }
+    .btn-add:hover {
+      background: #1f8a7d;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(42, 157, 143, 0.35);
+    }
+    .items-section {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+    .items-header {
+      padding: 14px 24px;
+      background: var(--surface-alt);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .items-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .items-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .items-table th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--surface-alt);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .items-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
     .items-table tr:last-child td { border-bottom: none; }
-    .items-table .edit-input { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 4px 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; width: 100%; background: var(--surface); outline: none; transition: 0.15s; }
-    .items-table .edit-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12); }
-    .items-table .edit-input.qtd { width: 60px; text-align: center; }
-    .items-table .edit-input.fator { width: 60px; text-align: center; }
+    .items-table .edit-input {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      width: 100%;
+      background: var(--surface);
+      outline: none;
+      transition: 0.15s;
+    }
+    .items-table .edit-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12);
+    }
+    .items-table .edit-input.qtd {
+      width: 60px;
+      text-align: center;
+    }
+    .items-table .edit-input.fator {
+      width: 60px;
+      text-align: center;
+    }
     .items-table .descricao-cell { min-width: 180px; }
-    .items-table .total-cell { font-weight: 600; color: var(--accent); text-align: right; }
+    .items-table .total-cell {
+      font-weight: 600;
+      color: var(--accent);
+      text-align: right;
+    }
     .items-table .sku-cell { font-weight: 500; color: var(--text-secondary); }
-    .btn-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; transition: 0.15s; padding: 4px 8px; }
+    .btn-remove {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.15s;
+      padding: 4px 8px;
+    }
     .btn-remove:hover { color: var(--red); }
-    .empty-message { padding: 32px; text-align: center; color: var(--text-muted); font-size: 14px; }
-    .totals-bar { display: flex; justify-content: flex-end; gap: 32px; padding: 12px 24px; background: var(--surface-alt); border-top: 1px solid var(--border); font-size: 13.5px; }
+    .empty-message {
+      padding: 32px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .totals-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 32px;
+      padding: 12px 24px;
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
+      font-size: 13.5px;
+    }
     .totals-bar span { font-weight: 500; }
     .totals-bar .value { font-weight: 600; color: var(--text-primary); }
     .totals-bar .highlight { color: var(--accent); }
-    .footer-actions { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 50; }
-    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 20px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: 0.18s; border: none; outline: none; }
-    .btn-ghost { background: transparent; color: var(--text-secondary); border: 1.5px solid var(--border); }
-    .btn-ghost:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg); }
-    .btn-primary { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(42, 157, 143, 0.3); }
-    .btn-primary:hover { background: #1f8a7d; box-shadow: 0 4px 16px rgba(42, 157, 143, 0.4); transform: translateY(-1px); }
-    .btn-success { background: var(--green); color: white; box-shadow: 0 2px 8px rgba(26, 158, 107, 0.25); }
-    .btn-success:hover { background: #15885b; transform: translateY(-1px); }
-    .btn-secondary { background: var(--surface-alt); color: var(--text-secondary); border: 1.5px solid var(--border-strong); }
-    .btn-secondary:hover { background: var(--border); transform: translateY(-1px); }
-    .footer-right { display: flex; align-items: center; gap: 10px; }
-    .toast { position: fixed; top: 72px; right: 24px; background: var(--text-primary); color: white; padding: 11px 18px; border-radius: var(--radius); font-size: 13.5px; font-weight: 500; box-shadow: var(--shadow-md); opacity: 0; transform: translateY(-8px); transition: 0.25s; pointer-events: none; z-index: 200; max-width: 320px; }
+    .footer-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+      z-index: 50;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 20px;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.18s;
+      border: none;
+      outline: none;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+      background: var(--bg);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 8px rgba(42, 157, 143, 0.3);
+    }
+    .btn-primary:hover {
+      background: #1f8a7d;
+      box-shadow: 0 4px 16px rgba(42, 157, 143, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-success {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 2px 8px rgba(26, 158, 107, 0.25);
+    }
+    .btn-success:hover {
+      background: #15885b;
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--surface-alt);
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border-strong);
+    }
+    .btn-secondary:hover {
+      background: var(--border);
+      transform: translateY(-1px);
+    }
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toast {
+      position: fixed;
+      top: 72px;
+      right: 24px;
+      background: var(--text-primary);
+      color: white;
+      padding: 11px 18px;
+      border-radius: var(--radius);
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: 0.25s;
+      pointer-events: none;
+      z-index: 200;
+    }
     .toast.show { opacity: 1; transform: translateY(0); }
-    .status-bar { background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 16px; margin-bottom: 16px; font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    /* Status do catálogo */
+    .status-bar {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
     .status-bar .status-ok { color: var(--green); font-weight: 600; }
     .status-bar .status-error { color: var(--red); font-weight: 600; }
-    .status-bar .btn-reload { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 12px; cursor: pointer; font-size: 11px; color: var(--text-secondary); transition: 0.15s; }
-    .status-bar .btn-reload:hover { background: var(--bg); border-color: var(--border-strong); }
+    .status-bar .btn-reload {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-secondary);
+      transition: 0.15s;
+    }
+    .status-bar .btn-reload:hover {
+      background: var(--bg);
+      border-color: var(--border-strong);
+    }
     @media (max-width: 800px) {
       .transfer-header { grid-template-columns: 1fr 1fr; gap: 12px; }
       .add-product { flex-direction: column; align-items: stretch; }
@@ -127,13 +550,18 @@
       .items-table .edit-input.qtd, .items-table .edit-input.fator { width: 45px; }
       .totals-bar { flex-direction: column; gap: 4px; align-items: flex-end; }
     }
-    @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) {
+      .transfer-header { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo"><div class="nav-logo-icon">🍇</div>Frutas & Cia</div>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🍇</div>
+    Frutas & Cia
+  </div>
   <div class="nav-links">
     <a class="nav-link" href="#">Dashboard</a>
     <a class="nav-link active" href="#">Transferências</a>
@@ -146,7 +574,11 @@
 <div class="page">
 
   <div class="breadcrumb">
-    <span>Home</span><span class="sep">›</span><span>Transferências</span><span class="sep">›</span><span class="current">Novo romaneio</span>
+    <span>Home</span>
+    <span class="sep">›</span>
+    <span>Transferências</span>
+    <span class="sep">›</span>
+    <span class="current">Novo romaneio</span>
   </div>
 
   <div class="page-header">
@@ -154,19 +586,27 @@
     <div class="page-sub">Busque por código de barras ou descrição (qualquer ordem). Use o checkbox para manter o fator padrão do catálogo.</div>
   </div>
 
+  <!-- Status do catálogo -->
   <div class="status-bar" id="statusBar">
     <span id="statusTexto">🔄 Carregando catálogo...</span>
     <button class="btn-reload" onclick="recarregarCatalogo()">⟳ Recarregar</button>
   </div>
 
+  <!-- Dados da transferência -->
   <div class="transfer-header">
     <div class="header-field">
       <label>Loja origem</label>
-      <select id="lojaOrigem"><option value="Loja 1">Loja 1</option><option value="Loja 2">Loja 2</option></select>
+      <select id="lojaOrigem">
+        <option value="Loja 1">Loja 1</option>
+        <option value="Loja 2">Loja 2</option>
+      </select>
     </div>
     <div class="header-field">
       <label>Loja destino</label>
-      <select id="lojaDestino"><option value="Loja 2">Loja 2</option><option value="Loja 1">Loja 1</option></select>
+      <select id="lojaDestino">
+        <option value="Loja 2">Loja 2</option>
+        <option value="Loja 1">Loja 1</option>
+      </select>
     </div>
     <div class="header-field">
       <label>Data / Hora</label>
@@ -182,32 +622,62 @@
     </div>
   </div>
 
+  <!-- BARRA DE PESQUISA COM AUTOCOMPLETE -->
   <div class="search-bar">
     <span class="search-icon">🔍</span>
     <input type="text" id="pesquisaProduto" placeholder="Buscar produto por código ou descrição (ex: 'avocado kg' ou '14')" autocomplete="off">
     <div class="autocomplete-suggestions" id="suggestionsPesquisa"></div>
   </div>
 
+  <!-- FORMULÁRIO DE ADIÇÃO -->
   <div class="add-product">
-    <div class="add-field busca"><label>Cód. Barras</label><input type="text" id="codigoProd" placeholder="Código"></div>
-    <div class="add-field sku"><label>SKU</label><input type="text" id="skuProd" placeholder="SKU"></div>
-    <div class="add-field descricao"><label>Descrição</label><input type="text" id="descProd" placeholder="Produto"></div>
+    <div class="add-field busca">
+      <label>Cód. Barras</label>
+      <input type="text" id="codigoProd" placeholder="Código">
+    </div>
+    <div class="add-field sku">
+      <label>SKU</label>
+      <input type="text" id="skuProd" placeholder="SKU">
+    </div>
+    <div class="add-field descricao">
+      <label>Descrição</label>
+      <input type="text" id="descProd" placeholder="Produto">
+    </div>
     <div class="add-field unidade">
       <label>Un.</label>
-      <select id="unidadeProd"><option value="UN">UN</option><option value="KG">KG</option><option value="L">L</option><option value="CX">CX</option><option value="FD">FD</option></select>
+      <select id="unidadeProd">
+        <option value="UN">UN</option>
+        <option value="KG">KG</option>
+        <option value="L">L</option>
+        <option value="CX">CX</option>
+        <option value="FD">FD</option>
+      </select>
     </div>
     <div class="add-field fator">
       <label>Fator</label>
       <input type="number" id="fatorProd" value="1" min="1" step="1" disabled>
-      <div class="fator-toggle"><input type="checkbox" id="usarFatorCatalogo" checked><label for="usarFatorCatalogo">Usar fator do catálogo</label></div>
+      <div class="fator-toggle">
+        <input type="checkbox" id="usarFatorCatalogo" checked>
+        <label for="usarFatorCatalogo">Usar fator do catálogo</label>
+      </div>
     </div>
-    <div class="add-field qtd"><label>Qtd</label><input type="number" id="qtdProd" value="1" min="1"></div>
-    <div class="add-field total"><label>Total UN</label><input type="text" id="totalCalc" value="1" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);"></div>
+    <div class="add-field qtd">
+      <label>Qtd</label>
+      <input type="number" id="qtdProd" value="1" min="1">
+    </div>
+    <div class="add-field total">
+      <label>Total UN</label>
+      <input type="text" id="totalCalc" value="1" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);">
+    </div>
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
   </div>
 
+  <!-- LISTA DE ITENS -->
   <div class="items-section">
-    <div class="items-header"><h3>Itens da transferência</h3><span class="items-count" id="contadorItens">0 itens</span></div>
+    <div class="items-header">
+      <h3>Itens da transferência</h3>
+      <span class="items-count" id="contadorItens">0 itens</span>
+    </div>
     <table class="items-table" id="tabelaItens">
       <thead>
         <tr>
@@ -221,14 +691,18 @@
           <th style="width:6%;text-align:center">Ações</th>
         </tr>
       </thead>
-      <tbody id="corpoTabela"><tr><td colspan="8" class="empty-message">Nenhum item adicionado ainda.</td></tr></tbody>
+      <tbody id="corpoTabela">
+        <tr><td colspan="8" class="empty-message">Nenhum item adicionado ainda.</td></tr>
+      </tbody>
       <tfoot>
-        <tr><td colspan="7" style="padding:0;">
-          <div class="totals-bar">
-            <span>Itens: <span class="value" id="totalItens">0</span></span>
-            <span>Total de unidades: <span class="value highlight" id="totalUnidades">0</span></span>
-          </div>
-        </td></tr>
+        <tr>
+          <td colspan="7" style="padding:0;">
+            <div class="totals-bar">
+              <span>Itens: <span class="value" id="totalItens">0</span></span>
+              <span>Total de unidades: <span class="value highlight" id="totalUnidades">0</span></span>
+            </div>
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -241,47 +715,71 @@
   <button class="btn btn-ghost" onclick="limparFormulario()">🗑️ Limpar tudo</button>
   <div class="footer-right">
     <button class="btn btn-primary" onclick="adicionarItem()">➕ Adicionar item</button>
-    <button class="btn btn-secondary" onclick="imprimirCupom()">🖨️ Imprimir Cupom</button>
+    <button class="btn btn-secondary" onclick="imprimirCupom()">🖨️ Imprimir Notinha</button>
     <button class="btn btn-success" onclick="finalizarTransferencia()">✓ Finalizar</button>
   </div>
 </div>
 
 <script>
   // ============================================================
-  // 0. URL DO CSV (catálogo de produtos)
+  // 0. URL DO CSV (SUBSTITUA PELA SUA URL CORRETA)
   // ============================================================
   const URL_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjvppz-af7oTQZHb7EVqWIZkr64pR_FMtALAdr8FhXAYWv1nBUixrxHz4Zl8iGnMq_JrEFMWMGoh2D/pub?gid=1850173316&single=true&output=csv';
 
   // ============================================================
-  // 0b. URL DO APPS SCRIPT (histórico) — ATUALIZE após reimplantar!
-  // ============================================================
-  const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbwYKjNcykaQNnG0osrh_DZr8m2YRfqms1jUGiPF1hDBgyW-ibDio6QHK_FK5at6oOTQ/exec';
-
-  // ============================================================
-  // 1. CATÁLOGO DE FALLBACK
+  // 1. CATÁLOGO DE FALLBACK (usado se o CSV não carregar)
   // ============================================================
   const catalogoFallback = [
     { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1 },
     { sku: '2', codbarra: '2', descricao: 'ABACATE BREDA KG', unidade: 'KG', fator: 1 },
     { sku: '3', codbarra: '3', descricao: 'ABACATE FORTUNE KG', unidade: 'KG', fator: 1 },
     { sku: '4', codbarra: '4', descricao: 'ABACAXI HAWAI UN', unidade: 'UN', fator: 1 },
-    { sku: '5', codbarra: '5', descricao: 'ABACAXI PEROLA UN', unidade: 'UN', fator: 1 }
+    { sku: '5', codbarra: '5', descricao: 'ABACAXI PEROLA UN', unidade: 'UN', fator: 1 },
+    { sku: '6', codbarra: '6', descricao: 'ABACAXI PEROLA PICADO UN', unidade: 'UN', fator: 1 },
+    { sku: '7', codbarra: '7', descricao: 'ABACAXI PEROLA RODELAS UN', unidade: 'UN', fator: 1 },
+    { sku: '8', codbarra: '8', descricao: 'ABOBORA JAPONESA FATIADA KG', unidade: 'KG', fator: 1 },
+    { sku: '9', codbarra: '9', descricao: 'ABOBORA JAPONESA KG', unidade: 'KG', fator: 1 },
+    { sku: '10', codbarra: '10', descricao: 'ABOBORA JAPONESA PICADA KG', unidade: 'KG', fator: 1 },
+    { sku: '11', codbarra: '11', descricao: 'ABOBORA MORANGA KG', unidade: 'KG', fator: 1 },
+    { sku: '12', codbarra: '12', descricao: 'ABOBORA MORANGA PICADA KG', unidade: 'KG', fator: 1 },
+    { sku: '13', codbarra: '13', descricao: 'ABOBORA PAULISTA KG', unidade: 'KG', fator: 1 },
+    { sku: '14', codbarra: '14', descricao: 'ABOBORA SECA PEDACO KG', unidade: 'KG', fator: 1 }
   ];
 
+  // ============================================================
+  // 2. VARIÁVEL GLOBAL DO CATÁLOGO
+  // ============================================================
   let catalogo = [];
 
+  // ============================================================
+  // 3. FUNÇÃO PARA CARREGAR O CATÁLOGO DO CSV (CORRIGIDA)
+  // ============================================================
   async function carregarCatalogo() {
     const statusTexto = document.getElementById('statusTexto');
     try {
       statusTexto.textContent = '🔄 Baixando catálogo da planilha...';
+
       const resposta = await fetch(URL_CSV);
-      if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
+      if (!resposta.ok) {
+        throw new Error(`Erro HTTP: ${resposta.status}`);
+      }
+
       const csv = await resposta.text();
+      console.log('✅ CSV baixado, primeiros 200 caracteres:', csv.substring(0, 200));
+
+      // Divide o CSV em linhas
       const linhas = csv.split('\n').filter(linha => linha.trim() !== '');
       if (linhas.length === 0) throw new Error('CSV vazio');
+
+      // Detecta o separador pela primeira linha
       const primeiraLinha = linhas[0];
       const separador = primeiraLinha.includes(';') ? ';' : ',';
+      console.log(`🔍 Separador detectado: "${separador}"`);
+
       const cabecalho = primeiraLinha.split(separador).map(item => item.trim());
+      console.log('📋 Cabeçalho:', cabecalho);
+
+      // Mapeia os índices com nomes flexíveis (maiúsculas/minúsculas, variações)
       const idxMap = {
         codigo: cabecalho.findIndex(c => /codigo|código/i.test(c)),
         codbarra: cabecalho.findIndex(c => /codbarra|codbarr/i.test(c)),
@@ -289,17 +787,24 @@
         unidade: cabecalho.findIndex(c => /unidade|un/i.test(c)),
         fator: cabecalho.findIndex(c => /fatorcx|fator|fator cx/i.test(c))
       };
+      console.log('📍 Índices encontrados:', idxMap);
+
+      // Se algum índice não foi encontrado, usa fallback posicional
       if (idxMap.codigo === -1) idxMap.codigo = 0;
       if (idxMap.codbarra === -1) idxMap.codbarra = 1;
       if (idxMap.descricao === -1) idxMap.descricao = 2;
       if (idxMap.unidade === -1) idxMap.unidade = 3;
       if (idxMap.fator === -1) idxMap.fator = 4;
+
       const catalogoCarregado = [];
       for (let i = 1; i < linhas.length; i++) {
         const colunas = linhas[i].split(separador).map(item => item.trim());
         if (colunas.length <= Math.max(idxMap.codigo, idxMap.codbarra, idxMap.descricao)) continue;
+
         const codbarra = colunas[idxMap.codbarra] || '';
+        // Ignora linhas com código de barras vazio ou "SEM GTIN"
         if (codbarra === '' || codbarra.toUpperCase() === 'SEM GTIN') continue;
+
         catalogoCarregado.push({
           sku: colunas[idxMap.codigo] || '',
           codbarra: codbarra,
@@ -308,10 +813,16 @@
           fator: parseInt(colunas[idxMap.fator]) || 1
         });
       }
-      if (catalogoCarregado.length === 0) throw new Error('Nenhum produto válido encontrado no CSV');
+
+      if (catalogoCarregado.length === 0) {
+        throw new Error('Nenhum produto válido encontrado no CSV');
+      }
+
       catalogo = catalogoCarregado;
       statusTexto.innerHTML = `✅ Catálogo carregado: <strong>${catalogo.length}</strong> produtos (via CSV)`;
+      console.log(`📦 Total de produtos carregados: ${catalogo.length}`);
       return catalogo;
+
     } catch (erro) {
       console.error('❌ Erro ao carregar catálogo:', erro);
       catalogo = catalogoFallback;
@@ -320,15 +831,26 @@
     }
   }
 
+  // ============================================================
+  // 4. RECARREGAR CATÁLOGO (botão)
+  // ============================================================
   async function recarregarCatalogo() {
     await carregarCatalogo();
     showToast('🔄 Catálogo recarregado!');
     const query = pesquisaInput.value.trim();
-    if (query) pesquisaInput.dispatchEvent(new Event('input'));
+    if (query) {
+      pesquisaInput.dispatchEvent(new Event('input'));
+    }
   }
 
+  // ============================================================
+  // 5. ARRAY DE ITENS DO ROMANEIO
+  // ============================================================
   let itens = [];
 
+  // ============================================================
+  // 6. REFERÊNCIAS DOM
+  // ============================================================
   const codigoInput = document.getElementById('codigoProd');
   const skuInput = document.getElementById('skuProd');
   const descInput = document.getElementById('descProd');
@@ -340,6 +862,9 @@
   const pesquisaInput = document.getElementById('pesquisaProduto');
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
 
+  // ============================================================
+  // 7. LÓGICA DO CHECKBOX (Fator automático vs manual)
+  // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
       fatorInput.disabled = true;
@@ -347,7 +872,10 @@
       const cod = codigoInput.value.trim();
       if (cod) {
         const produto = catalogo.find(p => p.codbarra === cod);
-        if (produto) { fatorInput.value = produto.fator; atualizarTotalCalc(); }
+        if (produto) {
+          fatorInput.value = produto.fator;
+          atualizarTotalCalc();
+        }
       }
     } else {
       fatorInput.disabled = false;
@@ -357,6 +885,9 @@
   usarFatorCheck.addEventListener('change', toggleFatorInput);
   toggleFatorInput();
 
+  // ============================================================
+  // 8. PREENCHER CAMPOS
+  // ============================================================
   function preencherCampos(produto) {
     if (!produto) return;
     codigoInput.value = produto.codbarra;
@@ -365,8 +896,10 @@
     unidadeSelect.value = produto.unidade || 'UN';
     if (usarFatorCheck.checked) {
       fatorInput.value = produto.fator || 1;
-    } else if (!fatorInput.value || fatorInput.value == '') {
-      fatorInput.value = produto.fator || 1;
+    } else {
+      if (!fatorInput.value || fatorInput.value == '') {
+        fatorInput.value = produto.fator || 1;
+      }
     }
     atualizarTotalCalc();
   }
@@ -375,10 +908,19 @@
     const cod = this.value.trim();
     if (cod === '') return;
     const produto = catalogo.find(p => p.codbarra === cod);
-    if (produto) { preencherCampos(produto); showToast('Produto encontrado'); qtdInput.focus(); }
+    if (produto) {
+      preencherCampos(produto);
+      showToast('Produto encontrado');
+      qtdInput.focus();
+    }
   });
-  codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
+  codigoInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') this.blur();
+  });
 
+  // ============================================================
+  // 9. AUTOCOMPLETE COM BUSCA EM QUALQUER ORDEM
+  // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
     const text = (produto.descricao + ' ' + produto.codbarra).toLowerCase();
@@ -387,12 +929,18 @@
 
   pesquisaInput.addEventListener('input', function() {
     const query = this.value.trim();
-    if (query === '') { suggestionsPesquisa.classList.remove('show'); filtrarLista(''); return; }
+    if (query === '') {
+      suggestionsPesquisa.classList.remove('show');
+      filtrarLista('');
+      return;
+    }
     const matches = catalogo.filter(p => matchesQuery(p, query));
     if (matches.length > 0) {
       const limited = matches.slice(0, 10);
       suggestionsPesquisa.innerHTML = limited.map(p =>
-        `<div class="suggestion" data-sku="${p.sku}" data-codbarra="${p.codbarra}" data-desc="${p.descricao}" data-unidade="${p.unidade}" data-fator="${p.fator}"><strong>${p.codbarra}</strong> — ${p.descricao}</div>`
+        `<div class="suggestion" data-sku="${p.sku}" data-codbarra="${p.codbarra}" data-desc="${p.descricao}" data-unidade="${p.unidade}" data-fator="${p.fator}">
+          <strong>${p.codbarra}</strong> — ${p.descricao}
+        </div>`
       ).join('');
       suggestionsPesquisa.classList.add('show');
     } else {
@@ -404,7 +952,13 @@
   suggestionsPesquisa.addEventListener('click', function(e) {
     const item = e.target.closest('.suggestion');
     if (!item) return;
-    const produto = { sku: item.dataset.sku, codbarra: item.dataset.codbarra, descricao: item.dataset.desc, unidade: item.dataset.unidade, fator: parseInt(item.dataset.fator) };
+    const produto = {
+      sku: item.dataset.sku,
+      codbarra: item.dataset.codbarra,
+      descricao: item.dataset.desc,
+      unidade: item.dataset.unidade,
+      fator: parseInt(item.dataset.fator)
+    };
     preencherCampos(produto);
     pesquisaInput.value = '';
     suggestionsPesquisa.classList.remove('show');
@@ -413,9 +967,14 @@
   });
 
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.search-bar')) suggestionsPesquisa.classList.remove('show');
+    if (!e.target.closest('.search-bar')) {
+      suggestionsPesquisa.classList.remove('show');
+    }
   });
 
+  // ============================================================
+  // 10. FILTRAR LISTA
+  // ============================================================
   function filtrarLista(termo) {
     const linhas = document.querySelectorAll('#corpoTabela tr');
     const query = termo.toLowerCase().trim();
@@ -426,6 +985,9 @@
     });
   }
 
+  // ============================================================
+  // 11. ATUALIZAR TOTAL CALCULADO
+  // ============================================================
   function atualizarTotalCalc() {
     const qtd = parseInt(qtdInput.value) || 0;
     const fator = parseInt(fatorInput.value) || 1;
@@ -435,6 +997,9 @@
   fatorInput.addEventListener('input', atualizarTotalCalc);
   atualizarTotalCalc();
 
+  // ============================================================
+  // 12. ADICIONAR ITEM
+  // ============================================================
   function adicionarItem() {
     const codbarra = codigoInput.value.trim() || '---';
     const sku = skuInput.value.trim() || '---';
@@ -450,17 +1015,31 @@
 
     itens.push({ sku, codbarra, descricao, unidade, fator, quantidade, totalUnidades });
 
-    descInput.value = ''; skuInput.value = ''; qtdInput.value = '1'; fatorInput.value = '1';
+    descInput.value = '';
+    skuInput.value = '';
+    qtdInput.value = '1';
+    fatorInput.value = '1';
     if (usarFatorCheck.checked) fatorInput.disabled = true;
     atualizarTotalCalc();
-    codigoInput.value = ''; codigoInput.focus();
+    codigoInput.value = '';
+    codigoInput.focus();
 
     renderizarTabela();
     showToast('✓ Item adicionado');
   }
 
-  function removerItem(index) { itens.splice(index, 1); renderizarTabela(); showToast('Item removido'); }
+  // ============================================================
+  // 13. REMOVER ITEM
+  // ============================================================
+  function removerItem(index) {
+    itens.splice(index, 1);
+    renderizarTabela();
+    showToast('Item removido');
+  }
 
+  // ============================================================
+  // 14. ATUALIZAR ITEM (editáveis)
+  // ============================================================
   function atualizarItem(index, campo, valor) {
     if (campo === 'descricao') itens[index].descricao = valor;
     else if (campo === 'sku') itens[index].sku = valor;
@@ -482,6 +1061,9 @@
     renderizarTabela();
   }
 
+  // ============================================================
+  // 15. RENDERIZAR TABELA
+  // ============================================================
   function renderizarTabela() {
     const tbody = document.getElementById('corpoTabela');
     const totalItensSpan = document.getElementById('totalItens');
@@ -490,23 +1072,44 @@
 
     if (itens.length === 0) {
       tbody.innerHTML = `<tr><td colspan="8" class="empty-message">Nenhum item adicionado ainda.</td></tr>`;
-      totalItensSpan.textContent = '0'; totalUnidadesSpan.textContent = '0'; contadorSpan.textContent = '0 itens';
+      totalItensSpan.textContent = '0';
+      totalUnidadesSpan.textContent = '0';
+      contadorSpan.textContent = '0 itens';
       return;
     }
 
-    let html = ''; let somaUnidades = 0;
+    let html = '';
+    let somaUnidades = 0;
 
     itens.forEach((item, index) => {
       somaUnidades += item.totalUnidades;
       html += `<tr>
-        <td class="sku-cell"><input class="edit-input" type="text" value="${escHtml(item.sku)}" style="width:60px;" onchange="atualizarItem(${index}, 'sku', this.value)"></td>
+        <td class="sku-cell">
+          <input class="edit-input" type="text" value="${escHtml(item.sku)}" style="width:60px;"
+                 onchange="atualizarItem(${index}, 'sku', this.value)">
+        </td>
         <td>${escHtml(item.codbarra)}</td>
-        <td class="descricao-cell"><input class="edit-input" type="text" value="${escHtml(item.descricao)}" onchange="atualizarItem(${index}, 'descricao', this.value)"></td>
-        <td><input class="edit-input qtd" type="number" min="0" value="${item.quantidade}" onchange="atualizarItem(${index}, 'quantidade', this.value)"></td>
-        <td><input class="edit-input fator" type="number" min="1" value="${item.fator}" onchange="atualizarItem(${index}, 'fator', this.value)"></td>
+        <td class="descricao-cell">
+          <input class="edit-input" type="text" value="${escHtml(item.descricao)}"
+                 onchange="atualizarItem(${index}, 'descricao', this.value)">
+        </td>
+        <td>
+          <input class="edit-input qtd" type="number" min="0" value="${item.quantidade}"
+                 onchange="atualizarItem(${index}, 'quantidade', this.value)">
+        </td>
+        <td>
+          <input class="edit-input fator" type="number" min="1" value="${item.fator}"
+                 onchange="atualizarItem(${index}, 'fator', this.value)">
+        </td>
         <td>${item.unidade}</td>
-        <td class="total-cell"><input class="edit-input" type="number" min="0" value="${item.totalUnidades}" style="width:70px;text-align:right;font-weight:600;color:var(--accent);" onchange="atualizarItem(${index}, 'total', this.value)"></td>
-        <td style="text-align:center"><button class="btn-remove" onclick="removerItem(${index})" title="Remover">✕</button></td>
+        <td class="total-cell">
+          <input class="edit-input" type="number" min="0" value="${item.totalUnidades}"
+                 style="width:70px;text-align:right;font-weight:600;color:var(--accent);"
+                 onchange="atualizarItem(${index}, 'total', this.value)">
+        </td>
+        <td style="text-align:center">
+          <button class="btn-remove" onclick="removerItem(${index})" title="Remover">✕</button>
+        </td>
       </tr>`;
     });
 
@@ -519,26 +1122,45 @@
     if (termo) filtrarLista(termo);
   }
 
+  // ============================================================
+  // 16. ESCAPE HTML
+  // ============================================================
   function escHtml(texto) {
     if (!texto) return '';
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return texto.replace(/[&<>"']/g, m => map[m]);
   }
 
+  // ============================================================
+  // 17. LIMPAR FORMULÁRIO
+  // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
-    if (confirm('Tem certeza que deseja limpar todos os itens?')) { itens = []; renderizarTabela(); showToast('Lista limpa'); }
+    if (confirm('Tem certeza que deseja limpar todos os itens?')) {
+      itens = [];
+      renderizarTabela();
+      showToast('Lista limpa');
+    }
   }
 
+  // ============================================================
+  // 18. GERAR HTML DO CUPOM FISCAL
+  // ============================================================
   function gerarCupomHTML() {
-    if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return null; }
+    if (itens.length === 0) {
+      showToast('⚠️ Nenhum item para imprimir');
+      return null;
+    }
+
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
     const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
     const operador = document.getElementById('operador').value.trim() || 'Não informado';
     const observacao = document.getElementById('observacao').value.trim();
+
     const totalItens = itens.length;
     const totalUnidades = itens.reduce((acc, item) => acc + item.totalUnidades, 0);
+
     let linhas = '';
     itens.forEach((item, i) => {
       linhas += `<tr>
@@ -551,57 +1173,297 @@
         <td style="padding:4px 6px;text-align:right;font-weight:bold;">${item.totalUnidades}</td>
       </tr>`;
     });
-    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Cupom - Transferência</title><style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      @page { size: 80mm auto; margin: 0; }
-      html, body { width: 80mm; margin: 0; padding: 0; background: #fff !important; color: #000 !important; }
-      body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      .cupom { width: 80mm; max-width: 80mm; padding: 4mm 3mm; color: #000 !important; background: #fff !important; }
-      .center { text-align: center; }
-      .titulo-empresa { font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 3px; }
-      .titulo-doc { font-size: 14px; font-weight: 900; margin-bottom: 5px; }
-      .linha { border-top: 2px solid #000; margin: 6px 0; }
-      .linha-dupla { border-top: 3px double #000; margin: 7px 0; }
-      .info-linha { font-size: 12px; font-weight: 700; padding: 2px 0; }
-      .info-linha .label, .observacao .label { font-weight: 900; }
-      .observacao { font-size: 11px; font-weight: 700; margin-top: 4px; color: #000 !important; }
-      table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10px; color: #000 !important; margin: 5px 0; }
-      th { padding: 5px 2px; border-top: 2px solid #000; border-bottom: 2px solid #000; background: #fff !important; color: #000 !important; font-size: 10px; font-weight: 900; text-align: left; }
-      td { padding: 4px 2px; border-bottom: 1px solid #000; color: #000 !important; font-weight: 700; vertical-align: top; word-wrap: break-word; }
-      .col-num { width: 6%; text-align: center; } .col-sku { width: 13%; } .col-desc { width: 35%; }
-      .col-qtd { width: 10%; text-align: center; } .col-fat { width: 9%; text-align: center; } .col-un { width: 8%; text-align: center; } .col-total { width: 19%; text-align: right; }
-      .totais { display: flex; justify-content: space-between; padding: 7px 0; border-top: 3px solid #000; border-bottom: 3px double #000; color: #000 !important; font-size: 13px; font-weight: 900; }
-      .totais span { font-weight: 900; }
-      .assinatura { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
-      .assinatura div { flex: 1; text-align: center; font-size: 11px; font-weight: 700; }
-      .assinatura .linha-ass { border-top: 2px solid #000; margin-top: 18px; padding-top: 4px; font-weight: 900; }
-      .footer { border-top: 2px solid #000; margin-top: 10px; padding-top: 6px; text-align: center; color: #000 !important; font-size: 9px; font-weight: 700; }
-      @media print { html, body { width: 80mm; margin: 0 !important; padding: 0 !important; background: #fff !important; color: #000 !important; } .cupom { width: 80mm; padding: 4mm 3mm; } * { color: #000 !important; background: #fff !important; text-shadow: none !important; box-shadow: none !important; } }
-      </style></head><body>
-      <div class="cupom">
-        <div class="center titulo-empresa">🍇 FRUTAS & CIA</div>
-        <div class="center titulo-doc">ROMANEIO DE TRANSFERÊNCIA</div>
-        <div class="linha"></div>
-        <div class="info-linha"><span class="label">Origem:</span> ${escHtml(lojaOrigem)}</div>
-        <div class="info-linha"><span class="label">Destino:</span> ${escHtml(lojaDestino)}</div>
-        <div class="info-linha"><span class="label">Data/Hora:</span> ${escHtml(dataHora)}</div>
-        <div class="info-linha"><span class="label">Operador:</span> ${escHtml(operador)}</div>
-        ${observacao ? `<div class="observacao"><span class="label">Obs:</span> ${escHtml(observacao)}</div>` : ''}
-        <div class="linha"></div>
-        <table><thead><tr><th class="col-num">#</th><th class="col-sku">SKU</th><th class="col-desc">Descrição</th><th class="col-qtd">Qtd</th><th class="col-fat">Fat</th><th class="col-un">Un</th><th class="col-total">Total</th></tr></thead><tbody>${linhas}</tbody></table>
-        <div class="totais"><span>Itens: ${totalItens}</span><span>Total UN: ${totalUnidades}</span></div>
-        <div class="linha-dupla"></div>
-        <div class="assinatura"><div><div>Emissor</div><div class="linha-ass">________________________</div></div><div><div>Destinatário</div><div class="linha-ass">________________________</div></div></div>
-        <div class="footer">*** Documento interno - Transferência entre lojas ***</div>
-      </div></body></html>`;
+
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cupom - Transferência</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+
+    html,
+    body {
+      width: 80mm;
+      margin: 0;
+      padding: 0;
+      background: #fff !important;
+      color: #000 !important;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.35;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .cupom {
+      width: 80mm;
+      max-width: 80mm;
+      padding: 4mm 3mm;
+      color: #000 !important;
+      background: #fff !important;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .titulo-empresa {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+
+    .titulo-doc {
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .linha {
+      border-top: 2px solid #000;
+      margin: 6px 0;
+    }
+
+    .linha-dupla {
+      border-top: 3px double #000;
+      margin: 7px 0;
+    }
+
+    .info-linha {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 0;
+    }
+
+    .info-linha .label,
+    .observacao .label {
+      font-weight: 900;
+    }
+
+    .observacao {
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #000 !important;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 10px;
+      color: #000 !important;
+      margin: 5px 0;
+    }
+
+    th {
+      padding: 5px 2px;
+      border-top: 2px solid #000;
+      border-bottom: 2px solid #000;
+      background: #fff !important;
+      color: #000 !important;
+      font-size: 10px;
+      font-weight: 900;
+      text-align: left;
+    }
+
+    td {
+      padding: 4px 2px;
+      border-bottom: 1px solid #000;
+      color: #000 !important;
+      font-weight: 700;
+      vertical-align: top;
+      word-wrap: break-word;
+    }
+
+    .col-num {
+      width: 6%;
+      text-align: center;
+    }
+
+    .col-sku {
+      width: 13%;
+    }
+
+    .col-desc {
+      width: 35%;
+    }
+
+    .col-qtd {
+      width: 10%;
+      text-align: center;
+    }
+
+    .col-fat {
+      width: 9%;
+      text-align: center;
+    }
+
+    .col-un {
+      width: 8%;
+      text-align: center;
+    }
+
+    .col-total {
+      width: 19%;
+      text-align: right;
+    }
+
+    .totais {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-top: 3px solid #000;
+      border-bottom: 3px double #000;
+      color: #000 !important;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .totais span {
+      font-weight: 900;
+    }
+
+    .assinatura {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .assinatura div {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .assinatura .linha-ass {
+      border-top: 2px solid #000;
+      margin-top: 18px;
+      padding-top: 4px;
+      font-weight: 900;
+    }
+
+    .footer {
+      border-top: 2px solid #000;
+      margin-top: 10px;
+      padding-top: 6px;
+      text-align: center;
+      color: #000 !important;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    @media print {
+      html,
+      body {
+        width: 80mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #000 !important;
+      }
+
+      .cupom {
+        width: 80mm;
+        padding: 4mm 3mm;
+      }
+
+      * {
+        color: #000 !important;
+        background: #fff !important;
+        text-shadow: none !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="cupom">
+  <div class="center titulo-empresa">🍇 FRUTAS & CIA</div>
+  <div class="center titulo-doc">ROMANEIO DE TRANSFERÊNCIA</div>
+  <div class="linha"></div>
+
+  <div class="info-linha"><span class="label">Origem:</span> ${escHtml(lojaOrigem)}</div>
+  <div class="info-linha"><span class="label">Destino:</span> ${escHtml(lojaDestino)}</div>
+  <div class="info-linha"><span class="label">Data/Hora:</span> ${escHtml(dataHora)}</div>
+  <div class="info-linha"><span class="label">Operador:</span> ${escHtml(operador)}</div>
+  ${observacao ? `<div class="observacao"><span class="label">Obs:</span> ${escHtml(observacao)}</div>` : ''}
+
+  <div class="linha"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="col-num">#</th>
+        <th class="col-sku">SKU</th>
+        <th class="col-desc">Descrição</th>
+        <th class="col-qtd">Qtd</th>
+        <th class="col-fat">Fat</th>
+        <th class="col-un">Un</th>
+        <th class="col-total">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${linhas}
+    </tbody>
+  </table>
+
+  <div class="totais">
+    <span>Itens: ${totalItens}</span>
+    <span>Total UN: ${totalUnidades}</span>
+  </div>
+
+  <div class="linha-dupla"></div>
+
+  <div class="assinatura">
+    <div>
+      <div>Emissor</div>
+      <div class="linha-ass">________________________</div>
+    </div>
+    <div>
+      <div>Destinatário</div>
+      <div class="linha-ass">________________________</div>
+    </div>
+  </div>
+
+  <div class="footer">*** Documento interno - Transferência entre lojas ***</div>
+</div>
+</body>
+</html>`;
   }
 
+  // ============================================================
+  // 19. IMPRIMIR CUPOM
+  // ============================================================
   function imprimirCupom() {
-    if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return; }
+    if (itens.length === 0) {
+      showToast('⚠️ Nenhum item para imprimir');
+      return;
+    }
     const html = gerarCupomHTML();
     if (!html) return;
     const win = window.open('', '_blank', 'width=350,height=600');
-    if (!win) { showToast('⚠️ Permita pop-ups para imprimir'); return; }
+    if (!win) {
+      showToast('⚠️ Permita pop-ups para imprimir');
+      return;
+    }
     win.document.write(html);
     win.document.close();
     win.focus();
@@ -610,89 +1472,22 @@
   }
 
   // ============================================================
-  // SALVAR NO HISTÓRICO (Google Sheets)
+  // 20. FINALIZAR TRANSFERÊNCIA
   // ============================================================
-  // O fetch() para o domínio de redirecionamento do Apps Script
-  // (googleusercontent.com) está sendo bloqueado pelo navegador
-  // devido a uma política de segurança (Cross-Origin-Resource-Policy)
-  // que existe especificamente para chamadas feitas via JavaScript —
-  // mas não bloqueia navegação/carregamento de recursos como imagens.
-  // Por isso, o envio usa a técnica de "imagem-beacon": criamos um
-  // objeto Image() apontando para a URL com os dados. O navegador
-  // dispara a requisição normalmente (like ao carregar uma foto),
-  // contorna o bloqueio, e não precisamos ler a resposta mesmo.
-  function enviarViaImagem(url) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      let concluido = false;
-      const finalizar = () => {
-        if (!concluido) { concluido = true; resolve(); }
-      };
-      img.onload = finalizar;
-      img.onerror = finalizar; // dispara mesmo assim: a resposta é JSON,
-                                // não uma imagem válida, mas a requisição
-                                // já chegou ao servidor de qualquer forma
-      img.src = url;
-      setTimeout(finalizar, 4000); // failsafe, caso nada dispare
-    });
-  }
-
-  async function salvarHistorico() {
-    if (itens.length === 0) { showToast('⚠️ Nenhum item para salvar'); return false; }
-
-    const lojaOrigem = document.getElementById('lojaOrigem').value;
-    const lojaDestino = document.getElementById('lojaDestino').value;
-    const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
-    const operador = document.getElementById('operador').value.trim() || 'Não informado';
-    const observacao = document.getElementById('observacao').value.trim();
-
-    const dados = {
-      dataHora, tipo: 'TRANSFERÊNCIA', origem: lojaOrigem, destino: lojaDestino, operador, observacao,
-      itens: itens.map(item => ({
-        sku: item.sku, codbarra: item.codbarra, descricao: item.descricao,
-        quantidade: Number(item.quantidade), fator: Number(item.fator),
-        unidade: item.unidade, totalUnidades: Number(item.totalUnidades)
-      }))
-    };
-
-    try {
-      console.log('📤 Enviando para:', URL_SCRIPT);
-      console.log('📦 Dados enviados:', dados);
-
-      const urlComDados = URL_SCRIPT + '?dados=' + encodeURIComponent(JSON.stringify(dados));
-
-      if (urlComDados.length > 7500) {
-        console.warn('⚠️ URL muito longa (' + urlComDados.length + ' caracteres). Transferências com muitos itens podem falhar por limite de tamanho de URL.');
-      }
-
-      await enviarViaImagem(urlComDados);
-
-      showToast('✅ Histórico enviado! Confira a planilha.');
-      return true;
-
-    } catch (erro) {
-      console.error('❌ Erro ao salvar histórico:', erro);
-      showToast(`⚠️ Erro ao salvar: ${erro.message}`);
-      return false;
+  function finalizarTransferencia() {
+    if (itens.length === 0) {
+      showToast('⚠️ Adicione pelo menos um item');
+      return;
     }
-  }
-
-  async function finalizarTransferencia() {
-    if (itens.length === 0) { showToast('⚠️ Adicione pelo menos um item'); return; }
 
     let operador = document.getElementById('operador').value.trim();
     if (!operador) {
       operador = prompt('Digite o nome do operador (campo obrigatório):');
-      if (!operador) { showToast('⚠️ Operador é obrigatório'); return; }
+      if (!operador) {
+        showToast('⚠️ Operador é obrigatório');
+        return;
+      }
       document.getElementById('operador').value = operador;
-    }
-
-    showToast('🔄 Salvando transferência...');
-
-    const salvou = await salvarHistorico();
-
-    if (!salvou) {
-      if (!confirm('⚠️ Não foi possível confirmar o salvamento do histórico. Deseja continuar mesmo assim?')) return;
     }
 
     const lojaOrigem = document.getElementById('lojaOrigem').value;
@@ -701,7 +1496,7 @@
     const observacao = document.getElementById('observacao').value.trim();
 
     const totalItens = itens.length;
-    const totalUnidades = itens.reduce((acc, item) => acc + Number(item.totalUnidades || 0), 0);
+    const totalUnidades = itens.reduce((acc, item) => acc + item.totalUnidades, 0);
 
     let resumo = '🍇 FRUTAS & CIA — ROMANEIO DE TRANSFERÊNCIA\n';
     resumo += '═'.repeat(48) + '\n';
@@ -724,22 +1519,33 @@
 
     alert(resumo);
 
-    if (confirm('Deseja imprimir o cupom?')) imprimirCupom();
+    if (confirm('Deseja imprimir o cupom fiscal?')) {
+      imprimirCupom();
+    }
 
     showToast('✅ Transferência finalizada!');
   }
 
+  // ============================================================
+  // 21. TOAST
+  // ============================================================
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3200);
+    setTimeout(() => t.classList.remove('show'), 2200);
   }
 
+  // ============================================================
+  // 22. ENTER PARA ADICIONAR
+  // ============================================================
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   qtdInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
   fatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
 
+  // ============================================================
+  // 23. PREENCHER DATA/HORA AUTOMÁTICA
+  // ============================================================
   (function preencherData() {
     const now = new Date();
     const dia = String(now.getDate()).padStart(2,'0');
@@ -748,15 +1554,22 @@
     const hora = String(now.getHours()).padStart(2,'0');
     const min = String(now.getMinutes()).padStart(2,'0');
     const campoData = document.getElementById('dataHora');
-    if (!campoData.value) campoData.value = `${dia}/${mes}/${ano} ${hora}:${min}`;
+    if (!campoData.value) {
+      campoData.value = `${dia}/${mes}/${ano} ${hora}:${min}`;
+    }
   })();
 
+  // ============================================================
+  // 24. INICIALIZAR O APP
+  // ============================================================
   (async function init() {
     await carregarCatalogo();
     console.log(`✅ App iniciado com ${catalogo.length} produtos no catálogo`);
     renderizarTabela();
     const query = pesquisaInput.value.trim();
-    if (query) pesquisaInput.dispatchEvent(new Event('input'));
+    if (query) {
+      pesquisaInput.dispatchEvent(new Event('input'));
+    }
   })();
 </script>
 
