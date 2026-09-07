@@ -601,102 +601,74 @@
   // ============================================================
   // 16. GERAR HTML DO CUPOM FISCAL (com ID)
   // ============================================================
-
   function gerarCupomHTML() {
-  if (itens.length === 0) {
-    showToast('⚠️ Nenhum item para imprimir');
-    return null;
+    if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return null; }
+    const idTransferencia = document.getElementById('idTransferencia').value;
+    const lojaOrigem = document.getElementById('lojaOrigem').value;
+    const lojaDestino = document.getElementById('lojaDestino').value;
+    const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
+    const operador = document.getElementById('operador').value.trim() || 'Não informado';
+    const observacao = document.getElementById('observacao').value.trim();
+    const totalItens = itens.length;
+    const totalUnidades = itens.reduce((acc, item) => acc + item.totalUnidades, 0);
+    let linhas = '';
+    itens.forEach((item, i) => {
+      linhas += `<tr>
+        <td style="padding:4px 6px;text-align:left;">${i+1}</td>
+        <td style="padding:4px 6px;text-align:left;">${escHtml(item.sku)}</td>
+        <td style="padding:4px 6px;text-align:left;">${escHtml(item.descricao)}</td>
+        <td style="padding:4px 6px;text-align:center;">${item.quantidade}</td>
+        <td style="padding:4px 6px;text-align:center;">${item.fator}</td>
+        <td style="padding:4px 6px;text-align:center;">${item.unidade}</td>
+        <td style="padding:4px 6px;text-align:right;font-weight:bold;">${item.totalUnidades}</td>
+      </tr>`;
+    });
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Cupom - Transferência</title><style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      @page { size: 80mm auto; margin: 0; }
+      html, body { width: 80mm; margin: 0; padding: 0; background: #fff !important; color: #000 !important; }
+      body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .cupom { width: 80mm; max-width: 80mm; padding: 4mm 3mm; color: #000 !important; background: #fff !important; }
+      .center { text-align: center; }
+      .titulo-empresa { font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 3px; }
+      .titulo-doc { font-size: 14px; font-weight: 900; margin-bottom: 5px; }
+      .linha { border-top: 2px solid #000; margin: 6px 0; }
+      .linha-dupla { border-top: 3px double #000; margin: 7px 0; }
+      .info-linha { font-size: 12px; font-weight: 700; padding: 2px 0; }
+      .info-linha .label, .observacao .label { font-weight: 900; }
+      .observacao { font-size: 11px; font-weight: 700; margin-top: 4px; color: #000 !important; }
+      .id-destaque { font-weight: 900; color: #000 !important; background: #f0f0f0 !important; padding: 2px 6px; border-radius: 4px; }
+      table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10px; color: #000 !important; margin: 5px 0; }
+      th { padding: 5px 2px; border-top: 2px solid #000; border-bottom: 2px solid #000; background: #fff !important; color: #000 !important; font-size: 10px; font-weight: 900; text-align: left; }
+      td { padding: 4px 2px; border-bottom: 1px solid #000; color: #000 !important; font-weight: 700; vertical-align: top; word-wrap: break-word; }
+      .col-num { width: 6%; text-align: center; } .col-sku { width: 13%; } .col-desc { width: 35%; }
+      .col-qtd { width: 10%; text-align: center; } .col-fat { width: 9%; text-align: center; } .col-un { width: 8%; text-align: center; } .col-total { width: 19%; text-align: right; }
+      .totais { display: flex; justify-content: space-between; padding: 7px 0; border-top: 3px solid #000; border-bottom: 3px double #000; color: #000 !important; font-size: 13px; font-weight: 900; }
+      .totais span { font-weight: 900; }
+      .assinatura { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
+      .assinatura div { flex: 1; text-align: center; font-size: 11px; font-weight: 700; }
+      .assinatura .linha-ass { border-top: 2px solid #000; margin-top: 18px; padding-top: 4px; font-weight: 900; }
+      .footer { border-top: 2px solid #000; margin-top: 10px; padding-top: 6px; text-align: center; color: #000 !important; font-size: 9px; font-weight: 700; }
+      @media print { html, body { width: 80mm; margin: 0 !important; padding: 0 !important; background: #fff !important; color: #000 !important; } .cupom { width: 80mm; padding: 4mm 3mm; } * { color: #000 !important; background: #fff !important; text-shadow: none !important; box-shadow: none !important; } }
+      </style></head><body>
+      <div class="cupom">
+        <div class="center titulo-empresa">🍇 FRUTAS & CIA</div>
+        <div class="center titulo-doc">ROMANEIO DE TRANSFERÊNCIA</div>
+        <div class="linha"></div>
+        <div class="info-linha"><span class="label">ID:</span> <span class="id-destaque">${escHtml(idTransferencia)}</span></div>
+        <div class="info-linha"><span class="label">Origem:</span> ${escHtml(lojaOrigem)}</div>
+        <div class="info-linha"><span class="label">Destino:</span> ${escHtml(lojaDestino)}</div>
+        <div class="info-linha"><span class="label">Data/Hora:</span> ${escHtml(dataHora)}</div>
+        <div class="info-linha"><span class="label">Operador:</span> ${escHtml(operador)}</div>
+        ${observacao ? `<div class="observacao"><span class="label">Obs:</span> ${escHtml(observacao)}</div>` : ''}
+        <div class="linha"></div>
+        <table><thead><tr><th class="col-num">#</th><th class="col-sku">SKU</th><th class="col-desc">Descrição</th><th class="col-qtd">Qtd</th><th class="col-fat">Fat</th><th class="col-un">Un</th><th class="col-total">Total</th></tr></thead><tbody>${linhas}</tbody></table>
+        <div class="totais"><span>Itens: ${totalItens}</span><span>Total UN: ${totalUnidades}</span></div>
+        <div class="linha-dupla"></div>
+        <div class="assinatura"><div><div>Emissor</div><div class="linha-ass">________________________</div></div><div><div>Destinatário</div><div class="linha-ass">________________________</div></div></div>
+        <div class="footer">*** Documento interno - Transferência entre lojas ***</div>
+      </div></body></html>`;
   }
-
-  const idTransferencia = document.getElementById('idTransferencia').value;
-  const lojaOrigem = document.getElementById('lojaOrigem').value;
-  const lojaDestino = document.getElementById('lojaDestino').value;
-  const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
-  const operador = document.getElementById('operador').value.trim() || 'Não informado';
-  const observacao = document.getElementById('observacao').value.trim();
-  const totalItens = itens.length;
-  const totalUnidades = itens.reduce((acc, item) => acc + item.quantidade, 0);
-
-  let linhas = '';
-  itens.forEach((item, i) => {
-    linhas += `<tr>
-      <td style="padding:4px 6px;text-align:left;">${i+1}</td>
-      <td style="padding:4px 6px;text-align:left;">${escHtml(item.sku)}</td>
-      <td style="padding:4px 6px;text-align:left;">${escHtml(item.descricao)}</td>
-      <td style="padding:4px 6px;text-align:center;">_______</td> <!-- Qtd vazia -->
-      <td style="padding:4px 6px;text-align:center;">${item.unidade}</td> <!-- Un mantida -->
-      <td style="padding:4px 6px;text-align:right;font-weight:bold;">${item.quantidade}</td> <!-- Total calculado -->
-    </tr>`;
-  });
-
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Cupom - Transferência</title><style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    @page { size: 80mm auto; margin: 0; }
-    html, body { width: 80mm; margin: 0; padding: 0; background: #fff !important; color: #000 !important; }
-    body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .cupom { width: 80mm; max-width: 80mm; padding: 4mm 3mm; color: #000 !important; background: #fff !important; }
-    .center { text-align: center; }
-    .titulo-empresa { font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 3px; }
-    .titulo-doc { font-size: 14px; font-weight: 900; margin-bottom: 5px; }
-    .linha { border-top: 2px solid #000; margin: 6px 0; }
-    .linha-dupla { border-top: 3px double #000; margin: 7px 0; }
-    .info-linha { font-size: 12px; font-weight: 700; padding: 2px 0; }
-    .info-linha .label, .observacao .label { font-weight: 900; }
-    .observacao { font-size: 11px; font-weight: 700; margin-top: 4px; color: #000 !important; }
-    .id-destaque { font-weight: 900; color: #000 !important; background: #f0f0f0 !important; padding: 2px 6px; border-radius: 4px; }
-    table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10px; color: #000 !important; margin: 5px 0; }
-    th { padding: 5px 2px; border-top: 2px solid #000; border-bottom: 2px solid #000; background: #fff !important; color: #000 !important; font-size: 10px; font-weight: 900; text-align: left; }
-    td { padding: 4px 2px; border-bottom: 1px solid #000; color: #000 !important; font-weight: 700; vertical-align: top; word-wrap: break-word; }
-    .col-num { width: 6%; text-align: center; }
-    .col-sku { width: 13%; }
-    .col-desc { width: 40%; }
-    .col-qtd { width: 10%; text-align: center; }
-    .col-un { width: 8%; text-align: center; }
-    .col-total { width: 15%; text-align: right; }
-    .totais { display: flex; justify-content: space-between; padding: 7px 0; border-top: 3px solid #000; border-bottom: 3px double #000; color: #000 !important; font-size: 13px; font-weight: 900; }
-    .totais span { font-weight: 900; }
-    .assinatura { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
-    .assinatura div { flex: 1; text-align: center; font-size: 11px; font-weight: 700; }
-    .assinatura .linha-ass { border-top: 2px solid #000; margin-top: 18px; padding-top: 4px; font-weight: 900; }
-    .footer { border-top: 2px solid #000; margin-top: 10px; padding-top: 6px; text-align: center; color: #000 !important; font-size: 9px; font-weight: 700; }
-    @media print { html, body { width: 80mm; margin: 0 !important; padding: 0 !important; background: #fff !important; color: #000 !important; } .cupom { width: 80mm; padding: 4mm 3mm; } * { color: #000 !important; background: #fff !important; text-shadow: none !important; box-shadow: none !important; } }
-    </style></head><body>
-    <div class="cupom">
-      <div class="center titulo-empresa">🍇 FRUTAS & CIA</div>
-      <div class="center titulo-doc">ROMANEIO DE TRANSFERÊNCIA</div>
-      <div class="linha"></div>
-      <div class="info-linha"><span class="label">ID:</span> <span class="id-destaque">${escHtml(idTransferencia)}</span></div>
-      <div class="info-linha"><span class="label">Origem:</span> ${escHtml(lojaOrigem)}</div>
-      <div class="info-linha"><span class="label">Destino:</span> ${escHtml(lojaDestino)}</div>
-      <div class="info-linha"><span class="label">Data/Hora:</span> ${escHtml(dataHora)}</div>
-      <div class="info-linha"><span class="label">Operador:</span> ${escHtml(operador)}</div>
-      ${observacao ? `<div class="observacao"><span class="label">Obs:</span> ${escHtml(observacao)}</div>` : ''}
-      <div class="linha"></div>
-      <table>
-        <thead>
-          <tr>
-            <th class="col-num">#</th>
-            <th class="col-sku">SKU</th>
-            <th class="col-desc">Descrição</th>
-            <th class="col-qtd">Qtd</th>
-            <th class="col-un">Un</th>
-            <th class="col-total">Total</th>
-          </tr>
-        </thead>
-        <tbody>${linhas}</tbody>
-      </table>
-      <div class="totais">
-        <span>Itens: ${totalItens}</span>
-        <span>Total UN: ${totalUnidades}</span>
-      </div>
-      <div class="linha-dupla"></div>
-      <div class="assinatura">
-        <div><div>Emissor</div><div class="linha-ass">________________________</div></div>
-        <div><div>Destinatário</div><div class="linha-ass">________________________</div></div>
-      </div>
-      <div class="footer">*** Documento interno - Transferência entre lojas ***</div>
-    </div></body></html>`;
-}
 
   // ============================================================
   // 17. IMPRIMIR CUPOM
