@@ -118,6 +118,9 @@
     .status-bar .status-error { color: var(--red); font-weight: 600; }
     .status-bar .btn-reload { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 12px; cursor: pointer; font-size: 11px; color: var(--text-secondary); transition: 0.15s; }
     .status-bar .btn-reload:hover { background: var(--bg); border-color: var(--border-strong); }
+    .planilha-link-wrapper { margin-top: 32px; text-align: center; }
+    .planilha-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; text-decoration: none; transition: 0.18s; }
+    .planilha-link:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
     @media (max-width: 800px) {
       .transfer-header { grid-template-columns: 1fr 1fr; gap: 12px; }
       .add-product { flex-direction: column; align-items: stretch; }
@@ -238,6 +241,16 @@
     </table>
   </div>
 
+  <!-- Link para a planilha de histórico -->
+  <div class="planilha-link-wrapper">
+    <a class="planilha-link"
+       href="https://docs.google.com/spreadsheets/d/1u6JYkO8fUzRClXpGsIBZWAF5e-MAHyvDQB02bHGR-ug/edit?usp=sharing"
+       target="_blank"
+       rel="noopener noreferrer">
+      📊 Abrir planilha de histórico de transferências
+    </a>
+  </div>
+
 </div>
 
 <div class="toast" id="toast">✓ Item adicionado</div>
@@ -247,6 +260,7 @@
   <div class="footer-right">
     <button class="btn btn-primary" onclick="adicionarItem()">➕ Adicionar item</button>
     <button class="btn btn-secondary" onclick="imprimirCupom()">🖨️ Imprimir Cupom</button>
+    <button class="btn btn-secondary" onclick="salvarPDFCupom()">💾 Salvar PDF</button>
     <button class="btn btn-success" onclick="finalizarTransferencia()">✓ Finalizar</button>
   </div>
 </div>
@@ -684,6 +698,23 @@
     win.focus();
     win.print();
     setTimeout(() => { win.close(); }, 5000);
+  }
+
+  // ============================================================
+  // 17b. SALVAR PDF DO CUPOM (A4)
+  // ============================================================
+  function salvarPDFCupom() {
+    if (itens.length === 0) { showToast('⚠️ Nenhum item para salvar'); return; }
+    const html = gerarCupomHTML();
+    if (!html) return;
+    const win = window.open('', '_blank', 'width=800,height=900');
+    if (!win) { showToast('⚠️ Permita pop-ups para salvar o PDF'); return; }
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    win.onload = function() {
+      setTimeout(() => { win.print(); }, 300);
+    };
   }
 
   // ============================================================
