@@ -89,7 +89,7 @@
     .items-table tr:last-child td { border-bottom: none; }
     .items-table .edit-input { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 4px 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; width: 100%; background: var(--surface); outline: none; transition: 0.15s; }
     .items-table .edit-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12); }
-    .items-table .edit-input.qtd { width: 60px; text-align: center; }
+    .items-table .edit-input.qtd { width: 70px; text-align: center; }
     .items-table .edit-input.fator { width: 60px; text-align: center; }
     .items-table .descricao-cell { min-width: 180px; }
     .items-table .total-cell { font-weight: 600; color: var(--accent); text-align: right; }
@@ -129,7 +129,7 @@
       .footer-actions { flex-direction: column; gap: 8px; padding: 12px 16px; }
       .footer-right { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
       .items-table th, .items-table td { padding: 6px 6px; font-size: 12px; }
-      .items-table .edit-input.qtd, .items-table .edit-input.fator { width: 45px; }
+      .items-table .edit-input.qtd, .items-table .edit-input.fator { width: 55px; }
       .totals-bar { flex-direction: column; gap: 4px; align-items: flex-end; }
     }
     @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
@@ -156,7 +156,7 @@
 
   <div class="page-header">
     <h1 class="page-title">Transferência entre lojas</h1>
-    <div class="page-sub">Busque por código de barras ou descrição (qualquer ordem). Informe as lojas antes de adicionar itens.</div>
+    <div class="page-sub">Busque por código de barras ou descrição (qualquer ordem). Informe as lojas antes de adicionar itens. Para produtos em KG, é possível informar quantidades fracionadas (ex: 1.5).</div>
   </div>
 
   <div class="status-bar" id="statusBar">
@@ -218,7 +218,7 @@
       <input type="number" id="fatorProd" value="1" min="1" step="1" disabled>
       <div class="fator-toggle"><input type="checkbox" id="usarFatorCatalogo" checked><label for="usarFatorCatalogo">Usar fator do catálogo</label></div>
     </div>
-    <div class="add-field qtd"><label>Qtd</label><input type="number" id="qtdProd" value="1" min="1"></div>
+    <div class="add-field qtd"><label>Qtd</label><input type="number" id="qtdProd" value="1" min="0" step="0.01"></div>
     <div class="add-field total"><label>Total UN</label><input type="text" id="totalCalc" value="1" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);"></div>
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
   </div>
@@ -301,6 +301,28 @@
   let idTransferencia = '';
 
   // ============================================================
+  // 1b. HELPER: Converter string em número (aceita vírgula e ponto)
+  // ============================================================
+  function paraNumero(valor) {
+    if (valor === null || valor === undefined) return 0;
+    if (typeof valor === 'number') return isNaN(valor) ? 0 : valor;
+    const s = String(valor).trim().replace(',', '.');
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  // ============================================================
+  // 1c. HELPER: Formatar número para exibição
+  // ============================================================
+  function formatarNumero(n) {
+    const num = paraNumero(n);
+    // Se for inteiro, mostra sem casas decimais
+    if (Number.isInteger(num)) return String(num);
+    // Senão, mostra até 3 casas, removendo zeros à direita
+    return num.toFixed(3).replace(/\.?0+$/, '');
+  }
+
+  // ============================================================
   // 2. GERAR ID DA TRANSFERÊNCIA
   // ============================================================
   function gerarIdTransferencia() {
@@ -328,7 +350,6 @@
     const destino = document.getElementById('lojaDestino');
     let valido = true;
 
-    // Valida origem
     if (origem.value === '') {
       origem.classList.add('erro');
       valido = false;
@@ -336,7 +357,6 @@
       origem.classList.remove('erro');
     }
 
-    // Valida destino
     if (destino.value === '') {
       destino.classList.add('erro');
       valido = false;
@@ -344,7 +364,6 @@
       destino.classList.remove('erro');
     }
 
-    // Valida se são diferentes
     if (origem.value !== '' && destino.value !== '' && origem.value === destino.value) {
       showToast('⚠️ Loja de origem e destino não podem ser iguais');
       origem.classList.add('erro');
@@ -360,7 +379,6 @@
     return true;
   }
 
-  // Limpar a marcação de erro quando o usuário selecionar
   document.getElementById('lojaOrigem').addEventListener('change', function() {
     if (this.value !== '') this.classList.remove('erro');
   });
@@ -545,30 +563,30 @@
   }
 
   // ============================================================
-  // 9. ATUALIZAR TOTAL CALCULADO
+  // 9. ATUALIZAR TOTAL CALCULADO (aceita decimais)
   // ============================================================
   function atualizarTotalCalc() {
-    const qtd = parseInt(qtdInput.value) || 0;
-    const fator = parseInt(fatorInput.value) || 1;
-    totalCalc.value = qtd * fator;
+    const qtd = paraNumero(qtdInput.value);
+    const fator = paraNumero(fatorInput.value) || 1;
+    const total = qtd * fator;
+    totalCalc.value = formatarNumero(total);
   }
   qtdInput.addEventListener('input', atualizarTotalCalc);
   fatorInput.addEventListener('input', atualizarTotalCalc);
   atualizarTotalCalc();
 
   // ============================================================
-  // 10. ADICIONAR ITEM (com validação de lojas)
+  // 10. ADICIONAR ITEM (com validação de lojas e decimais)
   // ============================================================
   function adicionarItem() {
-    // VALIDAÇÃO: Lojas obrigatórias antes de adicionar item
     if (!validarLojas()) return;
 
     const codbarra = codigoInput.value.trim() || '---';
     const sku = skuInput.value.trim() || '---';
     const descricao = descInput.value.trim();
     const unidade = unidadeSelect.value;
-    const fator = parseInt(fatorInput.value) || 1;
-    const quantidade = parseInt(qtdInput.value) || 0;
+    const fator = paraNumero(fatorInput.value) || 1;
+    const quantidade = paraNumero(qtdInput.value);
     const totalUnidades = quantidade * fator;
 
     if (!descricao) { showToast('⚠️ Digite a descrição'); return; }
@@ -592,23 +610,23 @@
   function removerItem(index) { itens.splice(index, 1); renderizarTabela(); showToast('Item removido'); }
 
   // ============================================================
-  // 12. ATUALIZAR ITEM
+  // 12. ATUALIZAR ITEM (aceita decimais)
   // ============================================================
   function atualizarItem(index, campo, valor) {
     if (campo === 'descricao') itens[index].descricao = valor;
     else if (campo === 'sku') itens[index].sku = valor;
     else if (campo === 'quantidade') {
-      const qtd = parseInt(valor) || 0;
+      const qtd = paraNumero(valor);
       itens[index].quantidade = qtd;
       itens[index].totalUnidades = qtd * itens[index].fator;
     } else if (campo === 'fator') {
-      const fator = parseInt(valor) || 1;
+      const fator = paraNumero(valor) || 1;
       itens[index].fator = fator;
       itens[index].totalUnidades = itens[index].quantidade * fator;
     } else if (campo === 'total') {
-      const total = parseInt(valor) || 0;
+      const total = paraNumero(valor);
       const fator = itens[index].fator || 1;
-      const novaQtd = Math.round(total / fator);
+      const novaQtd = total / fator;
       itens[index].quantidade = novaQtd;
       itens[index].totalUnidades = novaQtd * fator;
     }
@@ -616,7 +634,7 @@
   }
 
   // ============================================================
-  // 13. RENDERIZAR TABELA
+  // 13. RENDERIZAR TABELA (com step="0.01" para aceitar decimais)
   // ============================================================
   function renderizarTabela() {
     const tbody = document.getElementById('corpoTabela');
@@ -638,17 +656,17 @@
         <td class="sku-cell"><input class="edit-input" type="text" value="${escHtml(item.sku)}" style="width:60px;" onchange="atualizarItem(${index}, 'sku', this.value)"></td>
         <td>${escHtml(item.codbarra)}</td>
         <td class="descricao-cell"><input class="edit-input" type="text" value="${escHtml(item.descricao)}" onchange="atualizarItem(${index}, 'descricao', this.value)"></td>
-        <td><input class="edit-input qtd" type="number" min="0" value="${item.quantidade}" onchange="atualizarItem(${index}, 'quantidade', this.value)"></td>
-        <td><input class="edit-input fator" type="number" min="1" value="${item.fator}" onchange="atualizarItem(${index}, 'fator', this.value)"></td>
+        <td><input class="edit-input qtd" type="number" min="0" step="0.01" value="${formatarNumero(item.quantidade)}" onchange="atualizarItem(${index}, 'quantidade', this.value)"></td>
+        <td><input class="edit-input fator" type="number" min="0" step="0.01" value="${formatarNumero(item.fator)}" onchange="atualizarItem(${index}, 'fator', this.value)"></td>
         <td>${item.unidade}</td>
-        <td class="total-cell"><input class="edit-input" type="number" min="0" value="${item.totalUnidades}" style="width:70px;text-align:right;font-weight:600;color:var(--accent);" onchange="atualizarItem(${index}, 'total', this.value)"></td>
+        <td class="total-cell"><input class="edit-input" type="number" min="0" step="0.01" value="${formatarNumero(item.totalUnidades)}" style="width:80px;text-align:right;font-weight:600;color:var(--accent);" onchange="atualizarItem(${index}, 'total', this.value)"></td>
         <td style="text-align:center"><button class="btn-remove" onclick="removerItem(${index})" title="Remover">✕</button></td>
       </tr>`;
     });
 
     tbody.innerHTML = html;
     totalItensSpan.textContent = itens.length;
-    totalUnidadesSpan.textContent = somaUnidades;
+    totalUnidadesSpan.textContent = formatarNumero(somaUnidades);
     contadorSpan.textContent = `${itens.length} itens`;
 
     const termo = pesquisaInput.value.trim();
@@ -700,10 +718,10 @@
         <td style="padding:4px 6px;text-align:left;">${i+1}</td>
         <td style="padding:4px 6px;text-align:left;">${escHtml(item.sku)}</td>
         <td style="padding:4px 6px;text-align:left;">${escHtml(item.descricao)}</td>
-        <td style="padding:4px 6px;text-align:center;">${item.quantidade}</td>
-        <td style="padding:4px 6px;text-align:center;">${item.fator}</td>
+        <td style="padding:4px 6px;text-align:center;">${formatarNumero(item.quantidade)}</td>
+        <td style="padding:4px 6px;text-align:center;">${formatarNumero(item.fator)}</td>
         <td style="padding:4px 6px;text-align:center;">${item.unidade}</td>
-        <td style="padding:4px 6px;text-align:right;font-weight:bold;">${item.totalUnidades}</td>
+        <td style="padding:4px 6px;text-align:right;font-weight:bold;">${formatarNumero(item.totalUnidades)}</td>
       </tr>`;
     });
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Cupom - Transferência</title><style>
@@ -746,7 +764,7 @@
         ${observacao ? `<div class="observacao"><span class="label">Obs:</span> ${escHtml(observacao)}</div>` : ''}
         <div class="linha"></div>
         <table><thead><tr><th class="col-num">#</th><th class="col-sku">SKU</th><th class="col-desc">Descrição</th><th class="col-qtd">Qtd</th><th class="col-fat">Fat</th><th class="col-un">Un</th><th class="col-total">Total</th></tr></thead><tbody>${linhas}</tbody></table>
-        <div class="totais"><span>Itens: ${totalItens}</span><span>Total UN: ${totalUnidades}</span></div>
+        <div class="totais"><span>Itens: ${totalItens}</span><span>Total UN: ${formatarNumero(totalUnidades)}</span></div>
         <div class="linha-dupla"></div>
         <div class="assinatura"><div><div>Emissor</div><div class="linha-ass">________________________</div></div><div><div>Destinatário</div><div class="linha-ass">________________________</div></div></div>
         <div class="footer">*** Documento interno - Transferência entre lojas ***</div>
@@ -789,10 +807,10 @@
         <td style="padding:4px 6px;text-align:left;">${i+1}</td>
         <td style="padding:4px 6px;text-align:left;">${escHtml(item.sku)}</td>
         <td style="padding:4px 6px;text-align:left;">${escHtml(item.descricao)}</td>
-        <td style="padding:4px 6px;text-align:center;">${item.quantidade}</td>
-        <td style="padding:4px 6px;text-align:center;">${item.fator}</td>
+        <td style="padding:4px 6px;text-align:center;">${formatarNumero(item.quantidade)}</td>
+        <td style="padding:4px 6px;text-align:center;">${formatarNumero(item.fator)}</td>
         <td style="padding:4px 6px;text-align:center;">${item.unidade}</td>
-        <td style="padding:4px 6px;text-align:right;font-weight:bold;">${item.totalUnidades}</td>
+        <td style="padding:4px 6px;text-align:right;font-weight:bold;">${formatarNumero(item.totalUnidades)}</td>
       </tr>`;
     });
 
@@ -862,7 +880,7 @@
           </table>
           <div class="totais">
             <span>Itens: ${totalItens}</span>
-            <span>Total UN: ${totalUnidades}</span>
+            <span>Total UN: ${formatarNumero(totalUnidades)}</span>
           </div>
           <div class="linha-dupla"></div>
           <div class="assinatura">
@@ -1003,11 +1021,11 @@
     resumo += '─'.repeat(48) + '\n';
     resumo += `ITENS (${totalItens}):\n`;
     itens.forEach((item, i) => {
-      resumo += `${i+1}. SKU:${item.sku} | ${item.descricao} | ${item.quantidade} ${item.unidade} (fator ${item.fator}) = ${item.totalUnidades} UN\n`;
+      resumo += `${i+1}. SKU:${item.sku} | ${item.descricao} | ${formatarNumero(item.quantidade)} ${item.unidade} (fator ${formatarNumero(item.fator)}) = ${formatarNumero(item.totalUnidades)} UN\n`;
     });
     resumo += '─'.repeat(48) + '\n';
     resumo += `Total de itens: ${totalItens}\n`;
-    resumo += `Total de unidades: ${totalUnidades}\n`;
+    resumo += `Total de unidades: ${formatarNumero(totalUnidades)}\n`;
     resumo += '═'.repeat(48) + '\n';
     resumo += 'Assinatura do emissor: ___________________\n';
     resumo += 'Assinatura do destinatário: ______________';
