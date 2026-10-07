@@ -49,7 +49,7 @@
     .header-field input:focus, .header-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15); }
     .header-field input.erro, .header-field select.erro { border-color: var(--red); background: #fef5f5; }
     .header-field .id-field { font-weight: 600; color: var(--accent); background: var(--accent-light); }
-    .search-bar { margin-bottom: 24px; position: relative; }
+    .search-bar { margin-bottom: 12px; position: relative; }
     .search-bar .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; pointer-events: none; z-index: 2; }
     .search-bar input { width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: 0.2s; outline: none; }
     .search-bar input::placeholder { color: var(--text-muted); }
@@ -59,6 +59,19 @@
     .autocomplete-suggestions .suggestion { padding: 8px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border); transition: 0.1s; }
     .autocomplete-suggestions .suggestion:hover { background: var(--accent-light); }
     .autocomplete-suggestions .suggestion:last-child { border-bottom: none; }
+    .autocomplete-suggestions .suggestion.inativo { background: #fff7e6; }
+    .autocomplete-suggestions .suggestion.inativo:hover { background: #ffedcc; }
+    .autocomplete-suggestions .suggestion .tag-inativo { display: inline-block; background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+
+    /* Barra de controles (cadastro + inativos) */
+    .controls-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-inativos { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: 0.15s; user-select: none; }
+    .filter-inativos:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg); }
+    .filter-inativos input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+    .filter-inativos.ativo { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+    .btn-cadastro { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.15s; }
+    .btn-cadastro:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
     .add-product { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px 24px; margin-bottom: 28px; display: flex; align-items: end; gap: 14px; flex-wrap: wrap; box-shadow: var(--shadow-sm); }
     .add-field { display: flex; flex-direction: column; gap: 4px; flex: 1 0 100px; }
     .add-field label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
@@ -156,6 +169,7 @@
       .items-table th, .items-table td { padding: 6px 6px; font-size: 12px; }
       .items-table .edit-input.qtd, .items-table .edit-input.fator { width: 55px; }
       .totals-bar { flex-direction: column; gap: 4px; align-items: flex-end; }
+      .controls-bar { flex-direction: column; align-items: stretch; }
     }
     @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
   </style>
@@ -222,6 +236,20 @@
     <span class="search-icon">🔍</span>
     <input type="text" id="pesquisaProduto" placeholder="Buscar produto por código ou descrição (ex: 'avocado kg' ou '14')" autocomplete="off">
     <div class="autocomplete-suggestions" id="suggestionsPesquisa"></div>
+  </div>
+
+  <!-- Barra de controles: cadastro + filtro inativos -->
+  <div class="controls-bar">
+    <label class="filter-inativos" id="labelFiltroInativos">
+      <input type="checkbox" id="mostrarInativos" onchange="onToggleInativos()">
+      <span>🔎 Mostrar SKUs inativos</span>
+    </label>
+    <a class="btn-cadastro"
+       href="https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/edit?gid=0#gid=0"
+       target="_blank"
+       rel="noopener noreferrer">
+      📋 Acessar cadastro de produtos
+    </a>
   </div>
 
   <div class="add-product">
@@ -334,9 +362,12 @@
 
 <script>
   // ============================================================
-  // 0. URL DO CSV (catálogo de produtos)
+  // 0. URL DO CSV (catálogo de produtos) — planilha de CADASTRO
   // ============================================================
-  const URL_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjvppz-af7oTQZHb7EVqWIZkr64pR_FMtALAdr8FhXAYWv1nBUixrxHz4Zl8iGnMq_JrEFMWMGoh2D/pub?gid=1850173316&single=true&output=csv';
+  // Importante: o ID da planilha foi alterado para a de CADASTRO
+  // (15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk)
+  // O gid pode variar; por padrão, para CSV usa-se gid=0
+  const URL_CSV = 'https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/export?format=csv&gid=0';
 
   // ============================================================
   // 0b. URL DO APPS SCRIPT (histórico) — VERSÃO DOGET
@@ -347,16 +378,17 @@
   // 1. CATÁLOGO DE FALLBACK
   // ============================================================
   const catalogoFallback = [
-    { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1 },
-    { sku: '2', codbarra: '2', descricao: 'ABACATE BREDA KG', unidade: 'KG', fator: 1 },
-    { sku: '3', codbarra: '3', descricao: 'ABACATE FORTUNE KG', unidade: 'KG', fator: 1 },
-    { sku: '4', codbarra: '4', descricao: 'ABACAXI HAWAI UN', unidade: 'UN', fator: 1 },
-    { sku: '5', codbarra: '5', descricao: 'ABACAXI PEROLA UN', unidade: 'UN', fator: 1 }
+    { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1, ativo: true },
+    { sku: '2', codbarra: '2', descricao: 'ABACATE BREDA KG', unidade: 'KG', fator: 1, ativo: true },
+    { sku: '3', codbarra: '3', descricao: 'ABACATE FORTUNE KG', unidade: 'KG', fator: 1, ativo: true },
+    { sku: '4', codbarra: '4', descricao: 'ABACAXI HAWAI UN', unidade: 'UN', fator: 1, ativo: true },
+    { sku: '5', codbarra: '5', descricao: 'ABACAXI PEROLA UN', unidade: 'UN', fator: 1, ativo: true }
   ];
 
   let catalogo = [];
   let itens = [];
   let idTransferencia = '';
+  let mostrarInativos = false; // por padrão, só mostra ativos
 
   // ============================================================
   // 1b. HELPERS
@@ -428,7 +460,25 @@
   });
 
   // ============================================================
-  // 3. CARREGAR CATÁLOGO
+  // 2c. TOGGLE INATIVOS
+  // ============================================================
+  function onToggleInativos() {
+    mostrarInativos = document.getElementById('mostrarInativos').checked;
+    const label = document.getElementById('labelFiltroInativos');
+    if (mostrarInativos) {
+      label.classList.add('ativo');
+    } else {
+      label.classList.remove('ativo');
+    }
+    // Reaplica o filtro se houver texto na pesquisa
+    const q = pesquisaInput.value.trim();
+    if (q) {
+      pesquisaInput.dispatchEvent(new Event('input'));
+    }
+  }
+
+  // ============================================================
+  // 3. CARREGAR CATÁLOGO (com coluna ATIVO)
   // ============================================================
   async function carregarCatalogo() {
     const statusTexto = document.getElementById('statusTexto');
@@ -447,30 +497,46 @@
         codbarra: cabecalho.findIndex(c => /codbarra|codbarr/i.test(c)),
         descricao: cabecalho.findIndex(c => /descricao|descrição/i.test(c)),
         unidade: cabecalho.findIndex(c => /unidade|un/i.test(c)),
-        fator: cabecalho.findIndex(c => /fatorcx|fator|fator cx/i.test(c))
+        fator: cabecalho.findIndex(c => /fatorcx|fator|fator cx/i.test(c)),
+        ativo: cabecalho.findIndex(c => /ativo/i.test(c))
       };
       if (idxMap.codigo === -1) idxMap.codigo = 0;
       if (idxMap.codbarra === -1) idxMap.codbarra = 1;
       if (idxMap.descricao === -1) idxMap.descricao = 2;
       if (idxMap.unidade === -1) idxMap.unidade = 3;
       if (idxMap.fator === -1) idxMap.fator = 4;
+
       const catalogoCarregado = [];
       for (let i = 1; i < linhas.length; i++) {
         const colunas = linhas[i].split(separador).map(item => item.trim());
         if (colunas.length <= Math.max(idxMap.codigo, idxMap.codbarra, idxMap.descricao)) continue;
         const codbarra = colunas[idxMap.codbarra] || '';
         if (codbarra === '' || codbarra.toUpperCase() === 'SEM GTIN') continue;
+
+        // Verifica se está ativo
+        let ativo = true;
+        if (idxMap.ativo !== -1) {
+          const valorAtivo = (colunas[idxMap.ativo] || '').toUpperCase();
+          // Considera ativo se estiver vazio, "S", "SIM", "1", "ATIVO", "TRUE"
+          ativo = !(valorAtivo === 'N' || valorAtivo === 'NAO' || valorAtivo === 'NÃO' ||
+                    valorAtivo === '0' || valorAtivo === 'INATIVO' || valorAtivo === 'FALSE');
+        }
+
         catalogoCarregado.push({
           sku: colunas[idxMap.codigo] || '',
           codbarra: codbarra,
           descricao: colunas[idxMap.descricao] || '',
           unidade: colunas[idxMap.unidade] || 'UN',
-          fator: parseInt(colunas[idxMap.fator]) || 1
+          fator: parseInt(colunas[idxMap.fator]) || 1,
+          ativo: ativo
         });
       }
       if (catalogoCarregado.length === 0) throw new Error('Nenhum produto válido encontrado no CSV');
       catalogo = catalogoCarregado;
-      statusTexto.innerHTML = `✅ Catálogo carregado: <strong>${catalogo.length}</strong> produtos (via CSV)`;
+
+      const totalAtivos = catalogo.filter(p => p.ativo).length;
+      const totalInativos = catalogo.length - totalAtivos;
+      statusTexto.innerHTML = `✅ Catálogo: <strong>${catalogo.length}</strong> produtos (${totalAtivos} ativos, ${totalInativos} inativos)`;
       return catalogo;
     } catch (erro) {
       console.error('❌ Erro ao carregar catálogo:', erro);
@@ -502,7 +568,7 @@
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
 
   // ============================================================
-  // 5. LÓGICA DO CHECKBOX
+  // 5. LÓGICA DO CHECKBOX (fator do catálogo)
   // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
@@ -545,13 +611,17 @@
       descInput.value = '';
       return;
     }
-    const produto = catalogo.find(p => p.codbarra === cod);
-    if (produto) { preencherCampos(produto); showToast('Produto encontrado'); qtdInput.focus(); }
+    const produto = catalogo.find(p => p.codbarra === cod && (mostrarInativos || p.ativo));
+    if (produto) {
+      preencherCampos(produto);
+      showToast(produto.ativo ? 'Produto encontrado' : '⚠️ Produto inativo!');
+      qtdInput.focus();
+    }
   });
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
 
   // ============================================================
-  // 7. AUTOCOMPLETE
+  // 7. AUTOCOMPLETE (com filtro de inativos e destaque)
   // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
@@ -562,12 +632,22 @@
   pesquisaInput.addEventListener('input', function() {
     const query = this.value.trim();
     if (query === '') { suggestionsPesquisa.classList.remove('show'); filtrarLista(''); return; }
-    const matches = catalogo.filter(p => matchesQuery(p, query));
+
+    // Filtra por texto E por status (ativo/inativo)
+    let matches = catalogo.filter(p => matchesQuery(p, query));
+    if (!mostrarInativos) {
+      matches = matches.filter(p => p.ativo);
+    }
+
     if (matches.length > 0) {
       const limited = matches.slice(0, 10);
-      suggestionsPesquisa.innerHTML = limited.map(p =>
-        `<div class="suggestion" data-sku="${p.sku}" data-codbarra="${p.codbarra}" data-desc="${p.descricao}" data-unidade="${p.unidade}" data-fator="${p.fator}"><strong>${p.codbarra}</strong> — ${p.descricao}</div>`
-      ).join('');
+      suggestionsPesquisa.innerHTML = limited.map(p => {
+        const classeInativo = p.ativo ? '' : ' inativo';
+        const tag = p.ativo ? '' : '<span class="tag-inativo">INATIVO</span>';
+        return `<div class="suggestion${classeInativo}" data-sku="${p.sku}" data-codbarra="${p.codbarra}" data-desc="${p.descricao}" data-unidade="${p.unidade}" data-fator="${p.fator}">
+          <strong>${p.codbarra}</strong> — ${p.descricao}${tag}
+        </div>`;
+      }).join('');
       suggestionsPesquisa.classList.add('show');
     } else {
       suggestionsPesquisa.classList.remove('show');
@@ -583,7 +663,8 @@
     pesquisaInput.value = '';
     suggestionsPesquisa.classList.remove('show');
     qtdInput.focus();
-    showToast('Produto selecionado');
+    const estavaInativo = item.classList.contains('inativo');
+    showToast(estavaInativo ? '⚠️ Produto inativo selecionado' : 'Produto selecionado');
   });
 
   document.addEventListener('click', function(e) {
@@ -604,7 +685,7 @@
   }
 
   // ============================================================
-  // 9. ATUALIZAR TOTAL (com campo vazio quando Qtd vazia)
+  // 9. ATUALIZAR TOTAL
   // ============================================================
   function atualizarTotalCalc() {
     const qtdStr = qtdInput.value;
@@ -954,7 +1035,7 @@
   }
 
   // ============================================================
-  // 18. COMPARTILHAR (modal + ações)
+  // 18. COMPARTILHAR
   // ============================================================
   function abrirModalCompartilhar() {
     if (!validarLojas()) return;
@@ -988,7 +1069,6 @@
     const html = gerarCupomHTMLparaPDF();
     if (!html) return;
 
-    // Renderiza em um iframe oculto
     const iframe = document.createElement('iframe');
     iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;background:#fff;';
     iframe.srcdoc = html;
@@ -1019,7 +1099,6 @@
 
         const file = new File([blob], nomeArquivo, { type: 'image/png' });
 
-        // Tenta usar Web Share API (mobile)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
@@ -1034,7 +1113,6 @@
           }
         }
 
-        // Fallback: download
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -1078,17 +1156,13 @@
     texto += `\nTotal de itens: ${itens.length}\n`;
     texto += `Total de unidades: ${formatarNumero(totalUnidades)}\n`;
 
-    // Tenta Web Share API
     if (navigator.share) {
       try {
         await navigator.share({ text: texto, title: 'Transferência' });
         return;
-      } catch (err) {
-        // cai no clipboard
-      }
+      } catch (err) {}
     }
 
-    // Fallback: clipboard
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(texto);
@@ -1102,7 +1176,7 @@
   }
 
   // ============================================================
-  // 19. SALVAR NO HISTÓRICO — ENVIO EM LOTES (ITEM POR ITEM)
+  // 19. SALVAR NO HISTÓRICO — ENVIO EM LOTES
   // ============================================================
   function enviarViaImagem(url) {
     return new Promise((resolve) => {
@@ -1148,7 +1222,6 @@
       const item = itens[i];
       mostrarProgresso(i + 1, total, item.descricao.substring(0, 30));
 
-      // Envia apenas UM item por vez
       const dados = {
         idTransferencia: idTransferencia,
         dataHora: dataHora,
@@ -1175,7 +1248,6 @@
         await enviarViaImagem(url);
         enviados++;
 
-        // Pequena pausa entre requisições para não sobrecarregar
         await new Promise((r) => setTimeout(r, 200));
 
       } catch (err) {
