@@ -33,8 +33,6 @@
     .nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; letter-spacing: -0.3px; color: var(--text-primary); }
     .nav-logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 700; }
     .nav-right { display: flex; align-items: center; gap: 12px; }
-    .nav-link-cadastro { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600; text-decoration: none; transition: 0.15s; }
-    .nav-link-cadastro:hover { background: var(--accent); color: white; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(42,157,143,0.3); }
     .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-mid)); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; cursor: pointer; }
     .page { max-width: 1000px; margin: 0 auto; padding: 32px 24px 100px; }
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-muted); margin-bottom: 24px; }
@@ -66,7 +64,6 @@
     .autocomplete-suggestions .suggestion.inativo:hover { background: #ffedcc; }
     .autocomplete-suggestions .suggestion .tag-inativo { display: inline-block; background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
 
-    /* Barra de controles: apenas filtro de inativos */
     .controls-bar { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
     .filter-inativos { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: 0.15s; user-select: none; }
     .filter-inativos:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg); }
@@ -83,11 +80,15 @@
     .add-field.unidade { flex: 0.9; }
     .add-field.total { flex: 0.5; }
     .add-field.sku { flex: 0.8; }
-    .add-field.fator { flex: 0.7; }
+    .add-field.fator { flex: 0.9; }
     .add-field.busca { flex: 0.9; }
     .add-field.qtd { flex: 0.6; }
     .fator-toggle { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; margin-top: 6px; cursor: pointer; }
     .fator-toggle input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+    /* Campo do fator semitransparente quando desativado (padrão) */
+    #fatorProd { opacity: 0.5; transition: opacity 0.2s; }
+    #fatorProd.ativo { opacity: 1; font-weight: 600; }
+
     .btn-add { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: 0.18s; box-shadow: 0 2px 8px rgba(42, 157, 143, 0.25); height: 40px; align-self: flex-end; margin-bottom: 1px; }
     .btn-add:hover { background: #1f8a7d; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(42, 157, 143, 0.35); }
     .items-section { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
@@ -130,7 +131,9 @@
     .status-bar .status-error { color: var(--red); font-weight: 600; }
     .status-bar .btn-reload { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 12px; cursor: pointer; font-size: 11px; color: var(--text-secondary); transition: 0.15s; }
     .status-bar .btn-reload:hover { background: var(--bg); border-color: var(--border-strong); }
-    .planilha-link-wrapper { margin-top: 32px; text-align: center; }
+
+    /* Links de planilha no final (cadastro + histórico lado a lado) */
+    .planilha-link-wrapper { margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
     .planilha-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; text-decoration: none; transition: 0.18s; }
     .planilha-link:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
 
@@ -170,7 +173,6 @@
       .totals-bar { flex-direction: column; gap: 4px; align-items: flex-end; }
       .controls-bar { flex-direction: column; align-items: stretch; }
       nav { padding: 0 16px; }
-      .nav-link-cadastro span { display: none; }
     }
     @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
   </style>
@@ -180,13 +182,6 @@
 <nav>
   <div class="nav-logo"><div class="nav-logo-icon">🍇</div>Frutas & Cia</div>
   <div class="nav-right">
-    <a class="nav-link-cadastro"
-       href="https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/edit?gid=0#gid=0"
-       target="_blank"
-       rel="noopener noreferrer"
-       title="Acessar cadastro de produtos">
-      📋 <span>Cadastro de produtos</span>
-    </a>
     <div class="nav-avatar">HG</div>
   </div>
 </nav>
@@ -248,7 +243,6 @@
     <div class="autocomplete-suggestions" id="suggestionsPesquisa"></div>
   </div>
 
-  <!-- Barra de controles: filtro de inativos -->
   <div class="controls-bar">
     <label class="filter-inativos" id="labelFiltroInativos">
       <input type="checkbox" id="mostrarInativos" onchange="onToggleInativos()">
@@ -265,9 +259,12 @@
       <select id="unidadeProd"><option value="UN">UN</option><option value="KG">KG</option><option value="L">L</option><option value="CX">CX</option><option value="FD">FD</option></select>
     </div>
     <div class="add-field fator">
-      <label>Fator</label>
-      <input type="number" id="fatorProd" value="1" min="1" step="1" disabled>
-      <div class="fator-toggle"><input type="checkbox" id="usarFatorCatalogo" checked><label for="usarFatorCatalogo">Usar fator do catálogo</label></div>
+      <label>Fator (cx/fd)</label>
+      <input type="number" id="fatorProd" value="1" min="1" step="1" readonly title="Quantidade de unidades por caixa/fardo — apenas para referência">
+      <div class="fator-toggle">
+        <input type="checkbox" id="usarFatorCatalogo" onchange="toggleFatorInput()">
+        <label for="usarFatorCatalogo">Usar fator do catálogo</label>
+      </div>
     </div>
     <div class="add-field qtd"><label>Qtd</label><input type="number" id="qtdProd" min="0" step="0.01" placeholder="Qtd"></div>
     <div class="add-field total"><label>Total UN</label><input type="text" id="totalCalc" value="" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);"></div>
@@ -302,6 +299,13 @@
   </div>
 
   <div class="planilha-link-wrapper">
+    <a class="planilha-link"
+       href="https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/edit?gid=0#gid=0"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Acessar cadastro de produtos">
+      📋 Cadastro de produtos
+    </a>
     <a class="planilha-link"
        href="https://docs.google.com/spreadsheets/d/1u6JYkO8fUzRClXpGsIBZWAF5e-MAHyvDQB02bHGR-ug/edit?usp=sharing"
        target="_blank"
@@ -364,17 +368,13 @@
 
 <script>
   // ============================================================
-  // 0. URL DO CSV (catálogo de produtos) — planilha de CADASTRO
+  // 0. URLs
   // ============================================================
   const URL_CSV = 'https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/export?format=csv&gid=0';
-
-  // ============================================================
-  // 0b. URL DO APPS SCRIPT (histórico) — VERSÃO DOGET
-  // ============================================================
   const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbz61xUG6dh8CWjfh9c8KtiJ8X3ocTj1towPeZR5QUP2qrLkeyWiTfMivVY2w66cN5RK/exec';
 
   // ============================================================
-  // 0c. PARSER CSV ROBUSTO (lida com aspas e separador , ou ;)
+  // 0b. Parser CSV robusto
   // ============================================================
   function parseCSV(texto) {
     const rows = [];
@@ -402,7 +402,7 @@
   }
 
   // ============================================================
-  // 1. CATÁLOGO DE FALLBACK
+  // 1. Fallback
   // ============================================================
   const catalogoFallback = [
     { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1, ativo: true },
@@ -416,7 +416,7 @@
   let mostrarInativos = false;
 
   // ============================================================
-  // 1b. HELPERS
+  // 1b. Helpers
   // ============================================================
   function paraNumero(valor) {
     if (valor === null || valor === undefined || valor === '') return 0;
@@ -425,7 +425,6 @@
     const n = parseFloat(s);
     return isNaN(n) ? 0 : n;
   }
-
   function formatarNumero(n) {
     const num = paraNumero(n);
     if (Number.isInteger(num)) return String(num);
@@ -433,7 +432,7 @@
   }
 
   // ============================================================
-  // 2. ID DA TRANSFERÊNCIA
+  // 2. ID
   // ============================================================
   function gerarIdTransferencia() {
     const now = new Date();
@@ -446,58 +445,45 @@
     const rand = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
     return `TRF-${ano}${mes}${dia}-${hora}${min}${seg}-${rand}`;
   }
-
   function inicializarIdTransferencia() {
     idTransferencia = gerarIdTransferencia();
     document.getElementById('idTransferencia').value = idTransferencia;
   }
 
   // ============================================================
-  // 2b. VALIDAR LOJAS
+  // 2b. Validar lojas
   // ============================================================
   function validarLojas() {
     const origem = document.getElementById('lojaOrigem');
     const destino = document.getElementById('lojaDestino');
     let valido = true;
-
-    if (origem.value === '') { origem.classList.add('erro'); valido = false; }
-    else { origem.classList.remove('erro'); }
-
-    if (destino.value === '') { destino.classList.add('erro'); valido = false; }
-    else { destino.classList.remove('erro'); }
-
+    if (origem.value === '') { origem.classList.add('erro'); valido = false; } else { origem.classList.remove('erro'); }
+    if (destino.value === '') { destino.classList.add('erro'); valido = false; } else { destino.classList.remove('erro'); }
     if (origem.value !== '' && destino.value !== '' && origem.value === destino.value) {
       showToast('⚠️ Loja de origem e destino não podem ser iguais');
       origem.classList.add('erro');
       destino.classList.add('erro');
       return false;
     }
-
     if (!valido) { showToast('⚠️ Preencha a loja de origem e destino'); return false; }
     return true;
   }
-
-  document.getElementById('lojaOrigem').addEventListener('change', function() {
-    if (this.value !== '') this.classList.remove('erro');
-  });
-  document.getElementById('lojaDestino').addEventListener('change', function() {
-    if (this.value !== '') this.classList.remove('erro');
-  });
+  document.getElementById('lojaOrigem').addEventListener('change', function() { if (this.value !== '') this.classList.remove('erro'); });
+  document.getElementById('lojaDestino').addEventListener('change', function() { if (this.value !== '') this.classList.remove('erro'); });
 
   // ============================================================
-  // 2c. TOGGLE INATIVOS
+  // 2c. Toggle inativos
   // ============================================================
   function onToggleInativos() {
     mostrarInativos = document.getElementById('mostrarInativos').checked;
     const label = document.getElementById('labelFiltroInativos');
-    if (mostrarInativos) label.classList.add('ativo');
-    else label.classList.remove('ativo');
+    if (mostrarInativos) label.classList.add('ativo'); else label.classList.remove('ativo');
     const q = pesquisaInput.value.trim();
     if (q) pesquisaInput.dispatchEvent(new Event('input'));
   }
 
   // ============================================================
-  // 3. CARREGAR CATÁLOGO (parser robusto)
+  // 3. Carregar catálogo
   // ============================================================
   async function carregarCatalogo() {
     const statusTexto = document.getElementById('statusTexto');
@@ -506,13 +492,9 @@
       const resposta = await fetch(URL_CSV);
       if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
       const csv = await resposta.text();
-
       const rows = parseCSV(csv);
       if (rows.length < 2) throw new Error('CSV vazio ou inválido');
-
       const cabecalho = rows[0].map(c => c.trim());
-      console.log('📋 Cabeçalho detectado:', cabecalho);
-
       const idxMap = {
         codigo: cabecalho.findIndex(c => /codigo|código/i.test(c)),
         codbarra: cabecalho.findIndex(c => /codbarra|codbarr/i.test(c)),
@@ -521,38 +503,24 @@
         fator: cabecalho.findIndex(c => /fatorcx|fator/i.test(c)),
         ativo: cabecalho.findIndex(c => /ativo/i.test(c))
       };
-
-      // Fallback posicional (A=0, B=1, C=2, D=3, E=4, G=6)
       if (idxMap.codigo === -1) idxMap.codigo = 0;
       if (idxMap.codbarra === -1) idxMap.codbarra = 1;
       if (idxMap.descricao === -1) idxMap.descricao = 2;
       if (idxMap.unidade === -1) idxMap.unidade = 3;
       if (idxMap.fator === -1) idxMap.fator = 4;
-      if (idxMap.ativo === -1) idxMap.ativo = 6; // coluna G
-
-      console.log('📍 Índices:', idxMap);
+      if (idxMap.ativo === -1) idxMap.ativo = 6;
 
       const catalogoCarregado = [];
       for (let i = 1; i < rows.length; i++) {
         const colunas = rows[i].map(c => c.trim());
         if (colunas.length <= Math.max(idxMap.codigo, idxMap.codbarra, idxMap.descricao)) continue;
-
         const codbarra = colunas[idxMap.codbarra] || '';
         if (codbarra === '' || codbarra.toUpperCase() === 'SEM GTIN') continue;
-
-        // Verifica ativo
         let ativo = true;
         if (idxMap.ativo !== -1 && colunas[idxMap.ativo] !== undefined) {
           const valorAtivo = String(colunas[idxMap.ativo]).trim().toUpperCase();
-          // Considera INATIVO se for: N, NAO, NÃO, 0, INATIVO, FALSE
-          // Considera ATIVO: S, SIM, 1, ATIVO, TRUE, vazio, ou qualquer outra coisa
-          if (valorAtivo === 'N' || valorAtivo === 'NAO' || valorAtivo === 'NÃO' ||
-              valorAtivo === '0' || valorAtivo === 'INATIVO' || valorAtivo === 'FALSE' ||
-              valorAtivo === 'INATIVA') {
-            ativo = false;
-          }
+          if (['N','NAO','NÃO','0','INATIVO','FALSE','INATIVA'].includes(valorAtivo)) ativo = false;
         }
-
         catalogoCarregado.push({
           sku: colunas[idxMap.codigo] || '',
           codbarra: codbarra,
@@ -562,14 +530,11 @@
           ativo: ativo
         });
       }
-
       if (catalogoCarregado.length === 0) throw new Error('Nenhum produto válido encontrado no CSV');
       catalogo = catalogoCarregado;
-
       const totalAtivos = catalogo.filter(p => p.ativo).length;
       const totalInativos = catalogo.length - totalAtivos;
       statusTexto.innerHTML = `✅ Catálogo: <strong>${catalogo.length}</strong> produtos (${totalAtivos} ativos, ${totalInativos} inativos)`;
-      console.log(`✅ Catálogo carregado: ${catalogo.length} produtos (${totalAtivos} ativos / ${totalInativos} inativos)`);
       return catalogo;
     } catch (erro) {
       console.error('❌ Erro ao carregar catálogo:', erro);
@@ -587,7 +552,7 @@
   }
 
   // ============================================================
-  // 4. REFERÊNCIAS DOM
+  // 4. Referências DOM
   // ============================================================
   const codigoInput = document.getElementById('codigoProd');
   const skuInput = document.getElementById('skuProd');
@@ -601,27 +566,25 @@
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
 
   // ============================================================
-  // 5. LÓGICA DO CHECKBOX (fator do catálogo)
+  // 5. Fator: checkbox (padrão DESMARCADO, semitransparente quando inativo)
   // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
-      fatorInput.disabled = true;
-      fatorInput.style.background = '#f5f4f1';
+      fatorInput.classList.add('ativo');
+      // Se houver produto selecionado, reaplica o fator do catálogo
       const cod = codigoInput.value.trim();
       if (cod) {
         const produto = catalogo.find(p => p.codbarra === cod);
-        if (produto) { fatorInput.value = produto.fator; atualizarTotalCalc(); }
+        if (produto) fatorInput.value = produto.fator || 1;
       }
     } else {
-      fatorInput.disabled = false;
-      fatorInput.style.background = '#ffffff';
+      fatorInput.classList.remove('ativo');
     }
+    atualizarTotalCalc();
   }
-  usarFatorCheck.addEventListener('change', toggleFatorInput);
-  toggleFatorInput();
 
   // ============================================================
-  // 6. PREENCHER CAMPOS
+  // 6. Preencher campos (sempre mostra fator do catálogo como referência)
   // ============================================================
   function preencherCampos(produto) {
     if (!produto) return;
@@ -629,21 +592,14 @@
     skuInput.value = produto.sku;
     descInput.value = produto.descricao;
     unidadeSelect.value = produto.unidade || 'UN';
-    if (usarFatorCheck.checked) {
-      fatorInput.value = produto.fator || 1;
-    } else if (!fatorInput.value || fatorInput.value == '') {
-      fatorInput.value = produto.fator || 1;
-    }
+    // Sempre mostra o fator do catálogo (como referência visual)
+    fatorInput.value = produto.fator || 1;
     atualizarTotalCalc();
   }
 
   codigoInput.addEventListener('blur', function() {
     const cod = this.value.trim();
-    if (cod === '') {
-      skuInput.value = '';
-      descInput.value = '';
-      return;
-    }
+    if (cod === '') { skuInput.value = ''; descInput.value = ''; fatorInput.value = '1'; atualizarTotalCalc(); return; }
     const produto = catalogo.find(p => p.codbarra === cod && (mostrarInativos || p.ativo));
     if (produto) {
       preencherCampos(produto);
@@ -654,7 +610,7 @@
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
 
   // ============================================================
-  // 7. AUTOCOMPLETE
+  // 7. Autocomplete (NÃO filtra a lista de itens)
   // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
@@ -664,12 +620,10 @@
 
   pesquisaInput.addEventListener('input', function() {
     const query = this.value.trim();
-    if (query === '') { suggestionsPesquisa.classList.remove('show'); filtrarLista(''); return; }
+    if (query === '') { suggestionsPesquisa.classList.remove('show'); return; }
 
     let matches = catalogo.filter(p => matchesQuery(p, query));
-    if (!mostrarInativos) {
-      matches = matches.filter(p => p.ativo === true);
-    }
+    if (!mostrarInativos) matches = matches.filter(p => p.ativo === true);
 
     if (matches.length > 0) {
       const limited = matches.slice(0, 10);
@@ -684,7 +638,7 @@
     } else {
       suggestionsPesquisa.classList.remove('show');
     }
-    filtrarLista(query);
+    // NÃO chama filtrarLista aqui — a lista de itens permanece sempre visível
   });
 
   suggestionsPesquisa.addEventListener('click', function(e) {
@@ -704,33 +658,21 @@
   });
 
   // ============================================================
-  // 8. FILTRAR LISTA
-  // ============================================================
-  function filtrarLista(termo) {
-    const linhas = document.querySelectorAll('#corpoTabela tr');
-    const query = termo.toLowerCase().trim();
-    linhas.forEach(tr => {
-      if (tr.classList.contains('empty-message')) return;
-      const texto = tr.textContent.toLowerCase();
-      tr.style.display = texto.includes(query) ? '' : 'none';
-    });
-  }
-
-  // ============================================================
-  // 9. ATUALIZAR TOTAL
+  // 8. Total UN (usa fator SOMENTE se checkbox marcado)
   // ============================================================
   function atualizarTotalCalc() {
     const qtdStr = qtdInput.value;
-    const fator = paraNumero(fatorInput.value) || 1;
-    if (qtdStr === '' || qtdStr === null) totalCalc.value = '';
-    else totalCalc.value = formatarNumero(paraNumero(qtdStr) * fator);
+    if (qtdStr === '' || qtdStr === null) { totalCalc.value = ''; return; }
+    const qtd = paraNumero(qtdStr);
+    const fator = usarFatorCheck.checked ? (paraNumero(fatorInput.value) || 1) : 1;
+    totalCalc.value = formatarNumero(qtd * fator);
   }
   qtdInput.addEventListener('input', atualizarTotalCalc);
   fatorInput.addEventListener('input', atualizarTotalCalc);
   atualizarTotalCalc();
 
   // ============================================================
-  // 10. ADICIONAR ITEM
+  // 9. Adicionar item
   // ============================================================
   function adicionarItem() {
     if (!validarLojas()) return;
@@ -739,22 +681,19 @@
     const sku = skuInput.value.trim() || '---';
     const descricao = descInput.value.trim();
     const unidade = unidadeSelect.value;
-    const fator = paraNumero(fatorInput.value) || 1;
+    // Fator só é aplicado se o checkbox estiver marcado
+    const fator = usarFatorCheck.checked ? (paraNumero(fatorInput.value) || 1) : 1;
     const quantidade = paraNumero(qtdInput.value);
     const totalUnidades = quantidade * fator;
 
     if (!descricao) { showToast('⚠️ Selecione um produto primeiro'); return; }
-    if (qtdInput.value === '' || quantidade <= 0) {
-      showToast('⚠️ Informe a quantidade');
-      qtdInput.focus();
-      return;
-    }
+    if (qtdInput.value === '' || quantidade <= 0) { showToast('⚠️ Informe a quantidade'); qtdInput.focus(); return; }
     if (fator <= 0) { showToast('⚠️ Fator deve ser > 0'); return; }
 
     itens.push({ sku, codbarra, descricao, unidade, fator, quantidade, totalUnidades });
 
+    // Reseta o formulário (mantém o checkbox como está)
     descInput.value = ''; skuInput.value = ''; fatorInput.value = '1'; qtdInput.value = '';
-    if (usarFatorCheck.checked) fatorInput.disabled = true;
     atualizarTotalCalc();
     codigoInput.value = ''; codigoInput.focus();
 
@@ -763,10 +702,9 @@
   }
 
   // ============================================================
-  // 11. REMOVER / ATUALIZAR ITEM
+  // 10. Remover / atualizar item
   // ============================================================
   function removerItem(index) { itens.splice(index, 1); renderizarTabela(); showToast('Item removido'); }
-
   function atualizarItem(index, campo, valor) {
     if (campo === 'descricao') itens[index].descricao = valor;
     else if (campo === 'sku') itens[index].sku = valor;
@@ -789,7 +727,7 @@
   }
 
   // ============================================================
-  // 12. RENDERIZAR TABELA
+  // 11. Renderizar tabela
   // ============================================================
   function renderizarTabela() {
     const tbody = document.getElementById('corpoTabela');
@@ -802,7 +740,6 @@
       totalItensSpan.textContent = '0'; totalUnidadesSpan.textContent = '0'; contadorSpan.textContent = '0 itens';
       return;
     }
-
     let html = ''; let somaUnidades = 0;
     itens.forEach((item, index) => {
       somaUnidades += item.totalUnidades;
@@ -817,17 +754,14 @@
         <td style="text-align:center"><button class="btn-remove" onclick="removerItem(${index})" title="Remover">✕</button></td>
       </tr>`;
     });
-
     tbody.innerHTML = html;
     totalItensSpan.textContent = itens.length;
     totalUnidadesSpan.textContent = formatarNumero(somaUnidades);
     contadorSpan.textContent = `${itens.length} itens`;
-    const termo = pesquisaInput.value.trim();
-    if (termo) filtrarLista(termo);
   }
 
   // ============================================================
-  // 13. ESCAPE HTML
+  // 12. Escape HTML
   // ============================================================
   function escHtml(texto) {
     if (!texto) return '';
@@ -836,7 +770,7 @@
   }
 
   // ============================================================
-  // 14. LIMPAR FORMULÁRIO
+  // 13. Limpar
   // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
@@ -853,7 +787,7 @@
   }
 
   // ============================================================
-  // 15-17. GERAÇÃO DE CUPOM (TÉRMICO E PDF) — inalterado
+  // 14-16. Cupom térmico / PDF / impressão (inalterado)
   // ============================================================
   function gerarCupomHTML() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return null; }
@@ -1025,7 +959,7 @@
   }
 
   // ============================================================
-  // 18. COMPARTILHAR
+  // 17. Compartilhar
   // ============================================================
   function abrirModalCompartilhar() {
     if (!validarLojas()) return;
@@ -1061,8 +995,7 @@
           try { await navigator.share({ files: [file], title: 'Transferência', text: 'Compartilhando cupom' }); showToast('📷 Imagem compartilhada!'); return; } catch (err) {}
         }
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = nomeArquivo; a.click();
+        const a = document.createElement('a'); a.href = url; a.download = nomeArquivo; a.click();
         URL.revokeObjectURL(url);
         showToast('📷 Imagem salva!');
       }, 'image/png');
@@ -1103,7 +1036,7 @@
   }
 
   // ============================================================
-  // 19. SALVAR NO HISTÓRICO — ENVIO EM LOTES
+  // 18. Salvar no histórico (em lotes)
   // ============================================================
   function enviarViaImagem(url) {
     return new Promise((resolve) => {
@@ -1115,7 +1048,6 @@
       setTimeout(finalizar, 5000);
     });
   }
-
   function mostrarProgresso(atual, total, nomeItem) {
     const overlay = document.getElementById('progressOverlay');
     const texto = document.getElementById('progressText');
@@ -1168,7 +1100,7 @@
   }
 
   // ============================================================
-  // 20. FINALIZAR TRANSFERÊNCIA
+  // 19. Finalizar
   // ============================================================
   async function finalizarTransferencia() {
     if (!validarLojas()) return;
@@ -1213,7 +1145,7 @@
   }
 
   // ============================================================
-  // 21. TOAST
+  // 20. Toast
   // ============================================================
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -1223,7 +1155,7 @@
   }
 
   // ============================================================
-  // 22. ENTER PARA ADICIONAR
+  // 21. Enter para adicionar
   // ============================================================
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
@@ -1231,7 +1163,7 @@
   fatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
 
   // ============================================================
-  // 23. DATA/HORA AUTOMÁTICA
+  // 22. Data/Hora automática
   // ============================================================
   (function preencherData() {
     const now = new Date();
@@ -1245,15 +1177,16 @@
   })();
 
   // ============================================================
-  // 24. INICIALIZAR
+  // 23. Inicializar
   // ============================================================
   (async function init() {
     await carregarCatalogo();
     inicializarIdTransferencia();
+    // Estado inicial: checkbox do fator desmarcado + campo semitransparente
+    usarFatorCheck.checked = false;
+    fatorInput.classList.remove('ativo');
     console.log(`✅ App iniciado com ${catalogo.length} produtos no catálogo`);
     renderizarTabela();
-    const query = pesquisaInput.value.trim();
-    if (query) pesquisaInput.dispatchEvent(new Event('input'));
   })();
 </script>
 
