@@ -85,7 +85,6 @@
     .add-field.qtd { flex: 0.6; }
     .fator-toggle { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; margin-top: 6px; cursor: pointer; }
     .fator-toggle input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
-    /* Campo do fator semitransparente quando desativado (padrão) */
     #fatorProd { opacity: 0.5; transition: opacity 0.2s; }
     #fatorProd.ativo { opacity: 1; font-weight: 600; }
 
@@ -132,7 +131,20 @@
     .status-bar .btn-reload { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 12px; cursor: pointer; font-size: 11px; color: var(--text-secondary); transition: 0.15s; }
     .status-bar .btn-reload:hover { background: var(--bg); border-color: var(--border-strong); }
 
-    /* Links de planilha no final (cadastro + histórico lado a lado) */
+    /* BOTÕES DESABILITADOS */
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .btn:disabled:hover {
+      background: var(--surface-alt);
+      color: var(--text-secondary);
+      border-color: var(--border-strong);
+      transform: none !important;
+    }
+
     .planilha-link-wrapper { margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
     .planilha-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; text-decoration: none; transition: 0.18s; }
     .planilha-link:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
@@ -359,9 +371,9 @@
   <button class="btn btn-ghost" onclick="limparFormulario()">🗑️ Limpar tudo</button>
   <div class="footer-right">
     <button class="btn btn-primary" onclick="adicionarItem()">➕ Adicionar item</button>
-    <button class="btn btn-secondary" onclick="salvarPDFCupom()">💾 Salvar PDF</button>
-    <button class="btn btn-secondary" onclick="abrirModalCompartilhar()">📤 Compartilhar</button>
-    <button class="btn btn-secondary" onclick="imprimirCupom()">🖨️ Imprimir</button>
+    <button class="btn btn-secondary" id="btnSalvarPDF" onclick="salvarPDFCupom()" disabled>💾 Salvar PDF</button>
+    <button class="btn btn-secondary" id="btnCompartilhar" onclick="abrirModalCompartilhar()" disabled>📤 Compartilhar</button>
+    <button class="btn btn-secondary" id="btnImprimir" onclick="imprimirCupom()" disabled>🖨️ Imprimir</button>
     <button class="btn btn-success" onclick="finalizarTransferencia()">✓ Finalizar</button>
   </div>
 </div>
@@ -414,6 +426,7 @@
   let itens = [];
   let idTransferencia = '';
   let mostrarInativos = false;
+  let transferenciaFinalizada = false;
 
   // ============================================================
   // 1b. Helpers
@@ -432,26 +445,56 @@
   }
 
   // ============================================================
-  // 2. ID
+  // 2. ID SEQUENCIAL SIMPLES (localStorage)
   // ============================================================
   function gerarIdTransferencia() {
-    const now = new Date();
-    const ano = now.getFullYear().toString().slice(-2);
-    const mes = String(now.getMonth() + 1).padStart(2, '0');
-    const dia = String(now.getDate()).padStart(2, '0');
-    const hora = String(now.getHours()).padStart(2, '0');
-    const min = String(now.getMinutes()).padStart(2, '0');
-    const seg = String(now.getSeconds()).padStart(2, '0');
-    const rand = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-    return `TRF-${ano}${mes}${dia}-${hora}${min}${seg}-${rand}`;
+    const ultimo = parseInt(localStorage.getItem('frutas_cia_ultimo_id') || '0', 10) || 0;
+    return String(ultimo + 1);
   }
+
+  function salvarIdAtual() {
+    const idAtual = parseInt(idTransferencia, 10);
+    if (!isNaN(idAtual)) {
+      localStorage.setItem('frutas_cia_ultimo_id', String(idAtual));
+    }
+  }
+
   function inicializarIdTransferencia() {
     idTransferencia = gerarIdTransferencia();
     document.getElementById('idTransferencia').value = idTransferencia;
   }
 
   // ============================================================
-  // 2b. Validar lojas
+  // 2b. Controle de botões de ação (travar / liberar)
+  // ============================================================
+  function habilitarBotoesAcao() {
+    ['btnSalvarPDF', 'btnCompartilhar', 'btnImprimir'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.disabled = false;
+    });
+  }
+
+  function travarBotoesAcao() {
+    ['btnSalvarPDF', 'btnCompartilhar', 'btnImprimir'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.disabled = true;
+    });
+  }
+
+  function marcarTransferenciaFinalizada() {
+    transferenciaFinalizada = true;
+    salvarIdAtual();
+    habilitarBotoesAcao();
+  }
+
+  function iniciarNovaTransferencia() {
+    transferenciaFinalizada = false;
+    inicializarIdTransferencia();
+    travarBotoesAcao();
+  }
+
+  // ============================================================
+  // 2c. Validar lojas
   // ============================================================
   function validarLojas() {
     const origem = document.getElementById('lojaOrigem');
@@ -472,7 +515,7 @@
   document.getElementById('lojaDestino').addEventListener('change', function() { if (this.value !== '') this.classList.remove('erro'); });
 
   // ============================================================
-  // 2c. Toggle inativos
+  // 2d. Toggle inativos
   // ============================================================
   function onToggleInativos() {
     mostrarInativos = document.getElementById('mostrarInativos').checked;
@@ -566,12 +609,11 @@
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
 
   // ============================================================
-  // 5. Fator: checkbox (padrão DESMARCADO, semitransparente quando inativo)
+  // 5. Fator: checkbox (padrão DESMARCADO)
   // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
       fatorInput.classList.add('ativo');
-      // Se houver produto selecionado, reaplica o fator do catálogo
       const cod = codigoInput.value.trim();
       if (cod) {
         const produto = catalogo.find(p => p.codbarra === cod);
@@ -584,7 +626,7 @@
   }
 
   // ============================================================
-  // 6. Preencher campos (sempre mostra fator do catálogo como referência)
+  // 6. Preencher campos
   // ============================================================
   function preencherCampos(produto) {
     if (!produto) return;
@@ -592,7 +634,6 @@
     skuInput.value = produto.sku;
     descInput.value = produto.descricao;
     unidadeSelect.value = produto.unidade || 'UN';
-    // Sempre mostra o fator do catálogo (como referência visual)
     fatorInput.value = produto.fator || 1;
     atualizarTotalCalc();
   }
@@ -610,7 +651,7 @@
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
 
   // ============================================================
-  // 7. Autocomplete (NÃO filtra a lista de itens)
+  // 7. Autocomplete (não filtra a lista de itens)
   // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
@@ -621,10 +662,8 @@
   pesquisaInput.addEventListener('input', function() {
     const query = this.value.trim();
     if (query === '') { suggestionsPesquisa.classList.remove('show'); return; }
-
     let matches = catalogo.filter(p => matchesQuery(p, query));
     if (!mostrarInativos) matches = matches.filter(p => p.ativo === true);
-
     if (matches.length > 0) {
       const limited = matches.slice(0, 10);
       suggestionsPesquisa.innerHTML = limited.map(p => {
@@ -638,7 +677,6 @@
     } else {
       suggestionsPesquisa.classList.remove('show');
     }
-    // NÃO chama filtrarLista aqui — a lista de itens permanece sempre visível
   });
 
   suggestionsPesquisa.addEventListener('click', function(e) {
@@ -658,7 +696,7 @@
   });
 
   // ============================================================
-  // 8. Total UN (usa fator SOMENTE se checkbox marcado)
+  // 8. Total UN
   // ============================================================
   function atualizarTotalCalc() {
     const qtdStr = qtdInput.value;
@@ -672,16 +710,19 @@
   atualizarTotalCalc();
 
   // ============================================================
-  // 9. Adicionar item
+  // 9. Adicionar item (inicia nova transferência se já finalizada)
   // ============================================================
   function adicionarItem() {
     if (!validarLojas()) return;
+    if (transferenciaFinalizada) {
+      iniciarNovaTransferencia();
+      showToast('🔄 Nova transferência iniciada');
+    }
 
     const codbarra = codigoInput.value.trim() || '---';
     const sku = skuInput.value.trim() || '---';
     const descricao = descInput.value.trim();
     const unidade = unidadeSelect.value;
-    // Fator só é aplicado se o checkbox estiver marcado
     const fator = usarFatorCheck.checked ? (paraNumero(fatorInput.value) || 1) : 1;
     const quantidade = paraNumero(qtdInput.value);
     const totalUnidades = quantidade * fator;
@@ -692,7 +733,6 @@
 
     itens.push({ sku, codbarra, descricao, unidade, fator, quantidade, totalUnidades });
 
-    // Reseta o formulário (mantém o checkbox como está)
     descInput.value = ''; skuInput.value = ''; fatorInput.value = '1'; qtdInput.value = '';
     atualizarTotalCalc();
     codigoInput.value = ''; codigoInput.focus();
@@ -734,7 +774,6 @@
     const totalItensSpan = document.getElementById('totalItens');
     const totalUnidadesSpan = document.getElementById('totalUnidades');
     const contadorSpan = document.getElementById('contadorItens');
-
     if (itens.length === 0) {
       tbody.innerHTML = `<tr><td colspan="8" class="empty-message">Nenhum item adicionado ainda.</td></tr>`;
       totalItensSpan.textContent = '0'; totalUnidadesSpan.textContent = '0'; contadorSpan.textContent = '0 itens';
@@ -770,24 +809,24 @@
   }
 
   // ============================================================
-  // 13. Limpar
+  // 13. Limpar (inicia nova transferência, trava botões)
   // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
     if (confirm('Tem certeza que deseja limpar todos os itens?')) {
       itens = [];
       renderizarTabela();
-      showToast('Lista limpa');
-      inicializarIdTransferencia();
+      iniciarNovaTransferencia();
       document.getElementById('lojaOrigem').value = '';
       document.getElementById('lojaDestino').value = '';
       document.getElementById('lojaOrigem').classList.remove('erro');
       document.getElementById('lojaDestino').classList.remove('erro');
+      showToast('Lista limpa');
     }
   }
 
   // ============================================================
-  // 14-16. Cupom térmico / PDF / impressão (inalterado)
+  // 14-16. Cupom térmico / PDF / impressão
   // ============================================================
   function gerarCupomHTML() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return null; }
@@ -1100,19 +1139,32 @@
   }
 
   // ============================================================
-  // 19. Finalizar
+  // 19. Finalizar (libera botões e consome o ID)
   // ============================================================
   async function finalizarTransferencia() {
+    if (transferenciaFinalizada) {
+      showToast('⚠️ Transferência já finalizada. Clique em "Limpar tudo" para começar uma nova.');
+      return;
+    }
     if (!validarLojas()) return;
     if (itens.length === 0) { showToast('⚠️ Adicione pelo menos um item'); return; }
+
     let operador = document.getElementById('operador').value.trim();
     if (!operador) {
       operador = prompt('Digite o nome do operador (campo obrigatório):');
       if (!operador) { showToast('⚠️ Operador é obrigatório'); return; }
       document.getElementById('operador').value = operador;
     }
+
     const salvou = await salvarHistorico();
-    if (!salvou) { if (!confirm('⚠️ Não foi possível confirmar o salvamento do histórico. Deseja continuar mesmo assim?')) return; }
+    if (!salvou) {
+      if (!confirm('⚠️ Não foi possível confirmar o salvamento do histórico. Deseja continuar mesmo assim?')) return;
+    }
+
+    // Marca como finalizada: salva o ID atual e libera os botões
+    marcarTransferenciaFinalizada();
+    showToast('🔓 Botões de PDF, Compartilhar e Imprimir liberados');
+
     const idTransferencia = document.getElementById('idTransferencia').value;
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
@@ -1120,6 +1172,7 @@
     const observacao = document.getElementById('observacao').value.trim();
     const totalItens = itens.length;
     const totalUnidades = itens.reduce((acc, item) => acc + Number(item.totalUnidades || 0), 0);
+
     let resumo = '🍇 FRUTAS & CIA — ROMANEIO DE TRANSFERÊNCIA\n';
     resumo += '═'.repeat(48) + '\n';
     resumo += `ID: ${idTransferencia}\n`;
@@ -1139,8 +1192,10 @@
     resumo += '═'.repeat(48) + '\n';
     resumo += 'Assinatura do emissor: ___________________\n';
     resumo += 'Assinatura do destinatário: ______________';
+
     alert(resumo);
-    if (confirm('Deseja imprimir o cupom?')) imprimirCupom();
+
+    if (confirm('Deseja imprimir o cupom agora?')) imprimirCupom();
     showToast('✅ Transferência finalizada!');
   }
 
@@ -1182,10 +1237,10 @@
   (async function init() {
     await carregarCatalogo();
     inicializarIdTransferencia();
-    // Estado inicial: checkbox do fator desmarcado + campo semitransparente
     usarFatorCheck.checked = false;
     fatorInput.classList.remove('ativo');
-    console.log(`✅ App iniciado com ${catalogo.length} produtos no catálogo`);
+    travarBotoesAcao();
+    console.log(`✅ App iniciado com ${catalogo.length} produtos no catálogo | ID: ${idTransferencia}`);
     renderizarTabela();
   })();
 </script>
