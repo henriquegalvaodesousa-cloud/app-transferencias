@@ -76,25 +76,44 @@
     .add-field input, .add-field select { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text-primary); background: var(--surface); outline: none; transition: 0.15s; width: 100%; }
     .add-field input:focus, .add-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12); }
     .add-field input[type="number"] { width: 90px; }
+    .add-field.busca { flex: 1.2; }
     .add-field.descricao { flex: 2.5; }
-    .add-field.unidade { flex: 0.9; }
-    .add-field.total { flex: 0.5; }
     .add-field.sku { flex: 0.8; }
-    .add-field.fator { flex: 0.9; }
-    .add-field.busca { flex: 1.2; } /* Ajustado para caber o botão */
+    .add-field.unidade { flex: 0.9; }
+    .add-field.fator { flex: 1; }
     .add-field.qtd { flex: 0.6; }
-    
-    .scan-input-group { display: flex; gap: 6px; align-items: center; }
-    .btn-scan { padding: 8px 12px; background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); font-size: 16px; cursor: pointer; transition: 0.15s; display: flex; align-items: center; justify-content: center; }
-    .btn-scan:hover { background: var(--accent); color: white; }
+    .add-field.total { flex: 0.5; }
+    .add-field.fator input[type="number"] { width: 90px; opacity: 0.65; transition: opacity 0.2s; }
+    .add-field.fator input[type="number"]:focus { opacity: 1; }
+    .add-field.fator input[type="number"].ativo { opacity: 1; font-weight: 600; }
 
-    .fator-toggle { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; margin-top: 6px; cursor: pointer; }
-    .fator-toggle input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
-    #fatorProd { opacity: 0.5; transition: opacity 0.2s; }
-    #fatorProd.ativo { opacity: 1; font-weight: 600; }
+    .fator-toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; margin-top: 4px; cursor: pointer; user-select: none; }
+    .fator-toggle input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
+    .fator-toggle label { cursor: pointer; }
+
+    .btn-scan-row {
+      flex: 1 0 100%;
+      padding: 12px 16px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-scan-row:hover { background: var(--accent); color: white; }
+    .btn-scan-row:active { transform: scale(0.98); }
 
     .btn-add { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: 0.18s; box-shadow: 0 2px 8px rgba(42, 157, 143, 0.25); height: 40px; align-self: flex-end; margin-bottom: 1px; }
     .btn-add:hover { background: #1f8a7d; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(42, 157, 143, 0.35); }
+
     .items-section { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
     .items-header { padding: 14px 24px; background: var(--surface-alt); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     .items-header h3 { font-size: 15px; font-weight: 600; }
@@ -169,20 +188,45 @@
     .progress-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; border-radius: 99px; }
 
     /* Modal do Scanner */
-    .scanner-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1200; padding: 20px; }
+    .scanner-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1200; padding: 16px; }
     .scanner-modal.show { display: flex; }
-    .scanner-box { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 500px; overflow: hidden; position: relative; }
-    .scanner-video { width: 100%; height: auto; display: block; background: #000; }
+    .scanner-box { background: #000; border-radius: var(--radius-lg); width: 100%; max-width: 500px; overflow: hidden; position: relative; }
+    .scanner-video { width: 100%; height: auto; display: block; background: #000; max-height: 70vh; object-fit: cover; }
     .scanner-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
-    .scanner-target { width: 70%; height: 30%; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); }
-    .scanner-info { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: white; font-size: 14px; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-    .scanner-close { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto; transition: 0.15s; }
-    .scanner-close:hover { background: rgba(229, 76, 76, 0.8); }
+    .scanner-target { width: 75%; height: 35%; border: 2px solid rgba(255, 255, 255, 0.85); border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); }
+    .scanner-info { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: white; font-size: 14px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.9); padding: 0 16px; }
+    .scanner-close { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto; transition: 0.15s; z-index: 2; }
+    .scanner-close:hover { background: rgba(229, 76, 76, 0.9); }
 
+    /* ============================================================ */
+    /* MOBILE: grid 2 colunas com campos mais espaçados             */
+    /* ============================================================ */
     @media (max-width: 800px) {
-      .transfer-header { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .add-product { flex-direction: column; align-items: stretch; }
+      .transfer-header { grid-template-columns: 1fr 1fr; gap: 14px; }
+      .add-product {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        align-items: start;
+        padding: 18px 16px;
+      }
+      .add-field { flex: initial; width: 100%; }
+      .add-field input,
+      .add-field select { padding: 12px 12px; font-size: 15px; }
       .add-field input[type="number"] { width: 100%; }
+      .add-field.busca,
+      .add-field.descricao,
+      .add-field.sku,
+      .btn-scan-row,
+      .add-field.fator,
+      .btn-add { grid-column: 1 / -1; }
+      .add-field.unidade,
+      .add-field.qtd { grid-column: span 1; }
+      .add-field.total { grid-column: span 1; }
+      .add-field.fator input[type="number"] { max-width: 180px; }
+      .btn-add { width: 100%; height: 44px; font-size: 14.5px; }
+      .btn-scan-row { padding: 14px 16px; font-size: 15px; }
+
       .footer-actions { flex-direction: column; gap: 8px; padding: 12px 16px; }
       .footer-right { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
       .items-table th, .items-table td { padding: 6px 6px; font-size: 12px; }
@@ -191,7 +235,9 @@
       .controls-bar { flex-direction: column; align-items: stretch; }
       nav { padding: 0 16px; }
     }
-    @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) {
+      .transfer-header { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -268,29 +314,64 @@
   </div>
 
   <div class="add-product">
+    <!-- 1. Código de barras -->
     <div class="add-field busca">
       <label>Cód. Barras</label>
-      <div class="scan-input-group">
-        <input type="text" id="codigoProd" placeholder="Código">
-        <button class="btn-scan" id="btnEscanear" title="Escanear com a câmera">📷</button>
-      </div>
+      <input type="text" id="codigoProd" placeholder="Código">
     </div>
-    <div class="add-field sku"><label>SKU</label><input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;"></div>
-    <div class="add-field descricao"><label>Descrição</label><input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;"></div>
+
+    <!-- 2. Descrição (abaixo do código de barras) -->
+    <div class="add-field descricao">
+      <label>Descrição</label>
+      <input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;">
+    </div>
+
+    <!-- 3. Botão da câmera (acima do SKU) -->
+    <button class="btn-scan-row" id="btnEscanear" title="Escanear código de barras com a câmera">
+      📷 Escanear código de barras
+    </button>
+
+    <!-- 4. SKU -->
+    <div class="add-field sku">
+      <label>SKU</label>
+      <input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;">
+    </div>
+
+    <!-- 5. Unidade -->
     <div class="add-field unidade">
       <label>Un.</label>
-      <select id="unidadeProd"><option value="UN">UN</option><option value="KG">KG</option><option value="L">L</option><option value="CX">CX</option><option value="FD">FD</option></select>
+      <select id="unidadeProd">
+        <option value="UN">UN</option>
+        <option value="KG">KG</option>
+        <option value="L">L</option>
+        <option value="CX">CX</option>
+        <option value="FD">FD</option>
+      </select>
     </div>
+
+    <!-- 6. Fator (editável) -->
     <div class="add-field fator">
       <label>Fator (cx/fd)</label>
-      <input type="number" id="fatorProd" value="1" min="1" step="1" readonly title="Quantidade de unidades por caixa/fardo — apenas para referência">
+      <input type="number" id="fatorProd" value="1" min="0" step="0.01" title="Quantidade de unidades por caixa/fardo">
       <div class="fator-toggle">
         <input type="checkbox" id="usarFatorCatalogo" onchange="toggleFatorInput()">
         <label for="usarFatorCatalogo">Usar fator do catálogo</label>
       </div>
     </div>
-    <div class="add-field qtd"><label>Qtd</label><input type="number" id="qtdProd" min="0" step="0.01" placeholder="Qtd"></div>
-    <div class="add-field total"><label>Total UN</label><input type="text" id="totalCalc" value="" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);"></div>
+
+    <!-- 7. Quantidade -->
+    <div class="add-field qtd">
+      <label>Qtd</label>
+      <input type="number" id="qtdProd" min="0" step="0.01" placeholder="Qtd">
+    </div>
+
+    <!-- 8. Total -->
+    <div class="add-field total">
+      <label>Total UN</label>
+      <input type="text" id="totalCalc" value="" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);">
+    </div>
+
+    <!-- 9. Botão Adicionar -->
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
   </div>
 
@@ -472,20 +553,16 @@
   }
 
   // ============================================================
-  // 2. ID SEQUENCIAL SIMPLES (localStorage)
+  // 2. ID SEQUENCIAL SIMPLES
   // ============================================================
   function gerarIdTransferencia() {
     const ultimo = parseInt(localStorage.getItem('frutas_cia_ultimo_id') || '0', 10) || 0;
     return String(ultimo + 1);
   }
-
   function salvarIdAtual() {
     const idAtual = parseInt(idTransferencia, 10);
-    if (!isNaN(idAtual)) {
-      localStorage.setItem('frutas_cia_ultimo_id', String(idAtual));
-    }
+    if (!isNaN(idAtual)) localStorage.setItem('frutas_cia_ultimo_id', String(idAtual));
   }
-
   function inicializarIdTransferencia() {
     idTransferencia = gerarIdTransferencia();
     document.getElementById('idTransferencia').value = idTransferencia;
@@ -500,20 +577,17 @@
       if (b) b.disabled = false;
     });
   }
-
   function travarBotoesAcao() {
     ['btnSalvarPDF', 'btnCompartilhar', 'btnImprimir'].forEach(id => {
       const b = document.getElementById(id);
       if (b) b.disabled = true;
     });
   }
-
   function marcarTransferenciaFinalizada() {
     transferenciaFinalizada = true;
     salvarIdAtual();
     habilitarBotoesAcao();
   }
-
   function iniciarNovaTransferencia() {
     transferenciaFinalizada = false;
     inicializarIdTransferencia();
@@ -596,7 +670,7 @@
           codbarra: codbarra,
           descricao: colunas[idxMap.descricao] || '',
           unidade: colunas[idxMap.unidade] || 'UN',
-          fator: parseInt(colunas[idxMap.fator]) || 1,
+          fator: parseFloat(colunas[idxMap.fator]) || 1,
           ativo: ativo
         });
       }
@@ -639,16 +713,11 @@
   const scannerVideo = document.getElementById('scannerVideo');
 
   // ============================================================
-  // 5. Fator: checkbox (padrão DESMARCADO)
+  // 5. Fator: edição livre + checkbox de aplicação
   // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
       fatorInput.classList.add('ativo');
-      const cod = codigoInput.value.trim();
-      if (cod) {
-        const produto = catalogo.find(p => p.codbarra === cod);
-        if (produto) fatorInput.value = produto.fator || 1;
-      }
     } else {
       fatorInput.classList.remove('ativo');
     }
@@ -681,7 +750,7 @@
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
 
   // ============================================================
-  // 7. Autocomplete (não filtra a lista de itens)
+  // 7. Autocomplete
   // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
@@ -712,7 +781,7 @@
   suggestionsPesquisa.addEventListener('click', function(e) {
     const item = e.target.closest('.suggestion');
     if (!item) return;
-    const produto = { sku: item.dataset.sku, codbarra: item.dataset.codbarra, descricao: item.dataset.desc, unidade: item.dataset.unidade, fator: parseInt(item.dataset.fator) };
+    const produto = { sku: item.dataset.sku, codbarra: item.dataset.codbarra, descricao: item.dataset.desc, unidade: item.dataset.unidade, fator: parseFloat(item.dataset.fator) };
     preencherCampos(produto);
     pesquisaInput.value = '';
     suggestionsPesquisa.classList.remove('show');
@@ -726,7 +795,7 @@
   });
 
   // ============================================================
-  // 8. Total UN
+  // 8. Total UN (usa fator SOMENTE se checkbox marcado)
   // ============================================================
   function atualizarTotalCalc() {
     const qtdStr = qtdInput.value;
@@ -740,7 +809,7 @@
   atualizarTotalCalc();
 
   // ============================================================
-  // 9. Adicionar item (inicia nova transferência se já finalizada)
+  // 9. Adicionar item (reseta fator e checkbox)
   // ============================================================
   function adicionarItem() {
     if (!validarLojas()) return;
@@ -759,13 +828,22 @@
 
     if (!descricao) { showToast('⚠️ Selecione um produto primeiro'); return; }
     if (qtdInput.value === '' || quantidade <= 0) { showToast('⚠️ Informe a quantidade'); qtdInput.focus(); return; }
-    if (fator <= 0) { showToast('⚠️ Fator deve ser > 0'); return; }
 
     itens.push({ sku, codbarra, descricao, unidade, fator, quantidade, totalUnidades });
 
-    descInput.value = ''; skuInput.value = ''; fatorInput.value = '1'; qtdInput.value = '';
+    // Reset campos
+    descInput.value = '';
+    skuInput.value = '';
+    fatorInput.value = '1';
+    qtdInput.value = '';
+
+    // Reset do checkbox "usar fator do catálogo" → sempre falso
+    usarFatorCheck.checked = false;
+    fatorInput.classList.remove('ativo');
+
     atualizarTotalCalc();
-    codigoInput.value = ''; codigoInput.focus();
+    codigoInput.value = '';
+    codigoInput.focus();
 
     renderizarTabela();
     showToast('✓ Item adicionado');
@@ -789,7 +867,7 @@
     } else if (campo === 'total') {
       const total = paraNumero(valor);
       const fator = itens[index].fator || 1;
-      const novaQtd = total / fator;
+      const novaQtd = fator > 0 ? total / fator : total;
       itens[index].quantidade = novaQtd;
       itens[index].totalUnidades = novaQtd * fator;
     }
@@ -839,7 +917,7 @@
   }
 
   // ============================================================
-  // 13. Limpar (inicia nova transferência, trava botões)
+  // 13. Limpar
   // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
@@ -856,83 +934,55 @@
   }
 
   // ============================================================
-  // 13b. Lógica do Scanner de Código de Barras
+  // 13b. Scanner
   // ============================================================
   async function iniciarScanner() {
     if (!('BarcodeDetector' in window)) {
-      showToast('⚠️ Seu navegador não suporta leitura de código de barras nativa. Digite manualmente.');
+      showToast('⚠️ Seu navegador não suporta leitura nativa. Digite manualmente.');
       return;
     }
-
     scannerModal.classList.add('show');
     scannerAtivo = true;
-
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       scannerVideo.srcObject = stream;
-
       if (!barcodeDetector) {
         barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'] });
       }
-
-      // Inicia o loop de detecção
       detectarCodigo(stream);
-
     } catch (err) {
       console.error('Erro ao acessar a câmera:', err);
       showToast('❌ Não foi possível acessar a câmera. Verifique as permissões.');
       fecharScanner();
     }
   }
-
   async function detectarCodigo(stream) {
     if (!scannerAtivo) return;
-
     try {
       const barcodes = await barcodeDetector.detect(scannerVideo);
       if (barcodes.length > 0) {
         const codigo = barcodes[0].rawValue;
         console.log('Código detectado:', codigo);
-
-        // Vibra (se suportado) para indicar sucesso
         if (navigator.vibrate) navigator.vibrate(200);
-
-        // Preenche o campo e dispara o evento de blur para buscar o produto
         codigoInput.value = codigo;
         codigoInput.dispatchEvent(new Event('blur'));
-
         fecharScanner(stream);
         return;
       }
-    } catch (err) {
-      // Ignora erros de frame (comum no início)
-      console.warn('Erro na detecção:', err);
-    }
-
-    // Continua tentando enquanto o modal estiver aberto
-    if (scannerAtivo) {
-      requestAnimationFrame(() => detectarCodigo(stream));
-    }
+    } catch (err) { console.warn('Erro na detecção:', err); }
+    if (scannerAtivo) requestAnimationFrame(() => detectarCodigo(stream));
   }
-
   function fecharScanner(stream) {
     scannerAtivo = false;
     scannerModal.classList.remove('show');
-
-    // Para a câmera
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    } else if (scannerVideo.srcObject) {
+    if (stream) { stream.getTracks().forEach(track => track.stop()); }
+    else if (scannerVideo.srcObject) {
       scannerVideo.srcObject.getTracks().forEach(track => track.stop());
       scannerVideo.srcObject = null;
     }
   }
-
-  // Eventos do Scanner
   btnEscanear.addEventListener('click', iniciarScanner);
-  scannerModal.addEventListener('click', function(e) {
-    if (e.target === this) fecharScanner();
-  });
+  scannerModal.addEventListener('click', function(e) { if (e.target === this) fecharScanner(); });
 
   // ============================================================
   // 14-16. Cupom térmico / PDF / impressão
@@ -1184,7 +1234,7 @@
   }
 
   // ============================================================
-  // 18. Salvar no histórico (em lotes)
+  // 18. Salvar no histórico
   // ============================================================
   function enviarViaImagem(url) {
     return new Promise((resolve) => {
@@ -1248,7 +1298,7 @@
   }
 
   // ============================================================
-  // 19. Finalizar (libera botões e consome o ID)
+  // 19. Finalizar
   // ============================================================
   async function finalizarTransferencia() {
     if (transferenciaFinalizada) {
@@ -1270,7 +1320,6 @@
       if (!confirm('⚠️ Não foi possível confirmar o salvamento do histórico. Deseja continuar mesmo assim?')) return;
     }
 
-    // Marca como finalizada: salva o ID atual e libera os botões
     marcarTransferenciaFinalizada();
     showToast('🔓 Botões de PDF, Compartilhar e Imprimir liberados');
 
@@ -1346,6 +1395,7 @@
   (async function init() {
     await carregarCatalogo();
     inicializarIdTransferencia();
+    // Estado inicial: checkbox desmarcado, fator com opacity 0.65
     usarFatorCheck.checked = false;
     fatorInput.classList.remove('ativo');
     travarBotoesAcao();
