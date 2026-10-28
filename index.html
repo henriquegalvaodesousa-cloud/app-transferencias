@@ -81,8 +81,13 @@
     .add-field.total { flex: 0.5; }
     .add-field.sku { flex: 0.8; }
     .add-field.fator { flex: 0.9; }
-    .add-field.busca { flex: 0.9; }
+    .add-field.busca { flex: 1.2; } /* Ajustado para caber o botão */
     .add-field.qtd { flex: 0.6; }
+    
+    .scan-input-group { display: flex; gap: 6px; align-items: center; }
+    .btn-scan { padding: 8px 12px; background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); font-size: 16px; cursor: pointer; transition: 0.15s; display: flex; align-items: center; justify-content: center; }
+    .btn-scan:hover { background: var(--accent); color: white; }
+
     .fator-toggle { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; margin-top: 6px; cursor: pointer; }
     .fator-toggle input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
     #fatorProd { opacity: 0.5; transition: opacity 0.2s; }
@@ -131,19 +136,8 @@
     .status-bar .btn-reload { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 12px; cursor: pointer; font-size: 11px; color: var(--text-secondary); transition: 0.15s; }
     .status-bar .btn-reload:hover { background: var(--bg); border-color: var(--border-strong); }
 
-    /* BOTÕES DESABILITADOS */
-    .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-    .btn:disabled:hover {
-      background: var(--surface-alt);
-      color: var(--text-secondary);
-      border-color: var(--border-strong);
-      transform: none !important;
-    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    .btn:disabled:hover { background: var(--surface-alt); color: var(--text-secondary); border-color: var(--border-strong); transform: none !important; }
 
     .planilha-link-wrapper { margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
     .planilha-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; text-decoration: none; transition: 0.18s; }
@@ -173,6 +167,17 @@
     .progress-text { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; min-height: 18px; }
     .progress-bar-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
     .progress-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; border-radius: 99px; }
+
+    /* Modal do Scanner */
+    .scanner-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1200; padding: 20px; }
+    .scanner-modal.show { display: flex; }
+    .scanner-box { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 500px; overflow: hidden; position: relative; }
+    .scanner-video { width: 100%; height: auto; display: block; background: #000; }
+    .scanner-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+    .scanner-target { width: 70%; height: 30%; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); }
+    .scanner-info { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: white; font-size: 14px; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+    .scanner-close { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto; transition: 0.15s; }
+    .scanner-close:hover { background: rgba(229, 76, 76, 0.8); }
 
     @media (max-width: 800px) {
       .transfer-header { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -263,7 +268,13 @@
   </div>
 
   <div class="add-product">
-    <div class="add-field busca"><label>Cód. Barras</label><input type="text" id="codigoProd" placeholder="Código"></div>
+    <div class="add-field busca">
+      <label>Cód. Barras</label>
+      <div class="scan-input-group">
+        <input type="text" id="codigoProd" placeholder="Código">
+        <button class="btn-scan" id="btnEscanear" title="Escanear com a câmera">📷</button>
+      </div>
+    </div>
     <div class="add-field sku"><label>SKU</label><input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;"></div>
     <div class="add-field descricao"><label>Descrição</label><input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;"></div>
     <div class="add-field unidade">
@@ -330,6 +341,7 @@
 
 <div class="toast" id="toast">✓ Item adicionado</div>
 
+<!-- Modal Compartilhar -->
 <div class="modal-overlay" id="modalCompartilhar">
   <div class="modal-box">
     <div class="modal-header">
@@ -356,6 +368,19 @@
   </div>
 </div>
 
+<!-- Modal do Scanner -->
+<div class="scanner-modal" id="scannerModal">
+  <div class="scanner-box">
+    <video class="scanner-video" id="scannerVideo" autoplay playsinline muted></video>
+    <div class="scanner-overlay">
+      <div class="scanner-target"></div>
+      <div class="scanner-info">Aponte a câmera para o código de barras</div>
+    </div>
+    <button class="scanner-close" onclick="fecharScanner()">×</button>
+  </div>
+</div>
+
+<!-- Progress overlay -->
 <div class="progress-overlay" id="progressOverlay">
   <div class="progress-box">
     <div class="progress-spinner"></div>
@@ -427,6 +452,8 @@
   let idTransferencia = '';
   let mostrarInativos = false;
   let transferenciaFinalizada = false;
+  let barcodeDetector = null;
+  let scannerAtivo = false;
 
   // ============================================================
   // 1b. Helpers
@@ -607,6 +634,9 @@
   const usarFatorCheck = document.getElementById('usarFatorCatalogo');
   const pesquisaInput = document.getElementById('pesquisaProduto');
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
+  const btnEscanear = document.getElementById('btnEscanear');
+  const scannerModal = document.getElementById('scannerModal');
+  const scannerVideo = document.getElementById('scannerVideo');
 
   // ============================================================
   // 5. Fator: checkbox (padrão DESMARCADO)
@@ -824,6 +854,85 @@
       showToast('Lista limpa');
     }
   }
+
+  // ============================================================
+  // 13b. Lógica do Scanner de Código de Barras
+  // ============================================================
+  async function iniciarScanner() {
+    if (!('BarcodeDetector' in window)) {
+      showToast('⚠️ Seu navegador não suporta leitura de código de barras nativa. Digite manualmente.');
+      return;
+    }
+
+    scannerModal.classList.add('show');
+    scannerAtivo = true;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      scannerVideo.srcObject = stream;
+
+      if (!barcodeDetector) {
+        barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'] });
+      }
+
+      // Inicia o loop de detecção
+      detectarCodigo(stream);
+
+    } catch (err) {
+      console.error('Erro ao acessar a câmera:', err);
+      showToast('❌ Não foi possível acessar a câmera. Verifique as permissões.');
+      fecharScanner();
+    }
+  }
+
+  async function detectarCodigo(stream) {
+    if (!scannerAtivo) return;
+
+    try {
+      const barcodes = await barcodeDetector.detect(scannerVideo);
+      if (barcodes.length > 0) {
+        const codigo = barcodes[0].rawValue;
+        console.log('Código detectado:', codigo);
+
+        // Vibra (se suportado) para indicar sucesso
+        if (navigator.vibrate) navigator.vibrate(200);
+
+        // Preenche o campo e dispara o evento de blur para buscar o produto
+        codigoInput.value = codigo;
+        codigoInput.dispatchEvent(new Event('blur'));
+
+        fecharScanner(stream);
+        return;
+      }
+    } catch (err) {
+      // Ignora erros de frame (comum no início)
+      console.warn('Erro na detecção:', err);
+    }
+
+    // Continua tentando enquanto o modal estiver aberto
+    if (scannerAtivo) {
+      requestAnimationFrame(() => detectarCodigo(stream));
+    }
+  }
+
+  function fecharScanner(stream) {
+    scannerAtivo = false;
+    scannerModal.classList.remove('show');
+
+    // Para a câmera
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    } else if (scannerVideo.srcObject) {
+      scannerVideo.srcObject.getTracks().forEach(track => track.stop());
+      scannerVideo.srcObject = null;
+    }
+  }
+
+  // Eventos do Scanner
+  btnEscanear.addEventListener('click', iniciarScanner);
+  scannerModal.addEventListener('click', function(e) {
+    if (e.target === this) fecharScanner();
+  });
 
   // ============================================================
   // 14-16. Cupom térmico / PDF / impressão
