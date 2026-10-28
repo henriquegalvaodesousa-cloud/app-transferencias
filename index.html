@@ -198,9 +198,6 @@
     .scanner-close { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto; transition: 0.15s; z-index: 2; }
     .scanner-close:hover { background: rgba(229, 76, 76, 0.9); }
 
-    /* ============================================================ */
-    /* MOBILE: grid 2 colunas com campos mais espaçados             */
-    /* ============================================================ */
     @media (max-width: 800px) {
       .transfer-header { grid-template-columns: 1fr 1fr; gap: 14px; }
       .add-product {
@@ -314,30 +311,21 @@
   </div>
 
   <div class="add-product">
-    <!-- 1. Código de barras -->
     <div class="add-field busca">
       <label>Cód. Barras</label>
       <input type="text" id="codigoProd" placeholder="Código">
     </div>
-
-    <!-- 2. Descrição (abaixo do código de barras) -->
     <div class="add-field descricao">
       <label>Descrição</label>
       <input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;">
     </div>
-
-    <!-- 3. Botão da câmera (acima do SKU) -->
     <button class="btn-scan-row" id="btnEscanear" title="Escanear código de barras com a câmera">
       📷 Escanear código de barras
     </button>
-
-    <!-- 4. SKU -->
     <div class="add-field sku">
       <label>SKU</label>
       <input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;">
     </div>
-
-    <!-- 5. Unidade -->
     <div class="add-field unidade">
       <label>Un.</label>
       <select id="unidadeProd">
@@ -348,8 +336,6 @@
         <option value="FD">FD</option>
       </select>
     </div>
-
-    <!-- 6. Fator (editável) -->
     <div class="add-field fator">
       <label>Fator (cx/fd)</label>
       <input type="number" id="fatorProd" value="1" min="0" step="0.01" title="Quantidade de unidades por caixa/fardo">
@@ -358,20 +344,14 @@
         <label for="usarFatorCatalogo">Usar fator do catálogo</label>
       </div>
     </div>
-
-    <!-- 7. Quantidade -->
     <div class="add-field qtd">
       <label>Qtd</label>
       <input type="number" id="qtdProd" min="0" step="0.01" placeholder="Qtd">
     </div>
-
-    <!-- 8. Total -->
     <div class="add-field total">
       <label>Total UN</label>
       <input type="text" id="totalCalc" value="" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);">
     </div>
-
-    <!-- 9. Botão Adicionar -->
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
   </div>
 
@@ -422,7 +402,6 @@
 
 <div class="toast" id="toast">✓ Item adicionado</div>
 
-<!-- Modal Compartilhar -->
 <div class="modal-overlay" id="modalCompartilhar">
   <div class="modal-box">
     <div class="modal-header">
@@ -449,7 +428,6 @@
   </div>
 </div>
 
-<!-- Modal do Scanner -->
 <div class="scanner-modal" id="scannerModal">
   <div class="scanner-box">
     <video class="scanner-video" id="scannerVideo" autoplay playsinline muted></video>
@@ -461,7 +439,6 @@
   </div>
 </div>
 
-<!-- Progress overlay -->
 <div class="progress-overlay" id="progressOverlay">
   <div class="progress-box">
     <div class="progress-spinner"></div>
@@ -553,7 +530,7 @@
   }
 
   // ============================================================
-  // 2. ID SEQUENCIAL SIMPLES
+  // 2. ID SEQUENCIAL (localStorage) — PADRÃO ANTIGO
   // ============================================================
   function gerarIdTransferencia() {
     const ultimo = parseInt(localStorage.getItem('frutas_cia_ultimo_id') || '0', 10) || 0;
@@ -561,7 +538,9 @@
   }
   function salvarIdAtual() {
     const idAtual = parseInt(idTransferencia, 10);
-    if (!isNaN(idAtual)) localStorage.setItem('frutas_cia_ultimo_id', String(idAtual));
+    if (!isNaN(idAtual)) {
+      localStorage.setItem('frutas_cia_ultimo_id', String(idAtual));
+    }
   }
   function inicializarIdTransferencia() {
     idTransferencia = gerarIdTransferencia();
@@ -569,7 +548,7 @@
   }
 
   // ============================================================
-  // 2b. Controle de botões de ação (travar / liberar)
+  // 2b. Controle de botões de ação
   // ============================================================
   function habilitarBotoesAcao() {
     ['btnSalvarPDF', 'btnCompartilhar', 'btnImprimir'].forEach(id => {
@@ -795,7 +774,7 @@
   });
 
   // ============================================================
-  // 8. Total UN (usa fator SOMENTE se checkbox marcado)
+  // 8. Total UN
   // ============================================================
   function atualizarTotalCalc() {
     const qtdStr = qtdInput.value;
@@ -809,7 +788,7 @@
   atualizarTotalCalc();
 
   // ============================================================
-  // 9. Adicionar item (reseta fator e checkbox)
+  // 9. Adicionar item
   // ============================================================
   function adicionarItem() {
     if (!validarLojas()) return;
@@ -831,13 +810,10 @@
 
     itens.push({ sku, codbarra, descricao, unidade, fator, quantidade, totalUnidades });
 
-    // Reset campos
     descInput.value = '';
     skuInput.value = '';
     fatorInput.value = '1';
     qtdInput.value = '';
-
-    // Reset do checkbox "usar fator do catálogo" → sempre falso
     usarFatorCheck.checked = false;
     fatorInput.classList.remove('ativo');
 
@@ -1395,7 +1371,6 @@
   (async function init() {
     await carregarCatalogo();
     inicializarIdTransferencia();
-    // Estado inicial: checkbox desmarcado, fator com opacity 0.65
     usarFatorCheck.checked = false;
     fatorInput.classList.remove('ativo');
     travarBotoesAcao();
