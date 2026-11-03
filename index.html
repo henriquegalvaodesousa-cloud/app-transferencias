@@ -43,6 +43,7 @@
     .page-header { margin-bottom: 28px; }
     .page-title { font-size: 26px; font-weight: 600; letter-spacing: -0.6px; color: var(--text-primary); margin-bottom: 8px; }
     .page-sub { color: var(--text-secondary); font-size: 14px; }
+    
     .transfer-header { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px 24px; box-shadow: var(--shadow-sm); }
     .header-field { display: flex; flex-direction: column; gap: 4px; }
     .header-field label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
@@ -50,6 +51,13 @@
     .header-field input:focus, .header-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15); }
     .header-field input.erro, .header-field select.erro { border-color: var(--red); background: #fef5f5; }
     .header-field .id-field { font-weight: 600; color: var(--accent); background: var(--accent-light); }
+    
+    /* Input com botão acoplado (Senha) */
+    .input-with-btn { display: flex; gap: 6px; }
+    .input-with-btn input { flex: 1; }
+    .btn-icon { padding: 0 12px; background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
+    .btn-icon:hover { background: var(--accent); color: white; }
+
     .search-bar { margin-bottom: 12px; position: relative; }
     .search-bar .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; pointer-events: none; z-index: 2; }
     .search-bar input { width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: 0.2s; outline: none; }
@@ -187,7 +195,6 @@
     .progress-bar-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
     .progress-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; border-radius: 99px; }
 
-    /* Modal do Scanner */
     .scanner-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1200; padding: 16px; }
     .scanner-modal.show { display: flex; }
     .scanner-box { background: #000; border-radius: var(--radius-lg); width: 100%; max-width: 500px; overflow: hidden; position: relative; }
@@ -200,30 +207,16 @@
 
     @media (max-width: 800px) {
       .transfer-header { grid-template-columns: 1fr 1fr; gap: 14px; }
-      .add-product {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        align-items: start;
-        padding: 18px 16px;
-      }
+      .add-product { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; padding: 18px 16px; }
       .add-field { flex: initial; width: 100%; }
-      .add-field input,
-      .add-field select { padding: 12px 12px; font-size: 15px; }
+      .add-field input, .add-field select { padding: 12px 12px; font-size: 15px; }
       .add-field input[type="number"] { width: 100%; }
-      .add-field.busca,
-      .add-field.descricao,
-      .add-field.sku,
-      .btn-scan-row,
-      .add-field.fator,
-      .btn-add { grid-column: 1 / -1; }
-      .add-field.unidade,
-      .add-field.qtd { grid-column: span 1; }
+      .add-field.busca, .add-field.descricao, .add-field.sku, .btn-scan-row, .add-field.fator, .btn-add { grid-column: 1 / -1; }
+      .add-field.unidade, .add-field.qtd { grid-column: span 1; }
       .add-field.total { grid-column: span 1; }
       .add-field.fator input[type="number"] { max-width: 180px; }
       .btn-add { width: 100%; height: 44px; font-size: 14.5px; }
       .btn-scan-row { padding: 14px 16px; font-size: 15px; }
-
       .footer-actions { flex-direction: column; gap: 8px; padding: 12px 16px; }
       .footer-right { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
       .items-table th, .items-table td { padding: 6px 6px; font-size: 12px; }
@@ -232,9 +225,7 @@
       .controls-bar { flex-direction: column; align-items: stretch; }
       nav { padding: 0 16px; }
     }
-    @media (max-width: 480px) {
-      .transfer-header { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -288,10 +279,17 @@
       <input type="text" id="dataHora" placeholder="dd/mm/aaaa hh:mm">
     </div>
     <div class="header-field">
+      <label>Senha do Operador</label>
+      <div class="input-with-btn">
+        <input type="password" id="senhaOperador" placeholder="*****">
+        <button class="btn-icon" onclick="abrirScannerSenha()" title="Escanear cartão do operador">📷</button>
+      </div>
+    </div>
+    <div class="header-field">
       <label>Operador *</label>
       <input type="text" id="operador" placeholder="Nome do operador" value="">
     </div>
-    <div class="header-field" style="grid-column: span 2;">
+    <div class="header-field" style="grid-column: span 3;">
       <label>Observação</label>
       <input type="text" id="observacao" placeholder="Opcional">
     </div>
@@ -315,17 +313,21 @@
       <label>Cód. Barras</label>
       <input type="text" id="codigoProd" placeholder="Código">
     </div>
+
     <div class="add-field descricao">
       <label>Descrição</label>
       <input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;">
     </div>
-    <button class="btn-scan-row" id="btnEscanear" title="Escanear código de barras com a câmera">
+
+    <button class="btn-scan-row" id="btnEscanear" onclick="abrirScannerProduto()" title="Escanear código de barras com a câmera">
       📷 Escanear código de barras
     </button>
+
     <div class="add-field sku">
       <label>SKU</label>
       <input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;">
     </div>
+
     <div class="add-field unidade">
       <label>Un.</label>
       <select id="unidadeProd">
@@ -336,6 +338,7 @@
         <option value="FD">FD</option>
       </select>
     </div>
+
     <div class="add-field fator">
       <label>Fator (cx/fd)</label>
       <input type="number" id="fatorProd" value="1" min="0" step="0.01" title="Quantidade de unidades por caixa/fardo">
@@ -344,14 +347,17 @@
         <label for="usarFatorCatalogo">Usar fator do catálogo</label>
       </div>
     </div>
+
     <div class="add-field qtd">
       <label>Qtd</label>
       <input type="number" id="qtdProd" min="0" step="0.01" placeholder="Qtd">
     </div>
+
     <div class="add-field total">
       <label>Total UN</label>
       <input type="text" id="totalCalc" value="" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);">
     </div>
+
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
   </div>
 
@@ -466,6 +472,7 @@
   // 0. URLs
   // ============================================================
   const URL_CSV = 'https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/export?format=csv&gid=0';
+  const URL_CSV_OPERADORES = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQRhvQFKwwde7gCktDWXJJ-3G3eETE51T6JhptQr-9DqgADIKdvt7YpPQByY8ksRthvIMdNNhuRKuo2/pub?gid=132777903&single=true&output=csv';
   const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbz61xUG6dh8CWjfh9c8KtiJ8X3ocTj1towPeZR5QUP2qrLkeyWiTfMivVY2w66cN5RK/exec';
 
   // ============================================================
@@ -497,21 +504,24 @@
   }
 
   // ============================================================
-  // 1. Fallback
+  // 1. Variáveis Globais e Fallback
   // ============================================================
   const catalogoFallback = [
-    { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1, ativo: true },
-    { sku: '2', codbarra: '2', descricao: 'ABACATE BREDA KG', unidade: 'KG', fator: 1, ativo: true },
-    { sku: '3', codbarra: '3', descricao: 'ABACATE FORTUNE KG', unidade: 'KG', fator: 1, ativo: true }
+    { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1, ativo: true }
   ];
-
+  
   let catalogo = [];
+  let operadores = [];
   let itens = [];
   let idTransferencia = '';
   let mostrarInativos = false;
   let transferenciaFinalizada = false;
   let barcodeDetector = null;
   let scannerAtivo = false;
+  
+  // Controle do Scanner genérico
+  let scannerTargetInput = null; 
+  let operadorPreenchidoAutomaticamente = false;
 
   // ============================================================
   // 1b. Helpers
@@ -530,17 +540,18 @@
   }
 
   // ============================================================
-  // 2. ID SEQUENCIAL (localStorage) — PADRÃO ANTIGO
+  // 2. ID DA TRANSFERÊNCIA
   // ============================================================
   function gerarIdTransferencia() {
-    const ultimo = parseInt(localStorage.getItem('frutas_cia_ultimo_id') || '0', 10) || 0;
-    return String(ultimo + 1);
-  }
-  function salvarIdAtual() {
-    const idAtual = parseInt(idTransferencia, 10);
-    if (!isNaN(idAtual)) {
-      localStorage.setItem('frutas_cia_ultimo_id', String(idAtual));
-    }
+    const now = new Date();
+    const ano = now.getFullYear().toString().slice(-2);
+    const mes = String(now.getMonth() + 1).padStart(2, '0');
+    const dia = String(now.getDate()).padStart(2, '0');
+    const hora = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const seg = String(now.getSeconds()).padStart(2, '0');
+    const rand = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    return `TRF-${ano}${mes}${dia}-${hora}${min}${seg}-${rand}`;
   }
   function inicializarIdTransferencia() {
     idTransferencia = gerarIdTransferencia();
@@ -548,7 +559,7 @@
   }
 
   // ============================================================
-  // 2b. Controle de botões de ação
+  // 2b. Controle de botões e nova transferência
   // ============================================================
   function habilitarBotoesAcao() {
     ['btnSalvarPDF', 'btnCompartilhar', 'btnImprimir'].forEach(id => {
@@ -564,17 +575,21 @@
   }
   function marcarTransferenciaFinalizada() {
     transferenciaFinalizada = true;
-    salvarIdAtual();
     habilitarBotoesAcao();
   }
   function iniciarNovaTransferencia() {
     transferenciaFinalizada = false;
     inicializarIdTransferencia();
     travarBotoesAcao();
+    
+    // Limpa dados do operador para a nova transferência
+    document.getElementById('senhaOperador').value = '';
+    document.getElementById('operador').value = '';
+    operadorPreenchidoAutomaticamente = false;
   }
 
   // ============================================================
-  // 2c. Validar lojas
+  // 2c. Validações
   // ============================================================
   function validarLojas() {
     const origem = document.getElementById('lojaOrigem');
@@ -595,28 +610,18 @@
   document.getElementById('lojaDestino').addEventListener('change', function() { if (this.value !== '') this.classList.remove('erro'); });
 
   // ============================================================
-  // 2d. Toggle inativos
-  // ============================================================
-  function onToggleInativos() {
-    mostrarInativos = document.getElementById('mostrarInativos').checked;
-    const label = document.getElementById('labelFiltroInativos');
-    if (mostrarInativos) label.classList.add('ativo'); else label.classList.remove('ativo');
-    const q = pesquisaInput.value.trim();
-    if (q) pesquisaInput.dispatchEvent(new Event('input'));
-  }
-
-  // ============================================================
-  // 3. Carregar catálogo
+  // 3. Carregar catálogos
   // ============================================================
   async function carregarCatalogo() {
     const statusTexto = document.getElementById('statusTexto');
     try {
-      statusTexto.textContent = '🔄 Baixando catálogo da planilha...';
+      statusTexto.textContent = '🔄 Baixando catálogo de produtos...';
       const resposta = await fetch(URL_CSV);
       if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
       const csv = await resposta.text();
       const rows = parseCSV(csv);
       if (rows.length < 2) throw new Error('CSV vazio ou inválido');
+      
       const cabecalho = rows[0].map(c => c.trim());
       const idxMap = {
         codigo: cabecalho.findIndex(c => /codigo|código/i.test(c)),
@@ -667,6 +672,38 @@
     }
   }
 
+  async function carregarOperadores() {
+    try {
+      const resposta = await fetch(URL_CSV_OPERADORES);
+      if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
+      const csv = await resposta.text();
+      const rows = parseCSV(csv);
+      if (rows.length < 2) return;
+      
+      const cabecalho = rows[0].map(c => c.trim());
+      const idxSenha = cabecalho.findIndex(c => /senha/i.test(c));
+      const idxNome = cabecalho.findIndex(c => /operador|nome/i.test(c));
+      
+      if (idxSenha === -1 || idxNome === -1) return;
+
+      const listaOp = [];
+      for (let i = 1; i < rows.length; i++) {
+        const colunas = rows[i].map(c => c.trim());
+        if (colunas.length > Math.max(idxSenha, idxNome)) {
+          const senha = colunas[idxSenha];
+          const nome = colunas[idxNome];
+          if (senha && nome) {
+            listaOp.push({ senha, nome });
+          }
+        }
+      }
+      operadores = listaOp;
+      console.log(`✅ Operadores carregados: ${operadores.length}`);
+    } catch (erro) {
+      console.error('❌ Erro ao carregar operadores:', erro);
+    }
+  }
+
   async function recarregarCatalogo() {
     await carregarCatalogo();
     showToast('🔄 Catálogo recarregado!');
@@ -687,12 +724,54 @@
   const usarFatorCheck = document.getElementById('usarFatorCatalogo');
   const pesquisaInput = document.getElementById('pesquisaProduto');
   const suggestionsPesquisa = document.getElementById('suggestionsPesquisa');
-  const btnEscanear = document.getElementById('btnEscanear');
+  
+  const senhaOperadorInput = document.getElementById('senhaOperador');
+  const operadorInput = document.getElementById('operador');
+
   const scannerModal = document.getElementById('scannerModal');
   const scannerVideo = document.getElementById('scannerVideo');
 
   // ============================================================
-  // 5. Fator: edição livre + checkbox de aplicação
+  // 5. Lógica do Operador e Senha
+  // ============================================================
+  
+  // Busca operador ao sair do campo de senha
+  senhaOperadorInput.addEventListener('blur', function() {
+    const senha = this.value.trim();
+    if (senha === '') return;
+    
+    const op = operadores.find(o => o.senha === senha);
+    if (op) {
+      operadorInput.value = op.nome;
+      operadorPreenchidoAutomaticamente = true;
+      this.value = ''; // limpa a senha por segurança
+      showToast(`✓ Operador: ${op.nome}`);
+    } else {
+      showToast('⚠️ Senha não encontrada. Digite o nome manualmente.');
+      this.value = '';
+      operadorInput.focus();
+    }
+  });
+
+  senhaOperadorInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') this.blur();
+  });
+
+  // Adiciona "(Manual)" se o operador for digitado sem passar pela senha
+  operadorInput.addEventListener('input', function() {
+    // Se o usuário está digitando ativamente, desmarca a flag de automático
+    operadorPreenchidoAutomaticamente = false;
+  });
+
+  operadorInput.addEventListener('blur', function() {
+    const nome = this.value.trim();
+    if (nome && !nome.endsWith('(Manual)') && !operadorPreenchidoAutomaticamente) {
+      this.value = nome + ' (Manual)';
+    }
+  });
+
+  // ============================================================
+  // 6. Lógica do Fator e Total
   // ============================================================
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
@@ -703,9 +782,6 @@
     atualizarTotalCalc();
   }
 
-  // ============================================================
-  // 6. Preencher campos
-  // ============================================================
   function preencherCampos(produto) {
     if (!produto) return;
     codigoInput.value = produto.codbarra;
@@ -728,9 +804,6 @@
   });
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
 
-  // ============================================================
-  // 7. Autocomplete
-  // ============================================================
   function matchesQuery(produto, query) {
     const words = query.trim().toLowerCase().split(/\s+/).filter(w => w.length > 0);
     const text = (produto.descricao + ' ' + produto.codbarra).toLowerCase();
@@ -773,9 +846,6 @@
     if (!e.target.closest('.search-bar')) suggestionsPesquisa.classList.remove('show');
   });
 
-  // ============================================================
-  // 8. Total UN
-  // ============================================================
   function atualizarTotalCalc() {
     const qtdStr = qtdInput.value;
     if (qtdStr === '' || qtdStr === null) { totalCalc.value = ''; return; }
@@ -788,10 +858,18 @@
   atualizarTotalCalc();
 
   // ============================================================
-  // 9. Adicionar item
+  // 7. Adicionar item
   // ============================================================
   function adicionarItem() {
     if (!validarLojas()) return;
+    
+    // Verifica se o operador foi informado
+    if (!operadorInput.value.trim()) {
+      showToast('⚠️ Informe o operador (senha ou nome)');
+      senhaOperadorInput.focus();
+      return;
+    }
+
     if (transferenciaFinalizada) {
       iniciarNovaTransferencia();
       showToast('🔄 Nova transferência iniciada');
@@ -826,7 +904,7 @@
   }
 
   // ============================================================
-  // 10. Remover / atualizar item
+  // 8. Remover / atualizar item
   // ============================================================
   function removerItem(index) { itens.splice(index, 1); renderizarTabela(); showToast('Item removido'); }
   function atualizarItem(index, campo, valor) {
@@ -851,7 +929,7 @@
   }
 
   // ============================================================
-  // 11. Renderizar tabela
+  // 9. Renderizar tabela
   // ============================================================
   function renderizarTabela() {
     const tbody = document.getElementById('corpoTabela');
@@ -884,7 +962,7 @@
   }
 
   // ============================================================
-  // 12. Escape HTML
+  // 10. Escape HTML
   // ============================================================
   function escHtml(texto) {
     if (!texto) return '';
@@ -893,7 +971,7 @@
   }
 
   // ============================================================
-  // 13. Limpar
+  // 11. Limpar / Nova Transferência
   // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
@@ -910,8 +988,19 @@
   }
 
   // ============================================================
-  // 13b. Scanner
+  // 12. Scanner (Genérico para Produto e Senha)
   // ============================================================
+  
+  function abrirScannerProduto() {
+    scannerTargetInput = codigoInput;
+    iniciarScanner();
+  }
+  
+  function abrirScannerSenha() {
+    scannerTargetInput = senhaOperadorInput;
+    iniciarScanner();
+  }
+
   async function iniciarScanner() {
     if (!('BarcodeDetector' in window)) {
       showToast('⚠️ Seu navegador não suporta leitura nativa. Digite manualmente.');
@@ -923,15 +1012,16 @@
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       scannerVideo.srcObject = stream;
       if (!barcodeDetector) {
-        barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'] });
+        barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'qr_code'] });
       }
       detectarCodigo(stream);
     } catch (err) {
       console.error('Erro ao acessar a câmera:', err);
-      showToast('❌ Não foi possível acessar a câmera. Verifique as permissões.');
+      showToast('❌ Não foi possível acessar a câmera.');
       fecharScanner();
     }
   }
+
   async function detectarCodigo(stream) {
     if (!scannerAtivo) return;
     try {
@@ -940,14 +1030,19 @@
         const codigo = barcodes[0].rawValue;
         console.log('Código detectado:', codigo);
         if (navigator.vibrate) navigator.vibrate(200);
-        codigoInput.value = codigo;
-        codigoInput.dispatchEvent(new Event('blur'));
+        
+        if (scannerTargetInput) {
+          scannerTargetInput.value = codigo;
+          scannerTargetInput.dispatchEvent(new Event('blur'));
+        }
+        
         fecharScanner(stream);
         return;
       }
     } catch (err) { console.warn('Erro na detecção:', err); }
     if (scannerAtivo) requestAnimationFrame(() => detectarCodigo(stream));
   }
+
   function fecharScanner(stream) {
     scannerAtivo = false;
     scannerModal.classList.remove('show');
@@ -957,11 +1052,11 @@
       scannerVideo.srcObject = null;
     }
   }
-  btnEscanear.addEventListener('click', iniciarScanner);
+  
   scannerModal.addEventListener('click', function(e) { if (e.target === this) fecharScanner(); });
 
   // ============================================================
-  // 14-16. Cupom térmico / PDF / impressão
+  // 13-16. Cupom térmico / PDF / impressão
   // ============================================================
   function gerarCupomHTML() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return null; }
@@ -1210,7 +1305,7 @@
   }
 
   // ============================================================
-  // 18. Salvar no histórico
+  // 18. Salvar no histórico (lotes)
   // ============================================================
   function enviarViaImagem(url) {
     return new Promise((resolve) => {
@@ -1282,14 +1377,15 @@
       return;
     }
     if (!validarLojas()) return;
-    if (itens.length === 0) { showToast('⚠️ Adicione pelo menos um item'); return; }
-
-    let operador = document.getElementById('operador').value.trim();
-    if (!operador) {
-      operador = prompt('Digite o nome do operador (campo obrigatório):');
-      if (!operador) { showToast('⚠️ Operador é obrigatório'); return; }
-      document.getElementById('operador').value = operador;
+    
+    // Verifica se o operador foi informado
+    if (!operadorInput.value.trim()) {
+      showToast('⚠️ Informe o operador (senha ou nome)');
+      senhaOperadorInput.focus();
+      return;
     }
+
+    if (itens.length === 0) { showToast('⚠️ Adicione pelo menos um item'); return; }
 
     const salvou = await salvarHistorico();
     if (!salvou) {
@@ -1303,6 +1399,7 @@
     const lojaOrigem = document.getElementById('lojaOrigem').value;
     const lojaDestino = document.getElementById('lojaDestino').value;
     const dataHora = document.getElementById('dataHora').value.trim() || new Date().toLocaleString('pt-BR');
+    const operador = document.getElementById('operador').value.trim();
     const observacao = document.getElementById('observacao').value.trim();
     const totalItens = itens.length;
     const totalUnidades = itens.reduce((acc, item) => acc + Number(item.totalUnidades || 0), 0);
@@ -1344,7 +1441,7 @@
   }
 
   // ============================================================
-  // 21. Enter para adicionar
+  // 21. Eventos de Teclado
   // ============================================================
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
@@ -1370,11 +1467,12 @@
   // ============================================================
   (async function init() {
     await carregarCatalogo();
+    await carregarOperadores();
     inicializarIdTransferencia();
     usarFatorCheck.checked = false;
     fatorInput.classList.remove('ativo');
     travarBotoesAcao();
-    console.log(`✅ App iniciado com ${catalogo.length} produtos no catálogo | ID: ${idTransferencia}`);
+    console.log(`✅ App iniciado com ${catalogo.length} produtos e ${operadores.length} operadores.`);
     renderizarTabela();
   })();
 </script>
