@@ -766,7 +766,7 @@
   operadorInput.addEventListener('blur', function() {
     const nome = this.value.trim();
     if (nome && !nome.endsWith('(Manual)') && !operadorPreenchidoAutomaticamente) {
-      this.value = nome + ' (Manual)';
+      this.value = nome + ' (Digitado manualmente)';
     }
   });
 
