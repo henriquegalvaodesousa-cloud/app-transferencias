@@ -52,7 +52,6 @@
     .header-field input.erro, .header-field select.erro { border-color: var(--red); background: #fef5f5; }
     .header-field .id-field { font-weight: 600; color: var(--accent); background: var(--accent-light); }
     
-    /* Input com botão acoplado (Senha) */
     .input-with-btn { display: flex; gap: 6px; }
     .input-with-btn input { flex: 1; }
     .btn-icon { padding: 0 12px; background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
@@ -178,7 +177,7 @@
     .modal-header h3 { font-size: 16px; font-weight: 600; }
     .modal-close { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; line-height: 1; padding: 0 4px; }
     .modal-close:hover { color: var(--text-primary); }
-    .modal-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
     .share-option { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; gap: 2px 14px; padding: 14px 16px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); cursor: pointer; text-align: left; transition: 0.15s; font-family: 'DM Sans', sans-serif; }
     .share-option:hover { border-color: var(--accent); background: var(--accent-light); transform: translateY(-1px); }
     .share-icon { font-size: 24px; grid-row: span 2; align-self: center; }
@@ -224,6 +223,7 @@
       .totals-bar { flex-direction: column; gap: 4px; align-items: flex-end; }
       .controls-bar { flex-direction: column; align-items: stretch; }
       nav { padding: 0 16px; }
+      .nav-right { gap: 8px; }
     }
     @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
   </style>
@@ -233,6 +233,7 @@
 <nav>
   <div class="nav-logo"><div class="nav-logo-icon">🍇</div>Frutas & Cia</div>
   <div class="nav-right">
+    <button class="btn btn-primary" onclick="abrirModalRecebimento()" style="padding: 6px 14px; font-size: 12.5px; height: auto; box-shadow: none; white-space: nowrap;">📥 Confirmar Recebimento</button>
     <div class="nav-avatar">HG</div>
   </div>
 </nav>
@@ -407,6 +408,21 @@
 </div>
 
 <div class="toast" id="toast">✓ Item adicionado</div>
+
+<!-- Modal de Recebimento -->
+<div class="modal-overlay" id="modalRecebimento">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Confirmar Recebimento</h3>
+      <button class="modal-close" onclick="fecharModalRecebimento()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 12px; text-align: center;">Digite o ID da transferência para marcar os itens como recebidos no histórico.</p>
+      <input type="text" id="inputIdRecebimento" placeholder="Ex: TRF-231103-153052-5664" style="padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; width: 100%; outline: none; font-family: 'DM Mono', monospace; text-align: center; text-transform: uppercase;">
+      <button class="btn btn-primary" onclick="enviarRecebimento()" style="width: 100%; justify-content: center; padding: 12px; margin-top: 14px; font-size: 14px;">Confirmar Recebimento</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="modalCompartilhar">
   <div class="modal-box">
@@ -1431,7 +1447,69 @@
   }
 
   // ============================================================
-  // 20. Toast
+  // 20. Lógica de Recebimento (JSONP)
+  // ============================================================
+  function abrirModalRecebimento() {
+    document.getElementById('inputIdRecebimento').value = '';
+    document.getElementById('modalRecebimento').classList.add('show');
+    setTimeout(() => document.getElementById('inputIdRecebimento').focus(), 100);
+  }
+
+  function fecharModalRecebimento() {
+    document.getElementById('modalRecebimento').classList.remove('show');
+  }
+
+  document.getElementById('modalRecebimento').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalRecebimento();
+  });
+
+  function enviarRecebimento() {
+    const id = document.getElementById('inputIdRecebimento').value.trim().toUpperCase();
+    if (!id) {
+      showToast('⚠️ Informe o ID da transferência');
+      return;
+    }
+
+    const btn = document.querySelector('#modalRecebimento .btn-primary');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Processando...';
+    btn.disabled = true;
+
+    // Usa JSONP para contornar problemas de CORS com o Google Apps Script
+    const url = URL_SCRIPT + '?acao=receber&id=' + encodeURIComponent(id) + '&callback=receberCallback';
+
+    const oldScript = document.getElementById('jsonp-receber');
+    if (oldScript) oldScript.remove();
+
+    window.receberCallback = function(data) {
+      if (data.sucesso) {
+        showToast('✅ ' + data.mensagem);
+        fecharModalRecebimento();
+      } else {
+        showToast('⚠️ ' + data.mensagem);
+      }
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      const s = document.getElementById('jsonp-receber');
+      if (s) s.remove();
+    };
+
+    const script = document.createElement('script');
+    script.id = 'jsonp-receber';
+    script.src = url;
+    script.onerror = function() {
+      showToast('❌ Erro de conexão ao tentar confirmar.');
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      const s = document.getElementById('jsonp-receber');
+      if (s) s.remove();
+    };
+
+    document.body.appendChild(script);
+  }
+
+  // ============================================================
+  // 21. Toast
   // ============================================================
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -1441,7 +1519,7 @@
   }
 
   // ============================================================
-  // 21. Eventos de Teclado
+  // 22. Eventos de Teclado
   // ============================================================
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
@@ -1449,7 +1527,7 @@
   fatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
 
   // ============================================================
-  // 22. Data/Hora automática
+  // 23. Data/Hora automática
   // ============================================================
   (function preencherData() {
     const now = new Date();
@@ -1463,7 +1541,7 @@
   })();
 
   // ============================================================
-  // 23. Inicializar
+  // 24. Inicializar
   // ============================================================
   (async function init() {
     await carregarCatalogo();
