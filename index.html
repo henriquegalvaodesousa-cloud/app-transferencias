@@ -439,7 +439,7 @@
       <button class="share-option" onclick="compartilharFoto()">
         <span class="share-icon">📷</span>
         <span class="share-label">Foto</span>
-        <span class="share-desc">Gera uma imagem do cupom para compartilhar</span>
+        <span class="share-desc">Gera uma imagem da transferencia para compartilhar</span>
       </button>
       <button class="share-option" onclick="compartilharTexto()">
         <span class="share-icon">📝</span>
@@ -1277,7 +1277,7 @@
         if (!blob) { showToast('⚠️ Erro ao gerar imagem'); return; }
         const file = new File([blob], nomeArquivo, { type: 'image/png' });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try { await navigator.share({ files: [file], title: 'Transferência', text: 'Compartilhando cupom' }); showToast('📷 Imagem compartilhada!'); return; } catch (err) {}
+          try { await navigator.share({ files: [file], title: 'Transferência', text: 'Compartilhando romaneio' }); showToast('📷 Imagem compartilhada!'); return; } catch (err) {}
         }
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = nomeArquivo; a.click();
@@ -1442,7 +1442,7 @@
 
     alert(resumo);
 
-    if (confirm('Deseja imprimir o cupom agora?')) imprimirCupom();
+    if (confirm('Deseja imprimir o romaneio agora?')) imprimirCupom();
     showToast('✅ Transferência finalizada!');
   }
 
