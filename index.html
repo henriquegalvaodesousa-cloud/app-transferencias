@@ -27,13 +27,29 @@
       --radius-sm: 6px;
       --radius-lg: 16px;
     }
+
+    /* MODO NOTURNO */
+    body.dark-mode {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --surface-alt: #2c2c2c;
+      --border: #333333;
+      --border-strong: #555555;
+      --text-primary: #f0f0f0;
+      --text-secondary: #b0b0b0;
+      --text-muted: #808080;
+      --accent-light: #1a3a38;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
-    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; transition: background 0.3s, color 0.3s; }
+    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); transition: background 0.3s; }
     .nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; letter-spacing: -0.3px; color: var(--text-primary); }
     .nav-logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 700; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-mid)); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-mid)); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 8px; }
     .page { max-width: 1000px; margin: 0 auto; padding: 32px 24px 100px; }
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-muted); margin-bottom: 24px; }
     .breadcrumb span { cursor: pointer; transition: color 0.15s; }
@@ -44,14 +60,15 @@
     .page-title { font-size: 26px; font-weight: 600; letter-spacing: -0.6px; color: var(--text-primary); margin-bottom: 8px; }
     .page-sub { color: var(--text-secondary); font-size: 14px; }
     
-    .transfer-header { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px 24px; box-shadow: var(--shadow-sm); }
+    .transfer-header { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px 24px; box-shadow: var(--shadow-sm); transition: background 0.3s; }
     .header-field { display: flex; flex-direction: column; gap: 4px; }
     .header-field label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
     .header-field input, .header-field select { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: all 0.15s; outline: none; width: 100%; }
     .header-field input:focus, .header-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15); }
     .header-field input.erro, .header-field select.erro { border-color: var(--red); background: #fef5f5; }
     .header-field .id-field { font-weight: 600; color: var(--accent); background: var(--accent-light); }
-    
+    body.dark-mode .header-field input.erro, body.dark-mode .header-field select.erro { background: #3a1e1e; }
+
     .input-with-btn { display: flex; gap: 6px; }
     .input-with-btn input { flex: 1; }
     .btn-icon { padding: 0 12px; background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
@@ -62,13 +79,16 @@
     .search-bar input { width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--surface); transition: 0.2s; outline: none; }
     .search-bar input::placeholder { color: var(--text-muted); }
     .search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12); }
+    
     .autocomplete-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-sm); max-height: 200px; overflow-y: auto; z-index: 100; display: none; box-shadow: var(--shadow-md); }
     .autocomplete-suggestions.show { display: block; }
     .autocomplete-suggestions .suggestion { padding: 8px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border); transition: 0.1s; }
     .autocomplete-suggestions .suggestion:hover { background: var(--accent-light); }
     .autocomplete-suggestions .suggestion:last-child { border-bottom: none; }
-    .autocomplete-suggestions .suggestion.inativo { background: #fff7e6; }
+    .autocomplete-suggestions .suggestion.inativo { background: #fff7e6; color: #6b6860; }
+    body.dark-mode .autocomplete-suggestions .suggestion.inativo { background: #3a3a1e; color: #d0d0d0; }
     .autocomplete-suggestions .suggestion.inativo:hover { background: #ffedcc; }
+    body.dark-mode .autocomplete-suggestions .suggestion.inativo:hover { background: #4a4a2e; }
     .autocomplete-suggestions .suggestion .tag-inativo { display: inline-block; background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
 
     .controls-bar { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -98,23 +118,7 @@
     .fator-toggle input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
     .fator-toggle label { cursor: pointer; }
 
-    .btn-scan-row {
-      flex: 1 0 100%;
-      padding: 12px 16px;
-      background: var(--accent-light);
-      color: var(--accent);
-      border: 1.5px solid var(--accent);
-      border-radius: var(--radius-sm);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
+    .btn-scan-row { flex: 1 0 100%; padding: 12px 16px; background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-scan-row:hover { background: var(--accent); color: white; }
     .btn-scan-row:active { transform: scale(0.98); }
 
@@ -152,15 +156,13 @@
     .btn-success { background: var(--green); color: white; box-shadow: 0 2px 8px rgba(26, 158, 107, 0.25); }
     .btn-success:hover { background: #15885b; transform: translateY(-1px); }
     .btn-secondary { background: var(--surface-alt); color: var(--text-secondary); border: 1.5px solid var(--border-strong); }
-    .btn-secondary:hover { background: var(--border); transform: translateY(-1px); }
+    .btn-secondary:hover { background: var(--border); transform: translateY(-1px); color: var(--text-primary); }
     .footer-right { display: flex; align-items: center; gap: 10px; }
-    .toast { position: fixed; top: 72px; right: 24px; background: var(--text-primary); color: white; padding: 11px 18px; border-radius: var(--radius); font-size: 13.5px; font-weight: 500; box-shadow: var(--shadow-md); opacity: 0; transform: translateY(-8px); transition: 0.25s; pointer-events: none; z-index: 200; max-width: 320px; }
+    .toast { position: fixed; top: 72px; right: 24px; background: var(--text-primary); color: var(--bg); padding: 11px 18px; border-radius: var(--radius); font-size: 13.5px; font-weight: 500; box-shadow: var(--shadow-md); opacity: 0; transform: translateY(-8px); transition: 0.25s; pointer-events: none; z-index: 200; max-width: 320px; }
     .toast.show { opacity: 1; transform: translateY(0); }
     .status-bar { background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 16px; margin-bottom: 16px; font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .status-bar .status-ok { color: var(--green); font-weight: 600; }
-    .status-bar .status-error { color: var(--red); font-weight: 600; }
     .status-bar .btn-reload { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 12px; cursor: pointer; font-size: 11px; color: var(--text-secondary); transition: 0.15s; }
-    .status-bar .btn-reload:hover { background: var(--bg); border-color: var(--border-strong); }
+    .status-bar .btn-reload:hover { background: var(--bg); border-color: var(--border-strong); color: var(--text-primary); }
 
     .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
     .btn:disabled:hover { background: var(--surface-alt); color: var(--text-secondary); border-color: var(--border-strong); transform: none !important; }
@@ -178,6 +180,7 @@
     .modal-close { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; line-height: 1; padding: 0 4px; }
     .modal-close:hover { color: var(--text-primary); }
     .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+    
     .share-option { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; gap: 2px 14px; padding: 14px 16px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); cursor: pointer; text-align: left; transition: 0.15s; font-family: 'DM Sans', sans-serif; }
     .share-option:hover { border-color: var(--accent); background: var(--accent-light); transform: translateY(-1px); }
     .share-icon { font-size: 24px; grid-row: span 2; align-self: center; }
@@ -223,7 +226,8 @@
       .totals-bar { flex-direction: column; gap: 4px; align-items: flex-end; }
       .controls-bar { flex-direction: column; align-items: stretch; }
       nav { padding: 0 16px; }
-      .nav-right { gap: 8px; }
+      .nav-right { gap: 4px; }
+      .nav-btn-text { display: none; }
     }
     @media (max-width: 480px) { .transfer-header { grid-template-columns: 1fr; } }
   </style>
@@ -233,7 +237,9 @@
 <nav>
   <div class="nav-logo"><div class="nav-logo-icon">🍇</div>Frutas & Cia</div>
   <div class="nav-right">
-    <button class="btn btn-primary" onclick="abrirModalRecebimento()" style="padding: 6px 14px; font-size: 12.5px; height: auto; box-shadow: none; white-space: nowrap;">📥 Confirmar Recebimento</button>
+    <button class="btn btn-secondary" onclick="alternarModoNoturno()" style="padding: 6px 10px; font-size: 14px; height: auto; border: none;">🌙</button>
+    <button class="btn btn-secondary" onclick="abrirModalImportar()" style="padding: 6px 12px; font-size: 12.5px; height: auto; white-space: nowrap;">📥 <span class="nav-btn-text">Importar</span></button>
+    <button class="btn btn-primary" onclick="abrirModalRecebimento()" style="padding: 6px 12px; font-size: 12.5px; height: auto; white-space: nowrap;">✅ <span class="nav-btn-text">Confirmar</span></button>
     <div class="nav-avatar">HG</div>
   </div>
 </nav>
@@ -246,7 +252,7 @@
 
   <div class="page-header">
     <h1 class="page-title">Transferência entre lojas</h1>
-    <div class="page-sub">Busque por código de barras ou descrição (qualquer ordem). Informe as lojas antes de adicionar itens. Para produtos em KG, é possível informar quantidades fracionadas (ex: 1.5).</div>
+    <div class="page-sub">Busque por código de barras ou descrição (qualquer ordem). Informe as lojas antes de adicionar itens.</div>
   </div>
 
   <div class="status-bar" id="statusBar">
@@ -307,17 +313,18 @@
       <input type="checkbox" id="mostrarInativos" onchange="onToggleInativos()">
       <span>🔎 Mostrar SKUs inativos</span>
     </label>
+    <button class="btn btn-secondary" onclick="ativarModoNaoCadastrado()" style="font-size: 13px; padding: 8px 14px;">➕ Item não cadastrado</button>
   </div>
 
   <div class="add-product">
     <div class="add-field busca">
-      <label>Cód. Barras</label>
+      <label>Cód. Barras *</label>
       <input type="text" id="codigoProd" placeholder="Código">
     </div>
 
     <div class="add-field descricao">
       <label>Descrição</label>
-      <input type="text" id="descProd" placeholder="Produto" readonly style="background:#f5f4f1;">
+      <input type="text" id="descProd" placeholder="Produto" readonly style="background:var(--surface-alt);">
     </div>
 
     <button class="btn-scan-row" id="btnEscanear" onclick="abrirScannerProduto()" title="Escanear código de barras com a câmera">
@@ -326,7 +333,7 @@
 
     <div class="add-field sku">
       <label>SKU</label>
-      <input type="text" id="skuProd" placeholder="SKU" readonly style="background:#f5f4f1;">
+      <input type="text" id="skuProd" placeholder="SKU" readonly style="background:var(--surface-alt);">
     </div>
 
     <div class="add-field unidade">
@@ -356,7 +363,7 @@
 
     <div class="add-field total">
       <label>Total UN</label>
-      <input type="text" id="totalCalc" value="" readonly style="background:#f5f4f1;font-weight:600;color:var(--accent);">
+      <input type="text" id="totalCalc" value="" readonly style="background:var(--surface-alt);font-weight:600;color:var(--accent);">
     </div>
 
     <button class="btn-add" onclick="adicionarItem()">Adicionar →</button>
@@ -390,24 +397,32 @@
   </div>
 
   <div class="planilha-link-wrapper">
-    <a class="planilha-link"
-       href="https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/edit?gid=0#gid=0"
-       target="_blank"
-       rel="noopener noreferrer"
-       title="Acessar cadastro de produtos">
+    <a class="planilha-link" href="https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer">
       📋 Cadastro de produtos
     </a>
-    <a class="planilha-link"
-       href="https://docs.google.com/spreadsheets/d/1u6JYkO8fUzRClXpGsIBZWAF5e-MAHyvDQB02bHGR-ug/edit?usp=sharing"
-       target="_blank"
-       rel="noopener noreferrer">
-      📊 Abrir planilha de histórico de transferências
+    <a class="planilha-link" href="https://docs.google.com/spreadsheets/d/1u6JYkO8fUzRClXpGsIBZWAF5e-MAHyvDQB02bHGR-ug/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+      📊 Abrir planilha de histórico
     </a>
   </div>
 
 </div>
 
 <div class="toast" id="toast">✓ Item adicionado</div>
+
+<!-- Modal de Importação -->
+<div class="modal-overlay" id="modalImportar">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Importar Transferência</h3>
+      <button class="modal-close" onclick="fecharModalImportar()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 12px; text-align: center;">Digite o ID para carregar os itens e dados.</p>
+      <input type="text" id="inputIdImportar" placeholder="Ex: TRF-231103-153052-5664" style="padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; width: 100%; outline: none; font-family: 'DM Mono', monospace; text-align: center; text-transform: uppercase;">
+      <button class="btn btn-primary" onclick="enviarImportacao()" style="width: 100%; justify-content: center; padding: 12px; margin-top: 14px; font-size: 14px;">Carregar Dados</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal de Recebimento -->
 <div class="modal-overlay" id="modalRecebimento">
@@ -485,11 +500,20 @@
 
 <script>
   // ============================================================
-  // 0. URLs
+  // 0. URLs e Modo Noturno
   // ============================================================
   const URL_CSV = 'https://docs.google.com/spreadsheets/d/15MDwFquCAJIvM2pFr-WozERjTGRnpIkK7Y_Zw4LXPrk/export?format=csv&gid=0';
   const URL_CSV_OPERADORES = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQRhvQFKwwde7gCktDWXJJ-3G3eETE51T6JhptQr-9DqgADIKdvt7YpPQByY8ksRthvIMdNNhuRKuo2/pub?gid=132777903&single=true&output=csv';
-  const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbwzs3-iMS7vY-woZsxKtiHi9modyqTxUjsz26qfchMuG0p4H_0oET1mQZM2TZYZs_oU/exec';
+  const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbwz0iz8tq6vETwIP_8ZkoEz-qz9IMEN9HlNNoUB6GppQ5BSCoUkMcfEWnOlp2zcjCwb/exec';
+
+  if (localStorage.getItem('modoNoturno') === '1') {
+    document.body.classList.add('dark-mode');
+  }
+  function alternarModoNoturno() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('modoNoturno', isDark ? '1' : '0');
+  }
 
   // ============================================================
   // 0b. Parser CSV robusto
@@ -522,9 +546,7 @@
   // ============================================================
   // 1. Variáveis Globais e Fallback
   // ============================================================
-  const catalogoFallback = [
-    { sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1, ativo: true }
-  ];
+  const catalogoFallback = [{ sku: '1', codbarra: '1', descricao: 'ABACATE AVOCADO KG', unidade: 'KG', fator: 1, ativo: true }];
   
   let catalogo = [];
   let operadores = [];
@@ -534,10 +556,9 @@
   let transferenciaFinalizada = false;
   let barcodeDetector = null;
   let scannerAtivo = false;
-  
-  // Controle do Scanner genérico
   let scannerTargetInput = null; 
   let operadorPreenchidoAutomaticamente = false;
+  let modoNaoCadastrado = false; // Nova flag
 
   // ============================================================
   // 1b. Helpers
@@ -598,10 +619,10 @@
     inicializarIdTransferencia();
     travarBotoesAcao();
     
-    // Limpa dados do operador para a nova transferência
     document.getElementById('senhaOperador').value = '';
     document.getElementById('operador').value = '';
     operadorPreenchidoAutomaticamente = false;
+    cancelarModoNaoCadastrado();
   }
 
   // ============================================================
@@ -750,8 +771,6 @@
   // ============================================================
   // 5. Lógica do Operador e Senha
   // ============================================================
-  
-  // Busca operador ao sair do campo de senha
   senhaOperadorInput.addEventListener('blur', function() {
     const senha = this.value.trim();
     if (senha === '') return;
@@ -760,7 +779,7 @@
     if (op) {
       operadorInput.value = op.nome;
       operadorPreenchidoAutomaticamente = true;
-      this.value = ''; // limpa a senha por segurança
+      this.value = ''; 
       showToast(`✓ Operador: ${op.nome}`);
     } else {
       showToast('⚠️ Senha não encontrada. Digite o nome manualmente.');
@@ -773,9 +792,7 @@
     if (e.key === 'Enter') this.blur();
   });
 
-  // Adiciona "(Manual)" se o operador for digitado sem passar pela senha
   operadorInput.addEventListener('input', function() {
-    // Se o usuário está digitando ativamente, desmarca a flag de automático
     operadorPreenchidoAutomaticamente = false;
   });
 
@@ -787,8 +804,18 @@
   });
 
   // ============================================================
-  // 6. Lógica do Fator e Total
+  // 6. Lógica do Fator, Total e Filtro Inativos
   // ============================================================
+  function onToggleInativos() {
+    mostrarInativos = document.getElementById('mostrarInativos').checked;
+    const label = document.getElementById('labelFiltroInativos');
+    if (mostrarInativos) label.classList.add('ativo');
+    else label.classList.remove('ativo');
+
+    const query = pesquisaInput.value.trim();
+    if (query) pesquisaInput.dispatchEvent(new Event('input'));
+  }
+
   function toggleFatorInput() {
     if (usarFatorCheck.checked) {
       fatorInput.classList.add('ativo');
@@ -810,12 +837,16 @@
 
   codigoInput.addEventListener('blur', function() {
     const cod = this.value.trim();
+    if (modoNaoCadastrado) return; // Ignora busca se estiver em item manual
+
     if (cod === '') { skuInput.value = ''; descInput.value = ''; fatorInput.value = '1'; atualizarTotalCalc(); return; }
     const produto = catalogo.find(p => p.codbarra === cod && (mostrarInativos || p.ativo));
     if (produto) {
       preencherCampos(produto);
       showToast(produto.ativo ? 'Produto encontrado' : '⚠️ Produto inativo!');
       qtdInput.focus();
+    } else {
+      showToast('⚠️ Produto não encontrado no catálogo.');
     }
   });
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
@@ -831,6 +862,7 @@
     if (query === '') { suggestionsPesquisa.classList.remove('show'); return; }
     let matches = catalogo.filter(p => matchesQuery(p, query));
     if (!mostrarInativos) matches = matches.filter(p => p.ativo === true);
+    
     if (matches.length > 0) {
       const limited = matches.slice(0, 10);
       suggestionsPesquisa.innerHTML = limited.map(p => {
@@ -874,12 +906,35 @@
   atualizarTotalCalc();
 
   // ============================================================
-  // 7. Adicionar item
+  // 7. Item não cadastrado
+  // ============================================================
+  function ativarModoNaoCadastrado() {
+    modoNaoCadastrado = true;
+    descInput.readOnly = false;
+    descInput.style.background = 'var(--surface)';
+    descInput.value = '';
+    skuInput.value = '??';
+    codigoInput.value = '';
+    descInput.focus();
+    showToast('Modo manual ativo. Digite a descrição e o código de barras.');
+  }
+
+  function cancelarModoNaoCadastrado() {
+    if (!modoNaoCadastrado) return;
+    modoNaoCadastrado = false;
+    descInput.readOnly = true;
+    descInput.style.background = 'var(--surface-alt)';
+    descInput.value = '';
+    skuInput.value = '';
+    codigoInput.value = '';
+  }
+
+  // ============================================================
+  // 8. Adicionar item
   // ============================================================
   function adicionarItem() {
     if (!validarLojas()) return;
     
-    // Verifica se o operador foi informado
     if (!operadorInput.value.trim()) {
       showToast('⚠️ Informe o operador (senha ou nome)');
       senhaOperadorInput.focus();
@@ -899,7 +954,21 @@
     const quantidade = paraNumero(qtdInput.value);
     const totalUnidades = quantidade * fator;
 
-    if (!descricao) { showToast('⚠️ Selecione um produto primeiro'); return; }
+    if (modoNaoCadastrado) {
+      if (codbarra === '---') {
+        showToast('⚠️ O código de barras é obrigatório para itens não cadastrados.');
+        codigoInput.focus();
+        return;
+      }
+      if (!descricao) {
+        showToast('⚠️ Informe a descrição do produto.');
+        descInput.focus();
+        return;
+      }
+    } else {
+      if (!descricao) { showToast('⚠️ Selecione um produto primeiro'); return; }
+    }
+
     if (qtdInput.value === '' || quantidade <= 0) { showToast('⚠️ Informe a quantidade'); qtdInput.focus(); return; }
 
     itens.push({ sku, codbarra, descricao, unidade, fator, quantidade, totalUnidades });
@@ -912,6 +981,7 @@
     fatorInput.classList.remove('ativo');
 
     atualizarTotalCalc();
+    cancelarModoNaoCadastrado();
     codigoInput.value = '';
     codigoInput.focus();
 
@@ -920,7 +990,7 @@
   }
 
   // ============================================================
-  // 8. Remover / atualizar item
+  // 9. Remover / atualizar item
   // ============================================================
   function removerItem(index) { itens.splice(index, 1); renderizarTabela(); showToast('Item removido'); }
   function atualizarItem(index, campo, valor) {
@@ -945,7 +1015,7 @@
   }
 
   // ============================================================
-  // 9. Renderizar tabela
+  // 10. Renderizar tabela
   // ============================================================
   function renderizarTabela() {
     const tbody = document.getElementById('corpoTabela');
@@ -978,7 +1048,7 @@
   }
 
   // ============================================================
-  // 10. Escape HTML
+  // 11. Escape HTML
   // ============================================================
   function escHtml(texto) {
     if (!texto) return '';
@@ -987,7 +1057,7 @@
   }
 
   // ============================================================
-  // 11. Limpar / Nova Transferência
+  // 12. Limpar / Nova Transferência
   // ============================================================
   function limparFormulario() {
     if (itens.length === 0) { showToast('Já está vazio'); return; }
@@ -1004,9 +1074,8 @@
   }
 
   // ============================================================
-  // 12. Scanner (Genérico para Produto e Senha)
+  // 13. Scanner (Genérico para Produto e Senha)
   // ============================================================
-  
   function abrirScannerProduto() {
     scannerTargetInput = codigoInput;
     iniciarScanner();
@@ -1044,7 +1113,6 @@
       const barcodes = await barcodeDetector.detect(scannerVideo);
       if (barcodes.length > 0) {
         const codigo = barcodes[0].rawValue;
-        console.log('Código detectado:', codigo);
         if (navigator.vibrate) navigator.vibrate(200);
         
         if (scannerTargetInput) {
@@ -1072,7 +1140,7 @@
   scannerModal.addEventListener('click', function(e) { if (e.target === this) fecharScanner(); });
 
   // ============================================================
-  // 13-16. Cupom térmico / PDF / impressão
+  // 14. Cupom térmico / PDF / impressão
   // ============================================================
   function gerarCupomHTML() {
     if (itens.length === 0) { showToast('⚠️ Nenhum item para imprimir'); return null; }
@@ -1244,7 +1312,7 @@
   }
 
   // ============================================================
-  // 17. Compartilhar
+  // 15. Compartilhar
   // ============================================================
   function abrirModalCompartilhar() {
     if (!validarLojas()) return;
@@ -1321,7 +1389,7 @@
   }
 
   // ============================================================
-  // 18. Salvar no histórico (lotes)
+  // 16. Salvar no histórico (lotes)
   // ============================================================
   function enviarViaImagem(url) {
     return new Promise((resolve) => {
@@ -1385,7 +1453,7 @@
   }
 
   // ============================================================
-  // 19. Finalizar
+  // 17. Finalizar
   // ============================================================
   async function finalizarTransferencia() {
     if (transferenciaFinalizada) {
@@ -1394,7 +1462,6 @@
     }
     if (!validarLojas()) return;
     
-    // Verifica se o operador foi informado
     if (!operadorInput.value.trim()) {
       showToast('⚠️ Informe o operador (senha ou nome)');
       senhaOperadorInput.focus();
@@ -1447,8 +1514,77 @@
   }
 
   // ============================================================
-  // 20. Lógica de Recebimento (JSONP)
+  // 18. Importar e Receber (JSONP)
   // ============================================================
+  function abrirModalImportar() {
+    document.getElementById('inputIdImportar').value = '';
+    document.getElementById('modalImportar').classList.add('show');
+    setTimeout(() => document.getElementById('inputIdImportar').focus(), 100);
+  }
+
+  function fecharModalImportar() {
+    document.getElementById('modalImportar').classList.remove('show');
+  }
+
+  document.getElementById('modalImportar').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalImportar();
+  });
+
+  function enviarImportacao() {
+    const id = document.getElementById('inputIdImportar').value.trim().toUpperCase();
+    if (!id) return showToast('⚠️ Informe o ID da transferência');
+
+    const btn = document.querySelector('#modalImportar .btn-primary');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Carregando...';
+    btn.disabled = true;
+
+    const url = URL_SCRIPT + '?acao=importar&id=' + encodeURIComponent(id) + '&callback=importarCallback';
+
+    const oldScript = document.getElementById('jsonp-importar');
+    if (oldScript) oldScript.remove();
+
+    window.importarCallback = function(data) {
+      if (data.sucesso) {
+        const d = data.dados;
+        document.getElementById('idTransferencia').value = d.idTransferencia;
+        document.getElementById('lojaOrigem').value = d.origem;
+        document.getElementById('lojaDestino').value = d.destino;
+        document.getElementById('dataHora').value = d.dataHora;
+        document.getElementById('operador').value = d.operador;
+        document.getElementById('observacao').value = d.observacao || '';
+        
+        itens = d.itens.map(i => ({
+            sku: i.sku, codbarra: i.codbarra, descricao: i.descricao,
+            quantidade: Number(i.quantidade), fator: Number(i.fator), unidade: i.unidade, totalUnidades: Number(i.totalUnidades)
+        }));
+        renderizarTabela();
+        marcarTransferenciaFinalizada();
+        fecharModalImportar();
+        showToast('✅ Transferência importada com sucesso!');
+      } else {
+        showToast('⚠️ ' + data.mensagem);
+      }
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      const s = document.getElementById('jsonp-importar');
+      if (s) s.remove();
+    };
+
+    const script = document.createElement('script');
+    script.id = 'jsonp-importar';
+    script.src = url;
+    script.onerror = function() {
+      showToast('❌ Erro de conexão ao importar.');
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      const s = document.getElementById('jsonp-importar');
+      if (s) s.remove();
+    };
+
+    document.body.appendChild(script);
+  }
+
   function abrirModalRecebimento() {
     document.getElementById('inputIdRecebimento').value = '';
     document.getElementById('modalRecebimento').classList.add('show');
@@ -1465,17 +1601,13 @@
 
   function enviarRecebimento() {
     const id = document.getElementById('inputIdRecebimento').value.trim().toUpperCase();
-    if (!id) {
-      showToast('⚠️ Informe o ID da transferência');
-      return;
-    }
+    if (!id) return showToast('⚠️ Informe o ID da transferência');
 
     const btn = document.querySelector('#modalRecebimento .btn-primary');
     const originalText = btn.innerHTML;
     btn.innerHTML = '⏳ Processando...';
     btn.disabled = true;
 
-    // Usa JSONP para contornar problemas de CORS com o Google Apps Script
     const url = URL_SCRIPT + '?acao=receber&id=' + encodeURIComponent(id) + '&callback=receberCallback';
 
     const oldScript = document.getElementById('jsonp-receber');
@@ -1498,7 +1630,7 @@
     script.id = 'jsonp-receber';
     script.src = url;
     script.onerror = function() {
-      showToast('❌ Erro de conexão ao tentar confirmar.');
+      showToast('❌ Erro de conexão ao confirmar.');
       btn.innerHTML = originalText;
       btn.disabled = false;
       const s = document.getElementById('jsonp-receber');
@@ -1509,7 +1641,7 @@
   }
 
   // ============================================================
-  // 21. Toast
+  // 19. Toast
   // ============================================================
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -1519,7 +1651,7 @@
   }
 
   // ============================================================
-  // 22. Eventos de Teclado
+  // 20. Eventos de Teclado
   // ============================================================
   codigoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
@@ -1527,7 +1659,7 @@
   fatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') adicionarItem(); });
 
   // ============================================================
-  // 23. Data/Hora automática
+  // 21. Data/Hora automática
   // ============================================================
   (function preencherData() {
     const now = new Date();
@@ -1541,7 +1673,7 @@
   })();
 
   // ============================================================
-  // 24. Inicializar
+  // 22. Inicializar
   // ============================================================
   (async function init() {
     await carregarCatalogo();
